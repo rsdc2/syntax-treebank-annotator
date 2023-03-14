@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- cf. https://stackoverflow.com/questions/31075893/how-to-fix-favicon-ico-error-failed-to-load-resource-neterr-empty-response -->
+    <link rel="shortcut icon" href="#" />
+    <link rel="stylesheet" href="styles/styles.css" />
+    <link rel="stylesheet" href="styles/sections.css" />
+    <link rel="stylesheet" href="styles/tree.css" />
+    <link rel="stylesheet" href="styles/xml.css" />
+    <link rel="stylesheet" href="styles/toolbar.css" />
+    <link rel="stylesheet" href="styles/sentence.css" />
+    <link rel="stylesheet" href="styles/about.css" />
+  </head>
+  <body>
+    <div class="about" hidden>
+      <p>
+        The Treebank Annotator was written by Robert Crellin as part of the
+        Crossreads project at the Faculty of Classics, University of Oxford, and
+        is licensed under the MIT license. This project has received funding
+        from the European Research Council (ERC) under the European Union’s
+        Horizon 2020 research and innovation programme (grant agreement No
+        885040, “Crossreads”).
+      </p>
+    </div>
+    <div>
+      <div class="divided left">
+        <!-- https://www.w3schools.com/howto/howto_css_split_screen.asp -->
+        <div class="top toolbar">
+          <ul class="top toolbar">
+            <li>
+              <button id="UndoTextEdit">Undo</button>
+            </li>
+            <li>
+              <button id="RedoTextEdit">Redo</button>
+            </li>
+            <li>
+              <button
+                class="toggle active"
+                id="ToggleShowInput"
+                onclick="Frontend.toggleShowInput()"
+              >
+                View Input
+              </button>
+            </li>
+            <li>
+              <button
+                class="toggle active"
+                id="ToggleShowOutputArethusa"
+                onclick="Frontend.toggleShowOutputArethusa()"
+              >
+                View Output XML
+              </button>
+            </li>
+            <li>
+              <button class="toggle" id="btnAbout">About</button>
+            </li>
+            <!-- <li>
+              <button id="Download EpiDoc" onclick="Frontend.downloadEpiDoc()">
+                Download EpiDoc
+              </button>
+            </li> -->
+            <!-- <li>
+              <button
+                id="Download Arethusa"
+                onclick="Frontend.downloadArethusa()"
+              >
+                Download Arethusa XML
+              </button>
+            </li> -->
+          </ul>
+
+          <div class="Sentences" id="sentencesDiv" contenteditable="false">
+            [Representation of sentences]
+          </div>
+        </div>
+
+        <div class="left boundary"></div>
+
+        <div class="input" id="InputDiv">
+          <div class="input toolbar">
+            <ul class="relative input toolbar">
+              <li>
+                <button
+                  class="toggle active"
+                  id="ToggleShowInputText"
+                  onclick="Frontend.toggleShowInputText()"
+                >
+                  Plain Text
+                </button>
+              </li>
+              <li>
+                <button
+                  class="toggle"
+                  id="ToggleShowInputEpiDoc"
+                  onclick="Frontend.toggleShowInputEpiDoc()"
+                >
+                  EpiDoc XML
+                </button>
+              </li>
+              <li>
+                <button
+                  class="toggle"
+                  id="ToggleShowInputArethusa"
+                  onclick="Frontend.toggleShowInputArethusa()"
+                >
+                  Arethusa XML
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          <div class="sentence-text input">
+            <div class="sentence-text input toolbar">
+              <ul class="sentence-text input toolbar">
+                <!-- <li>
+                    <button id="ExampleText">Example</button>
+                  </li> -->
+                <li>
+                  <button id="DrawTreeText">Render</button>
+                </li>
+              </ul>
+            </div>
+
+            <textarea
+              class="sentence-text input"
+              type="text"
+              spellcheck="false"
+            >
+Type your text here.</textarea
+            >
+          </div>
+
+          <div class="epidoc input" hidden>
+            <div class="epidoc input toolbar">
+              <ul class="epidoc input toolbar">
+                <!-- <li>
+                    <button
+                      id="EpiDocToArethusa"
+                      onclick="globalState.textStateIO.fmap(TextStateIO.epidocToArethusa)"
+                    >
+                      EpiDoc to Arethusa
+                    </button>
+                  </li> -->
+                <li>
+                  <button id="DrawTreeEpiDoc">Render</button>
+                </li>
+                <li>
+                  <button
+                    id="FormatInputEpiDoc"
+                    onclick="Frontend.formatInputEpiDoc()"
+                  >
+                    Prettyprint XML and Render
+                  </button>
+                </li>
+                <li>
+                  <button id="ExampleEpiDoc">Example</button>
+                </li>
+              </ul>
+            </div>
+
+            <textarea
+              class="epidoc input XML"
+              type="text"
+              id="srcXML"
+              spellcheck="false"
+            ></textarea>
+          </div>
+
+          <div class="arethusa input" hidden>
+            <div class="arethusa input toolbar">
+              <ul class="arethusa input toolbar">
+                <li>
+                  <button id="DrawTreeArethusa">Render</button>
+                </li>
+                <li>
+                  <button
+                    id="FormatInputArethusa"
+                    onclick="Frontend.formatInputArethusa()"
+                  >
+                    Prettyprint XML and Render
+                  </button>
+                </li>
+                <li>
+                  <button id="ExampleArethusa">Example</button>
+                </li>
+              </ul>
+            </div>
+            <textarea
+              class="arethusa input XML"
+              type="text"
+              id="dstXML"
+              spellcheck="false"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="arethusa output toolbar">
+          <ul class="arethusa output toolbar">
+            <li>
+              <button id="AddNewSentence">Append sentence</button>
+            </li>
+            <li>
+              <button id="SplitSentence">Split sentence</button>
+            </li>
+            <li>
+              <button id="InsertSentence">Insert sentence</button>
+            </li>
+            <li>
+              <button id="RemoveSentence">Remove sentence</button>
+            </li>
+          </ul>
+
+          <ul class="relative toolbar">
+            <li>
+              <button id="AddNewWord">New word</button>
+            </li>
+            <li>
+              <button id="PushToNextSentence">Word to next sentence</button>
+            </li>
+            <li>
+              <button id="PushToPreviousSentence">
+                Word to previous sentence
+              </button>
+            </li>
+            <li>
+              <button id="RemoveWord">Remove word</button>
+            </li>
+            <li>
+              <button id="MoveUp">Move word up</button>
+            </li>
+            <li>
+              <button id="MoveDown">Move word down</button>
+            </li>
+          </ul>
+        </div>
+
+        <div
+          class="XML arethusa output"
+          id="arethusaDiv"
+          contenteditable="false"
+          onclick="ArethusaDiv.click()"
+          spellcheck="false"
+        ></div>
+      </div>
+
+      <div class="divided right">
+        <div class="tree toolbar">
+          <ul class="tree toolbar">
+            <li>
+              <button
+                id="MoveGraphUp"
+                onclick="Graph.moveGraph(SVG.ViewBox.incrMinY)"
+              >
+                Up
+              </button>
+            </li>
+            <li>
+              <button
+                id="MoveGraphDown"
+                onclick="Graph.moveGraph(SVG.ViewBox.decrMinY)"
+              >
+                Down
+              </button>
+            </li>
+            <li>
+              <button
+                id="MoveGraphLeft"
+                onclick="Graph.moveGraph(SVG.ViewBox.incrMinX)"
+              >
+                Left
+              </button>
+            </li>
+            <li>
+              <button
+                id="MoveGraphRight"
+                onclick="Graph.moveGraph(SVG.ViewBox.decrMinX)"
+              >
+                Right
+              </button>
+            </li>
+            <li>
+              <button id="ZoomIn" onclick="Graph.moveGraph(SVG.ViewBox.zoomIn)">
+                Zoom In
+              </button>
+            </li>
+            <li>
+              <button
+                id="ZoomOut"
+                onclick="Graph.moveGraph(SVG.ViewBox.zoomOut)"
+              >
+                Zoom Out
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <div class="tree-container">
+          <svg viewBox="0 0 560 560" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+
+  <script src="build/src/types/enums/enums.js"></script>
+  <script src="build/src/types/enums/direction.js"></script>
+  <script src="build/src/globals/constants.js"></script>
+  <script src="build/src/globals/globals.js"></script>
+  <script src="build/src/tree/templates.js"></script>
+  <script src="build/src/types/basic/obj.js"></script>
+  <script src="build/src/types/basic/arr.js"></script>
+  <script src="build/src/types/functor/miscFuncs.js"></script>
+  <script src="build/src/types/functor/functor.js"></script>
+  <script src="build/src/types/functor/monad.js"></script>
+  <script src="build/src/types/functor/maybe.js"></script>
+  <script src="build/src/types/basic/num.js"></script>
+  <script src="build/src/types/basic/regex.js"></script>
+  <script src="build/src/types/basic/str.js"></script>
+  <script src="build/src/types/xhtml/html.js"></script>
+  <script src="build/src/types/xhtml/div.js"></script>
+  <script src="build/src/types/xhtml/sel.js"></script>
+  <script src="build/src/types/xhtml/xmlCursorPosition.js"></script>
+  <script src="build/src/types/xhtml/xmlTagFragments.js"></script>
+  <script src="build/src/types/xhtml/xmlFormatter.js"></script>
+  <script src="build/src/types/xhtml/xml.js"></script>
+  <script src="build/src/types/xhtml/svg.js"></script>
+
+  <script src="build/src/tree/treeLinks.js"></script>
+  <script src="build/src/tree/treeEdges.js"></script>
+  <script src="build/src/tree/graph.js"></script>
+  <script src="build/src/tree/treebank.js"></script>
+  <script src="build/src/tree/treeNode.js"></script>
+  <script src="build/src/tree/treeSlashes.js"></script>
+  <script src="build/src/tree/treeTokens.js"></script>
+  <script src="build/src/tree/userInput.js"></script>
+  <script src="build/src/state/clickState.js"></script>
+  <script src="build/src/state/treeStateIO.js"></script>
+  <script src="build/src/state/treeState.js"></script>
+  <script src="build/src/state/globalState.js"></script>
+  <script src="build/data/data.js"></script>
+
+  <script src="build/data/epidoc.js"></script>
+  <script src="build/data/arethusaTemplate.js"></script>
+  <script src="build/src/domain/globalSettings.js"></script>
+  <script src="build/src/domain/TEI/TEIName.js"></script>
+  <script src="build/src/domain/TEI/TEIWord.js"></script>
+  <script src="build/src/domain/TEI/edition.js"></script>
+  <script src="build/src/domain/TEI/epidoc.js"></script>
+  <script src="build/src/domain/domaintypes.js"></script>
+  <script src="build/src/domain/domainxml.js"></script>
+  <script src="build/src/domain/arethusa/arethusaWord.js"></script>
+  <script src="build/src/domain/arethusa/arethusaSentence.js"></script>
+  <script src="build/src/domain/arethusa/arethusa.js"></script>
+  <script src="build/src/domain/conversion.js"></script>
+  <script src="build/src/frontend/textarea.js"></script>
+  <script src="build/src/frontend/arethusaDiv.js"></script>
+  <script src="build/src/frontend/arethusaDivCursor.js"></script>
+  <script src="build/src/frontend/sentences.js"></script>
+  <script src="build/src/frontend/observers.js"></script>
+  <script src="build/src/frontend/frontend.js"></script>
+  <script src="build/src/state/textState.js"></script>
+  <script src="build/src/state/textStateIO.js"></script>
+  <script src="build/src/state/textViewState.js"></script>
+
+  <script src="build/src/index.js"></script>
+</html>

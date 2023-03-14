@@ -1,0 +1,19 @@
+div.divided {
+  height: 100vh;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+div.divided.left {
+  width: 50vw;
+  left: 0;
+}
+
+div.divided.right {
+  width: 50vw;
+  right: 0;
+}
+

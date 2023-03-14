@@ -1,0 +1,16 @@
+div.about {
+    position: absolute;
+    top: 70px;
+    left: calc(50vw - 250px);
+    box-shadow: 5px 5px 5px black;
+    width: 500px;
+    max-width: 80vw;
+    height: fit-content;
+    max-height: 50vw;
+    padding-left: 15px;
+    padding-right: 15px;
+    z-index: 4;
+    background-color: whitesmoke    ;
+    color: black;
+    text-align: left;
+}

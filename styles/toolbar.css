@@ -1,0 +1,92 @@
+div.toolbar {
+  list-style-type: none;
+  margin-left: 2vw;
+  margin-right: 2vw;
+  padding-right: 2vw;
+  width: 45vw;
+  /* background-color: rgb(145, 221, 231); */
+  background-color: rgb(0, 174, 255);
+}
+
+div.left.boundary {
+  margin-top: 158px;
+}
+
+div.toolbar.top {
+  position: fixed;
+  top: 0;
+  margin-top: 0;
+  margin-left: 0;
+  padding-left: 2vw;
+  padding-top: 15px;
+  z-index: 2;
+}
+
+div.toolbar.tree {
+  padding-top: 15px;
+  margin: auto;
+  align-self: center;
+  width: fit-content;
+}
+
+div.toolbar.input {
+  position: relative;
+  z-index: 1;
+}
+
+div.toolbar.output.arethusa {
+  margin-top: 15px;
+}
+
+div.toolbar.relative {
+  position: relative;
+  z-index: -1;
+}
+
+div.toolbar ul {
+  list-style-type: none;
+  padding: 0;
+  border-color: bisque;
+  overflow-y: auto;
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+div.toolbar ul button {
+  background-color: blue;
+  color: white;
+  padding: 15px;
+  display: inline;
+  border: none;
+  margin: 0;
+}
+
+div.toolbar ul li {
+  float: left;
+}
+
+div.toolbar.tree ul button {
+  z-index: -1;
+}
+
+div.toolbar ul button:hover {
+  background-color: orange;
+}
+
+div.toolbar ul button:active {
+  background-color: red;
+}
+
+button.toggle.active {
+  background-color: brown;
+}
+
+button.toggle.active:hover {
+  background-color: red;
+}
+
+button.toggle.active:active {
+  background-color: blue;
+}

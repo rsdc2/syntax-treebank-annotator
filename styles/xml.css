@@ -1,0 +1,40 @@
+div.input {
+  z-index: 0;
+}
+
+div.XML.arethusa.output {
+  white-space: pre;
+  font-family: "Courier New", Courier, monospace;
+  tab-size: 2em;
+  background-color: black;
+  color: whitesmoke;
+  width: 45vw;
+  height: 20vh;
+  overflow-x: scroll;
+  padding: 0.5vw;
+  font-size: small;
+  margin-left: 2vw;
+  margin-right: 2vw;
+  margin-top: 0;
+  scrollbar-width: 45vw;
+  resize: vertical;
+}
+
+textarea.input {
+  width: 45vw;
+  height: 20vh;
+  margin-left: 2vw;
+  margin-right: 2vw;
+  margin-top: 0px;
+  white-space: pre;
+  overflow-x: scroll;
+  background-color: black;
+  color: whitesmoke;
+  font-family: "Courier New", Courier, monospace;
+  font-size: small;
+  tab-size: 2em;
+  border: 0;
+  padding: 0.5vw;
+  scrollbar-width: 45vw;
+  resize: vertical;
+}

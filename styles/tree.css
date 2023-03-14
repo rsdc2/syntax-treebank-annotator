@@ -1,0 +1,111 @@
+svg {
+  width: 46vw;
+  height: 46vw;
+  max-width: 90vh;
+  max-height: 90vh;
+  background-color: white;
+  margin: auto;
+  display: block;
+}
+
+.link {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+
+.link.head {
+  stroke: gray;
+}
+
+.link.slash {
+  stroke-dasharray: 0, 2 1;
+}
+
+circle {
+  fill: #ccc;
+  stroke: #333;
+  stroke-width: 1.5px;
+  transition: fill 200ms;
+}
+
+circle.clicked {
+  fill: red;
+  stroke: #333;
+  stroke-width: 1.5px;
+  transition: fill 200ms;
+}
+
+circle:hover {
+  fill: orange;
+  stroke: #333;
+  stroke-width: 1.5px;
+  transition: fill 1s;
+}
+
+line {
+  stroke: #ccc;
+}
+
+.node-label {
+  text-anchor: start;
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  font-weight: normal;
+  fill: #666;
+  font-size: 14px;
+  width: fit-content;
+  display: block;
+  transition: fill 20ms;
+}
+
+text.node-label:hover {
+  fill: blue;
+  font-size: 15px;
+  transition: fill 0.1;
+  cursor: pointer;
+}
+
+text.node-label.clicked {
+  font-weight: bolder;
+  transition: fill 0.1s;
+  cursor: pointer;
+}
+
+text.node-label.clicked:hover {
+  font-weight: bolder;
+  transition: fill 0.1s;
+  cursor: pointer;
+}
+
+div.edge-label-div {
+  text-anchor: start;
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  font-weight: normal;
+  fill: #666;
+  font-size: 10px;
+  width: fit-content;
+  display: block;
+  transition: fill 20ms;
+}
+
+div.edge-label-div:hover {
+  color: blue;
+  font-size: 11px;
+  transition: fill 0.1;
+  cursor: pointer;
+}
+
+div.edge-label-div.clicked {
+  color: blue;
+  font-size: 15px;
+  transition: fill 0.1;
+  cursor: pointer;
+}
+
+div.edge-label-div.clicked:hover {
+  color: blue;
+  font-size: 15px;
+  transition: fill 0.1;
+  cursor: pointer;
+}
+
