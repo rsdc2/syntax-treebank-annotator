@@ -17,11 +17,6 @@ var SVG;
         const createPoint = (x, y) => {
             return new DOMPoint(x, y);
         };
-        Point.cursPoint = (e) => (x, y) => (svgElem) => {
-            var _a;
-            const point = createPoint(x, y);
-            return point.matrixTransform((_a = svgElem.getScreenCTM()) === null || _a === void 0 ? void 0 : _a.inverse());
-        };
         Point.x = (point) => {
             return point.x;
         };
