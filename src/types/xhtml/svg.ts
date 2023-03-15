@@ -17,11 +17,6 @@ namespace SVG {
             return new DOMPoint(x, y)
         }
 
-        export const cursPoint = (e: MouseEvent) => (x: number, y: number) => (svgElem: SVGGraphicsElement): DOMPoint => {
-            const point = createPoint(x, y)
-            return point.matrixTransform(svgElem.getScreenCTM()?.inverse())
-        }
-
         export const x = (point: DOMPoint) => {
             return point.x
         }
