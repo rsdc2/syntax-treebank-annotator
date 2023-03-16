@@ -1,4 +1,4 @@
-# Syntax Treebank Annotator
+# Syntax Treebank Annotator (currently in development)
 
 The source code for the Syntax Treebank Annotator is written in [TypeScript](https://www.typescriptlang.org/) and transpiled to JavaScript (ECMAScript 2019).
 
