@@ -64,19 +64,19 @@ class GlobalState {
         this.treeStateIO.fmap(Graph.graph)
     }
 
-    pressInputArethusaKey = () => {
-        this._keysPressedInputArethusa += 1
-        if (this._keysPressedInputArethusa % 5 == 0) {
-            this._textStateIO.fmap(TextStateIO.pushInputArethusa(Frontend.inputArethusa))
-        }
-    }
+    // pressInputArethusaKey = () => {
+    //     this._keysPressedInputArethusa += 1
+    //     if (this._keysPressedInputArethusa % 5 == 0) {
+    //         this._textStateIO.fmap(TextStateIO.pushInputArethusa(Frontend.inputArethusa))
+    //     }
+    // }
 
-    pressInputEpiDocKey = () => {
-        this._keysPressedInputEpiDoc += 1
-        if (this._keysPressedInputEpiDoc % 5 == 0) {
-            this._textStateIO.fmap(TextStateIO.pushEpiDoc(Frontend.epidoc))
-        }
-    }
+    // pressInputEpiDocKey = () => {
+    //     this._keysPressedInputEpiDoc += 1
+    //     if (this._keysPressedInputEpiDoc % 5 == 0) {
+    //         this._textStateIO.fmap(TextStateIO.pushEpiDoc(Frontend.epidoc))
+    //     }
+    // }
 
     // pressInputArethusaKey = () => {
     //     this._keysPressed += 1

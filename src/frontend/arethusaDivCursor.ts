@@ -352,6 +352,7 @@ class AthDivCurs {
     }
 
     static setCursorPosFromAthDivOffset = (divOffset: number) => {
+        // console.log("Set cursor position.")
         const anchorInfo = AthDivCurs.textNodeOfIdx(divOffset)
         const createCursorPos = CursorPos.of(divOffset - anchorInfo.startIdx)
         const cursorPos = anchorInfo.maybeText.fmap(createCursorPos)

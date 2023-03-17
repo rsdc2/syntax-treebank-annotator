@@ -13,6 +13,7 @@ class ArethusaDiv {
             )
         
         // Set the cursor position
+        // console.log("click")
         AthDivCurs
             .setCursorPosFromAthDivOffset(divOffset)
     }

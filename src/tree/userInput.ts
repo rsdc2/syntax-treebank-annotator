@@ -173,13 +173,13 @@ namespace UserInput {
         }
     }
 
-    export function keyDownArethusaInputTextArea(this, e: KeyboardEvent) {
-        globalState.pressInputArethusaKey()
-    }
+    // export function keyDownArethusaInputTextArea(this, e: KeyboardEvent) {
+    //     globalState.pressInputArethusaKey()
+    // }
 
-    export function keyDownEpiDocInputTextArea(this, e: KeyboardEvent) {
-        globalState.pressInputEpiDocKey()
-    }
+    // export function keyDownEpiDocInputTextArea(this, e: KeyboardEvent) {
+    //     globalState.pressInputEpiDocKey()
+    // }
 
     export function pageDown(this, e: KeyboardEvent) {
         // switch (e.key) {

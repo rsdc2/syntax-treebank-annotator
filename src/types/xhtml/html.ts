@@ -44,9 +44,7 @@ namespace HTML {
     }
 
     export namespace Btn {
-        export const setOnclickFunc = (func) => (btn: HTMLButtonElement) => {
-            btn.onclick = func;
-        }
+
     }
 
     export namespace Div {
@@ -84,6 +82,10 @@ namespace HTML {
 
         export const unsetHidden = (elem: HTMLElement) => {
             return HTML.Elem.removeAttr("hidden")(elem)
+        }
+
+        export const setOnclickFunc = (func) => (elem: HTMLElement) => {
+            elem.onclick = func;
         }
 
         export const toggleHidden = (elem: HTMLElement) => {
