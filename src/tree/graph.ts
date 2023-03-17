@@ -16,11 +16,25 @@ namespace Graph {
     const xMult = 20;
     const yMult = 50;
 
+    export const circles = () => {
+        const circles = document.querySelectorAll("circle")
+        const circleArr = new Array<SVGCircleElement>()
+        circles.forEach ( (item: SVGCircleElement) => {
+            circleArr.push(item)
+        })
+        return circleArr
+    }    
+
     export function clearGraph(): void {
         d3
             .select("g")
             .selectAll('*')
             .remove()
+    }
+
+    export const clickCircle = (tokenId: string) =>  {
+        const clickState = ClickState.of(MaybeT.of(tokenId))(ElementType.NodeLabel)(ClickType.Left)
+        globalState.treeStateIO.fmap(TreeStateIO.changeClickState(clickState))
     }
     
     function resetClock() {
@@ -56,13 +70,13 @@ namespace Graph {
 
             resetClock();
             
-            simulation.nodes(globalState
+            globalState.simulation.nodes(globalState
                 .treeStateIO
                 .fmap(TreeStateIO.nodes)
                 .unpackT([])
             )
             
-            simulation
+            globalState.simulation
                 .alphaTarget(alphaTarget)
                 .restart();
         }
@@ -95,6 +109,8 @@ namespace Graph {
             .data(nodes)
             .join('circle')
             .attr("r", 6)
+            .attr("token-id", d => d.tokenId)
+            .attr("treenode-id", d => d.treeNodeId)
     
         d3.select(".circle")
             .selectAll("circle")
@@ -261,6 +277,8 @@ namespace Graph {
 
         window.onclick = ( 
             (e: MouseEvent) => {
+
+                // Clear tree click state
                 globalState
                     .treeStateIO
                     .fmap(
@@ -272,6 +290,19 @@ namespace Graph {
                         )
                     )
                 unclickAll()
+
+                // CLear output Arethusa click state
+                const currentSentenceId = globalState
+                    .textStateIO
+                    .bind(TextStateIO.currentSentence)
+                    .bind(ArethusaSentence.id)
+                globalState
+                    .textStateIO
+                    .fmap(TextStateIO.changeView
+                        (Nothing.of()) 
+                        (currentSentenceId)
+                )
+            
             }
         )
 
@@ -333,11 +364,11 @@ namespace Graph {
     export function unclickAll () {
         Graph.unclickEdgeLabels()
         Graph.unclickNodeLabels()
+        Graph.unclickCircles()
     }
 
     export const unclickNodeLabels = () => {
         const nodeLabels = Graph.nodeLabels()
-
         nodeLabels.forEach ((item: SVGTextElement) => {
             item.classList.remove("clicked")
         })        
@@ -349,16 +380,22 @@ namespace Graph {
             item.classList.remove("clicked")
             item.setAttribute("contenteditable", "false")
         })
-
     }  
+
+    export const unclickCircles = () => {
+        const circles = Graph.circles()
+        circles.forEach ((item: SVGCircleElement ) => {
+            item.classList.remove("clicked")
+        })
+    }
 
     function setForces(
         nodes: ITreeNode[], 
         links: ITreeLink[]) {
     
-        simulation
-        .force('charge', d3.forceManyBody().strength(manyBodyStrength))
-        .force('center', d3.forceCenter(300, 300))
+        globalState.simulation
+            .force('charge', d3.forceManyBody().strength(manyBodyStrength))
+            .force('center', d3.forceCenter(300, 300))
     
         .force('link', d3.forceLink()
             .links(links)
@@ -405,14 +442,14 @@ namespace Graph {
                 edgeLabels.attr("transform", edgeLabelPos(paths));
 
             } else {
-                simulation.stop();
+                globalState.simulation.stop();
 
                 // Used to stop the graph starting from the beginning on undo / redo
                 globalState
                     .treeStateIO
                     .fmap(
                         TreeStateIO.replaceSentStateFromNodes(
-                            simulation.nodes(),
+                            globalState.simulation.nodes(),
                             false, 
                             globalState
                                 .treeStateIO
@@ -485,7 +522,7 @@ namespace Graph {
     }
     
     export function updateSimulation(state: TreeStateIO) {
-        if (simulation === undefined) {
+        if (globalState.simulation === undefined) {
             createSimulation(state)
             return
         }
@@ -493,7 +530,7 @@ namespace Graph {
         const nodes = state.currentTreeState.nodes
         const links = TreeNode.links(nodes)
 
-        simulation.nodes(nodes)
+        globalState.simulation.nodes(nodes)
         setForces(nodes, links)
 
         const paths = drawPaths(links);
@@ -501,24 +538,27 @@ namespace Graph {
         const nodeLabels = drawNodeLabels(nodes);
         const edgeLabels = drawEdgeLabels(links);
 
-        simulation.on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
+        globalState
+            .simulation
+            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
 
         resetClock()
-        simulation
+        globalState
+            .simulation
             .alphaTarget(alphaTarget)
             .restart();
     }
     
-    export function updateSimulation_(state: TreeState) {
-        if (simulation === undefined) {
-            createSimulation_(state)
+    export function updateSimulation_(ts: TreeState) {
+        if (globalState.simulation === undefined) {
+            createSimulation_(ts)
             return
         }
 
-        const nodes = state.nodes
+        const nodes = ts.nodes
         const links = TreeNode.links(nodes)
 
-        simulation.nodes(nodes)
+        globalState.simulation.nodes(nodes)
         setForces(nodes, links)
 
         const paths = drawPaths(links);
@@ -526,10 +566,18 @@ namespace Graph {
         const nodeLabels = drawNodeLabels(nodes);
         const edgeLabels = drawEdgeLabels(links);
 
-        simulation.on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
+        unclickCircles()
+        ts.clickState
+            .circleElem
+            .fmap(HTML.Elem.Class.add("clicked"))
+        ts.clickState
+            .labelElem
+            .fmap(HTML.Elem.Class.add("clicked"))
+
+        globalState.simulation.on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
 
         resetClock()
-        simulation
+        globalState.simulation
             .alphaTarget(alphaTarget)
             .restart();
     }
@@ -544,11 +592,11 @@ namespace Graph {
         const nodeLabels = drawNodeLabels(nodes);
         const edgeLabels = drawEdgeLabels(links);
 
-        simulation = d3.forceSimulation(nodes);
+        globalState.simulation = d3.forceSimulation(nodes);
         setForces(nodes, links)
 
         resetClock()
-        simulation.on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
+        globalState.simulation.on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
     }
 
     export function createSimulation_(state: TreeState) {
@@ -561,11 +609,11 @@ namespace Graph {
         const nodeLabels = drawNodeLabels(nodes);
         const edgeLabels = drawEdgeLabels(links);
 
-        simulation = d3.forceSimulation(nodes);
+        globalState.simulation = d3.forceSimulation(nodes);
         setForces(nodes, links)
 
         resetClock()
-        simulation.on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
+        globalState.simulation.on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
     }
 
     export const svg = () => {
