@@ -79,7 +79,7 @@ class TreeStateIO {
             Graph.unclickAll()
 
             newClickState
-                .element
+                .labelElem
                 .fmap( HTML.Elem.setAttr ("contenteditable") ("true") )
 
             ClickState.clicked(newClickState)
@@ -396,6 +396,7 @@ class TreeStateIO {
 
         treeStateIO._treeState = ts
         treeStateIO.currentSentStateIdx = 0
+        console.log(ts.clickState)
 
         if (updateGraph) {
             Graph.updateSimulation_(treeStateIO._treeState)
