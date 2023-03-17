@@ -7,7 +7,7 @@ enum ClickType {
 
 
 class ClickState {
-    _lastClickedId: Maybe<string> = Nothing.of<string>()
+    _lastClickedTreeNodeId: Maybe<string> = Nothing.of<string>()
     _elementType: ElementType
     _clickType: ClickType
 
@@ -16,18 +16,18 @@ class ClickState {
         elementType: ElementType,
         clickType: ClickType
         ) {
-        this._lastClickedId = lastClickedId
+        this._lastClickedTreeNodeId = lastClickedId
         this._elementType = elementType
         this._clickType = clickType
     }
 
     static of = 
-        (lastLeftClickedId: Maybe<string>) =>
+        (lastLeftClickedTreeNodeId: Maybe<string>) =>
         (elementType: ElementType) => 
         (clickType: ClickType) =>
         {
 
-        return new ClickState(lastLeftClickedId, elementType, clickType)
+        return new ClickState(lastLeftClickedTreeNodeId, elementType, clickType)
     }
 
     static none = () => {
@@ -39,18 +39,22 @@ class ClickState {
 
     get edgeLabelElement (): Maybe<HTMLDivElement> {
         if (this._elementType === ElementType.EdgeLabel) {
-            return Graph.edgeLabelById(this._lastClickedId)
+            return Graph.edgeLabelById(this._lastClickedTreeNodeId)
         }
         return Nothing.of()
     }
 
-    get element (): Maybe<HTMLDivElement | SVGTextElement> {
+    get labelElem (): Maybe<HTMLDivElement | SVGTextElement> {
         if (this._elementType === ElementType.EdgeLabel) {
-            return Graph.edgeLabelById(this._lastClickedId)
+            return Graph.edgeLabelById(this._lastClickedTreeNodeId)
         } else if (this._elementType === ElementType.NodeLabel) {
-            return Graph.nodeLabelById(this._lastClickedId)
+            return Graph.nodeLabelById(this._lastClickedTreeNodeId)
         }
         return MaybeT.of<HTMLDivElement|SVGTextElement>(null)
+    }
+
+    get circleElem (): Maybe<SVGCircleElement> {
+        return  this._lastClickedTreeNodeId.bind(SVG.Circle.circleByTreeNodeId)
     }
 
     get elementType () {
@@ -58,28 +62,40 @@ class ClickState {
     }
 
     static clicked (clickState: ClickState) {
-        const clicked = clickState
-            .element
+        const labelClicked = clickState
+            .labelElem
             .fmap(HTML.Elem.Class.contains("clicked"))
             .unpackT(false)
 
-        if (clicked) {
+        const circleClicked = clickState
+            .circleElem
+            .fmap(HTML.Elem.Class.contains("clicked"))
+            .unpackT(false)
+
+        if (labelClicked || circleClicked) {
             ClickState.unclicked(clickState)
             return
         }
 
         clickState
-            .element
+            .labelElem
+            .fmap(HTML.Elem.Class.add("clicked"))
+        clickState
+            .circleElem
             .fmap(HTML.Elem.Class.add("clicked"))
     }
 
     get lastClickedId () {
-        return this._lastClickedId
+        return this._lastClickedTreeNodeId
     }
 
     static unclicked = (clickState: ClickState) => {
         clickState
-            .element
+            .labelElem
             .fmap(HTML.Elem.Class.remove("clicked"))
+        clickState
+            .circleElem
+            .fmap(HTML.Elem.Class.remove("clicked"))
+
     }
 }
