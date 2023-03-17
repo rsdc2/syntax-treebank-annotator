@@ -7,54 +7,67 @@ var ClickType;
 })(ClickType || (ClickType = {}));
 class ClickState {
     constructor(lastClickedId, elementType, clickType) {
-        this._lastClickedId = Nothing.of();
-        this._lastClickedId = lastClickedId;
+        this._lastClickedTreeNodeId = Nothing.of();
+        this._lastClickedTreeNodeId = lastClickedId;
         this._elementType = elementType;
         this._clickType = clickType;
     }
     get edgeLabelElement() {
         if (this._elementType === ElementType.EdgeLabel) {
-            return Graph.edgeLabelById(this._lastClickedId);
+            return Graph.edgeLabelById(this._lastClickedTreeNodeId);
         }
         return Nothing.of();
     }
-    get element() {
+    get labelElem() {
         if (this._elementType === ElementType.EdgeLabel) {
-            return Graph.edgeLabelById(this._lastClickedId);
+            return Graph.edgeLabelById(this._lastClickedTreeNodeId);
         }
         else if (this._elementType === ElementType.NodeLabel) {
-            return Graph.nodeLabelById(this._lastClickedId);
+            return Graph.nodeLabelById(this._lastClickedTreeNodeId);
         }
         return MaybeT.of(null);
+    }
+    get circleElem() {
+        return this._lastClickedTreeNodeId.bind(SVG.Circle.circleByTreeNodeId);
     }
     get elementType() {
         return this._elementType;
     }
     static clicked(clickState) {
-        const clicked = clickState
-            .element
+        const labelClicked = clickState
+            .labelElem
             .fmap(HTML.Elem.Class.contains("clicked"))
             .unpackT(false);
-        if (clicked) {
+        const circleClicked = clickState
+            .circleElem
+            .fmap(HTML.Elem.Class.contains("clicked"))
+            .unpackT(false);
+        if (labelClicked || circleClicked) {
             ClickState.unclicked(clickState);
             return;
         }
         clickState
-            .element
+            .labelElem
+            .fmap(HTML.Elem.Class.add("clicked"));
+        clickState
+            .circleElem
             .fmap(HTML.Elem.Class.add("clicked"));
     }
     get lastClickedId() {
-        return this._lastClickedId;
+        return this._lastClickedTreeNodeId;
     }
 }
-ClickState.of = (lastLeftClickedId) => (elementType) => (clickType) => {
-    return new ClickState(lastLeftClickedId, elementType, clickType);
+ClickState.of = (lastLeftClickedTreeNodeId) => (elementType) => (clickType) => {
+    return new ClickState(lastLeftClickedTreeNodeId, elementType, clickType);
 };
 ClickState.none = () => {
     return ClickState.of(Nothing.of())(ElementType.Unknown)(ClickType.Unknown);
 };
 ClickState.unclicked = (clickState) => {
     clickState
-        .element
+        .labelElem
+        .fmap(HTML.Elem.Class.remove("clicked"));
+    clickState
+        .circleElem
         .fmap(HTML.Elem.Class.remove("clicked"));
 };

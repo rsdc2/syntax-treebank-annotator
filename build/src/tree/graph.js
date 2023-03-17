@@ -13,6 +13,14 @@ var Graph;
     const manyBodyStrength = -600;
     const xMult = 20;
     const yMult = 50;
+    Graph.circles = () => {
+        const circles = document.querySelectorAll("circle");
+        const circleArr = new Array();
+        circles.forEach((item) => {
+            circleArr.push(item);
+        });
+        return circleArr;
+    };
     function clearGraph() {
         d3
             .select("g")
@@ -20,6 +28,10 @@ var Graph;
             .remove();
     }
     Graph.clearGraph = clearGraph;
+    Graph.clickCircle = (tokenId) => {
+        const clickState = ClickState.of(MaybeT.of(tokenId))(ElementType.NodeLabel)(ClickType.Left);
+        globalState.treeStateIO.fmap(TreeStateIO.changeClickState(clickState));
+    };
     function resetClock() {
         startTime = Date.now();
         endTime = startTime + simulationDurationInMs;
@@ -48,11 +60,11 @@ var Graph;
                 d.fy = mouseSVGY;
             }
             resetClock();
-            simulation.nodes(globalState
+            globalState.simulation.nodes(globalState
                 .treeStateIO
                 .fmap(TreeStateIO.nodes)
                 .unpackT([]));
-            simulation
+            globalState.simulation
                 .alphaTarget(alphaTarget)
                 .restart();
         }
@@ -78,7 +90,9 @@ var Graph;
             .selectAll('circle')
             .data(nodes)
             .join('circle')
-            .attr("r", 6);
+            .attr("r", 6)
+            .attr("token-id", d => d.tokenId)
+            .attr("treenode-id", d => d.treeNodeId);
         d3.select(".circle")
             .selectAll("circle")
             .call(d3.drag().on("start", dragstarted));
@@ -214,10 +228,19 @@ var Graph;
     };
     function graph(state) {
         window.onclick = ((e) => {
+            // Clear tree click state
             globalState
                 .treeStateIO
                 .fmap(TreeStateIO.changeClickState(ClickState.of(Nothing.of())(ElementType.Unknown)(ClickType.Unknown)));
             unclickAll();
+            // CLear output Arethusa click state
+            const currentSentenceId = globalState
+                .textStateIO
+                .bind(TextStateIO.currentSentence)
+                .bind(ArethusaSentence.id);
+            globalState
+                .textStateIO
+                .fmap(TextStateIO.changeView(Nothing.of())(currentSentenceId));
         });
         window.onkeydown = ((e) => {
             UserInput.keyDownEdgeLabel(e);
@@ -265,6 +288,7 @@ var Graph;
     function unclickAll() {
         Graph.unclickEdgeLabels();
         Graph.unclickNodeLabels();
+        Graph.unclickCircles();
     }
     Graph.unclickAll = unclickAll;
     Graph.unclickNodeLabels = () => {
@@ -280,8 +304,14 @@ var Graph;
             item.setAttribute("contenteditable", "false");
         });
     };
+    Graph.unclickCircles = () => {
+        const circles = Graph.circles();
+        circles.forEach((item) => {
+            item.classList.remove("clicked");
+        });
+    };
     function setForces(nodes, links) {
-        simulation
+        globalState.simulation
             .force('charge', d3.forceManyBody().strength(manyBodyStrength))
             .force('center', d3.forceCenter(300, 300))
             .force('link', d3.forceLink()
@@ -320,11 +350,11 @@ var Graph;
                 edgeLabels.attr("transform", edgeLabelPos(paths));
             }
             else {
-                simulation.stop();
+                globalState.simulation.stop();
                 // Used to stop the graph starting from the beginning on undo / redo
                 globalState
                     .treeStateIO
-                    .fmap(TreeStateIO.replaceSentStateFromNodes(simulation.nodes(), false, globalState
+                    .fmap(TreeStateIO.replaceSentStateFromNodes(globalState.simulation.nodes(), false, globalState
                     .treeStateIO
                     .fmap(TreeStateIO.currentSentStateIdx).unpackT(0)));
                 globalState
@@ -378,41 +408,51 @@ var Graph;
         return x;
     }
     function updateSimulation(state) {
-        if (simulation === undefined) {
+        if (globalState.simulation === undefined) {
             createSimulation(state);
             return;
         }
         const nodes = state.currentTreeState.nodes;
         const links = TreeNode.links(nodes);
-        simulation.nodes(nodes);
+        globalState.simulation.nodes(nodes);
         setForces(nodes, links);
         const paths = drawPaths(links);
         const circles = drawCircles(nodes);
         const nodeLabels = drawNodeLabels(nodes);
         const edgeLabels = drawEdgeLabels(links);
-        simulation.on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
+        globalState
+            .simulation
+            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
         resetClock();
-        simulation
+        globalState
+            .simulation
             .alphaTarget(alphaTarget)
             .restart();
     }
     Graph.updateSimulation = updateSimulation;
-    function updateSimulation_(state) {
-        if (simulation === undefined) {
-            createSimulation_(state);
+    function updateSimulation_(ts) {
+        if (globalState.simulation === undefined) {
+            createSimulation_(ts);
             return;
         }
-        const nodes = state.nodes;
+        const nodes = ts.nodes;
         const links = TreeNode.links(nodes);
-        simulation.nodes(nodes);
+        globalState.simulation.nodes(nodes);
         setForces(nodes, links);
         const paths = drawPaths(links);
         const circles = drawCircles(nodes);
         const nodeLabels = drawNodeLabels(nodes);
         const edgeLabels = drawEdgeLabels(links);
-        simulation.on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
+        Graph.unclickCircles();
+        ts.clickState
+            .circleElem
+            .fmap(HTML.Elem.Class.add("clicked"));
+        ts.clickState
+            .labelElem
+            .fmap(HTML.Elem.Class.add("clicked"));
+        globalState.simulation.on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
         resetClock();
-        simulation
+        globalState.simulation
             .alphaTarget(alphaTarget)
             .restart();
     }
@@ -425,10 +465,10 @@ var Graph;
         const circles = drawCircles(nodes);
         const nodeLabels = drawNodeLabels(nodes);
         const edgeLabels = drawEdgeLabels(links);
-        simulation = d3.forceSimulation(nodes);
+        globalState.simulation = d3.forceSimulation(nodes);
         setForces(nodes, links);
         resetClock();
-        simulation.on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
+        globalState.simulation.on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
     }
     Graph.createSimulation = createSimulation;
     function createSimulation_(state) {
@@ -439,10 +479,10 @@ var Graph;
         const circles = drawCircles(nodes);
         const nodeLabels = drawNodeLabels(nodes);
         const edgeLabels = drawEdgeLabels(links);
-        simulation = d3.forceSimulation(nodes);
+        globalState.simulation = d3.forceSimulation(nodes);
         setForces(nodes, links);
         resetClock();
-        simulation.on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
+        globalState.simulation.on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
     }
     Graph.createSimulation_ = createSimulation_;
     Graph.svg = () => {

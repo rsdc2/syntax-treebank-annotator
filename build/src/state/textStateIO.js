@@ -1,18 +1,4 @@
 class TextStateIO {
-    appendNewSentenceToArethusa() {
-        TextStateIO.appendNewSentenceToArethusa(this);
-    }
-    appendNewWordToSentence() {
-        TextStateIO.appendNewWordToSentence(this);
-    }
-    get outputArethusaP() {
-        return TextStateIO.outputArethusa(this);
-    }
-    get outputArethusaXML() {
-        return this
-            .outputArethusaP
-            .bind(DXML.nodeXMLStr);
-    }
     constructor(initialState) {
         this._textStates = [];
         this._currentStateIdx = Nothing.of();
@@ -130,12 +116,21 @@ class TextStateIO {
             Frontend.pushPlainTextToFrontend(this);
             SentencesDiv.setText(this.sentencesRep);
             // Update tree state
-            const treeStateFunc = MaybeT.of(simulation).isNothing ?
+            const treeStateFunc = MaybeT.of(globalState.simulation).isNothing ?
                 ArethusaSentence.toTreeSentState :
-                ArethusaSentence.toTreeSentStateWithNodesFromExistingTree(simulation.nodes());
+                ArethusaSentence.toTreeSentStateWithNodesFromExistingTree(globalState.simulation.nodes());
             const treeState = this.currentSentence.isNothing ?
                 MaybeT.of(TreeState.of(0)("1")([])([])(ClickState.none())) :
                 this.currentSentence.bind(treeStateFunc);
+            // Convert wordId to treeNodeId
+            const getTreeNodeId = this
+                .currentWordId
+                .fmap(Str.toNum)
+                .fmap(TreeState.tokenIdToTreeNodeId);
+            const treeNodeId = treeState.applyBind(getTreeNodeId)
+                .fmap(Str.fromNum);
+            const clickState = ClickState.of(treeNodeId)(ElementType.NodeLabel)(ClickType.Left);
+            treeState.fmap(TreeState.setClickState(clickState));
             if (!ext) {
                 globalState
                     .treeStateIO
@@ -146,6 +141,20 @@ class TextStateIO {
             }
         };
         this.appendNewState(false)(initialState);
+    }
+    appendNewSentenceToArethusa() {
+        TextStateIO.appendNewSentenceToArethusa(this);
+    }
+    appendNewWordToSentence() {
+        TextStateIO.appendNewWordToSentence(this);
+    }
+    get outputArethusaP() {
+        return TextStateIO.outputArethusa(this);
+    }
+    get outputArethusaXML() {
+        return this
+            .outputArethusaP
+            .bind(DXML.nodeXMLStr);
     }
     get currentState() {
         return TextStateIO.currentState(this);

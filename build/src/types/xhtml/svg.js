@@ -1,5 +1,14 @@
 var SVG;
 (function (SVG) {
+    let Circle;
+    (function (Circle) {
+        Circle.circleByTokenId = (id) => {
+            return HTML.q(`circle[token-id="${id}"]`);
+        };
+        Circle.circleByTreeNodeId = (id) => {
+            return HTML.q(`circle[treenode-id="${id}"]`);
+        };
+    })(Circle = SVG.Circle || (SVG.Circle = {}));
     let Matrix;
     (function (Matrix) {
         Matrix.d = (matrix) => {

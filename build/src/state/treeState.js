@@ -77,8 +77,11 @@ TreeState.arethusaSentence = (s) => {
         .toArethusaXMLNode(s)
         .fmap(ArethusaSentence.fromXMLNode);
 };
+TreeState.setClickState = (value) => (treeState) => {
+    treeState.clickState = value;
+};
 TreeState.deepcopy = (t) => {
-    return TreeState.of(t._state_id)(t._sentence_id)(Obj.deepcopy(t._tokens))(Obj.deepcopy(t._nodes))(ClickState.of(t._clickState._lastClickedId)(t._clickState._elementType)(t._clickState._clickType));
+    return TreeState.of(t._state_id)(t._sentence_id)(Obj.deepcopy(t._tokens))(Obj.deepcopy(t._nodes))(ClickState.of(t._clickState._lastClickedTreeNodeId)(t._clickState._elementType)(t._clickState._clickType));
 };
 TreeState.nodeByTokenId = (tokenId) => (sentState) => {
     return TreeNode.nodeByTokenId(tokenId)(sentState.nodes);

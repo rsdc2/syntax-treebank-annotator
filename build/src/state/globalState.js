@@ -42,6 +42,12 @@ class GlobalState {
         this._textStateIO = Nothing.of();
         this._treeStateIO = Nothing.of();
     }
+    get simulation() {
+        return this._simulation;
+    }
+    set simulation(value) {
+        this._simulation = value;
+    }
     get textStateIO() {
         return this._textStateIO;
     }

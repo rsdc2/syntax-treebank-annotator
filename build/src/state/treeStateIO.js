@@ -6,29 +6,6 @@ var ElementType;
     ElementType["Unknown"] = "unknown";
 })(ElementType || (ElementType = {}));
 class TreeStateIO {
-    addSentStateFromNodes(nodes, update) {
-        const newSentState = new TreeState(this.currentSentStateIdx + 1, this.currentTreeState._sentence_id, [], nodes, this.currentTreeState.clickState);
-        this.push(newSentState)(false)(update);
-    }
-    get arethusaSentence() {
-        return this
-            .currentTreeState
-            .arethusaSentence;
-    }
-    get clickState() {
-        return this.currentTreeState.clickState;
-    }
-    set clickState(value) {
-        this.currentTreeState.clickState = value;
-    }
-    get currentSentStateIdx() {
-        return this._currentSentStateIdx;
-    }
-    ;
-    set currentSentStateIdx(value) {
-        this._currentSentStateIdx = value;
-    }
-    ;
     constructor(sentState) {
         this._currentSentStateIdx = 0;
         this.changeEdgeLabelClickState = (newClickState) => {
@@ -44,7 +21,7 @@ class TreeStateIO {
                     .fmap(this.changeRelation);
                 Graph.unclickAll();
                 newClickState
-                    .element
+                    .labelElem
                     .fmap(HTML.Elem.setAttr("contenteditable")("true"));
                 ClickState.clicked(newClickState);
             }
@@ -131,6 +108,29 @@ class TreeStateIO {
         this._treeState = newSentState;
         this.currentSentStateIdx = 0;
     }
+    addSentStateFromNodes(nodes, update) {
+        const newSentState = new TreeState(this.currentSentStateIdx + 1, this.currentTreeState._sentence_id, [], nodes, this.currentTreeState.clickState);
+        this.push(newSentState)(false)(update);
+    }
+    get arethusaSentence() {
+        return this
+            .currentTreeState
+            .arethusaSentence;
+    }
+    get clickState() {
+        return this.currentTreeState.clickState;
+    }
+    set clickState(value) {
+        this.currentTreeState.clickState = value;
+    }
+    get currentSentStateIdx() {
+        return this._currentSentStateIdx;
+    }
+    ;
+    set currentSentStateIdx(value) {
+        this._currentSentStateIdx = value;
+    }
+    ;
     ;
     get currentTreeState() {
         return this._treeState;
@@ -282,6 +282,7 @@ TreeStateIO.of = (sentState) => {
 TreeStateIO.push = (ext) => (updateGraph) => (ts) => (treeStateIO) => {
     treeStateIO._treeState = ts;
     treeStateIO.currentSentStateIdx = 0;
+    console.log(ts.clickState);
     if (updateGraph) {
         Graph.updateSimulation_(treeStateIO._treeState);
     }

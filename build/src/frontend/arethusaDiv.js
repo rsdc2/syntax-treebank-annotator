@@ -19,11 +19,14 @@ class ArethusaDiv {
     }
 }
 ArethusaDiv.click = () => {
-    const divOffset = AthDivCurs.selectionEndIdx;
+    const divOffset = AthDivCurs
+        .selectionEndIdx;
     globalState
         .textStateIO
         .fmap(TextStateIO.changeView(AthDivCurs.currentWordId)(AthDivCurs.currentSentenceId));
-    AthDivCurs.setCursorPosFromAthDivOffset(divOffset);
+    // Set the cursor position
+    AthDivCurs
+        .setCursorPosFromAthDivOffset(divOffset);
 };
 ArethusaDiv.formatXMLForDiv = (xml) => {
     return xml

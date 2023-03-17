@@ -40,6 +40,9 @@ var HTML;
         Div.textContent = (elem) => {
             return MaybeT.of(elem.textContent);
         };
+        Div.setOnclickFunc = (func) => (btn) => {
+            btn.onclick = func;
+        };
     })(Div = HTML.Div || (HTML.Div = {}));
     let Elem;
     (function (Elem) {
