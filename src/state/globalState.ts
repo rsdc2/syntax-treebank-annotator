@@ -4,6 +4,7 @@ class GlobalState {
     _keysPressedInputArethusa: number = 0
     _keysPressedInputEpiDoc: number = 0
     _keysPressedInputText: number = 0
+    simulation: d3.Simulation<ITreeNode, undefined>
 
     constructor() {
         this._textStateIO = Nothing.of<TextStateIO>()
