@@ -50,6 +50,10 @@ class TreeState implements ITreeState {
         this._clickState = value
     }
 
+    static setClickState = (value: ClickState) => (treeState: TreeState) => {
+        treeState.clickState = value
+    }
+
     static deepcopy = (t: TreeState) => {
         return TreeState.of
             (t._state_id)
@@ -57,7 +61,7 @@ class TreeState implements ITreeState {
             (Obj.deepcopy(t._tokens))
             (Obj.deepcopy(t._nodes))
             (ClickState.of
-                (t._clickState._lastClickedId)
+                (t._clickState._lastClickedTreeNodeId)
                 (t._clickState._elementType)
                 (t._clickState._clickType)
             )
