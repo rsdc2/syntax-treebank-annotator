@@ -77,9 +77,6 @@ TextArea.currentSentence = (textarea) => {
     else if (currentNodeName.eq("word")) {
         const currentNodeBoundaries = TextArea.currentNodeBoundaries(textarea);
         const prevText = TextArea.textToPreCursorPos(textarea)(currentNodeBoundaries[0]);
-        // const tags = prevText.match(/(?<=\<)([A-Za-z_]+)(?=.*?\>)/g)
-        // const siblings1 = prevText.match(/(?<=\<)([A-Za-z_]+)(?=.*?[^\/]\>.*?\<\/\1\>)/g)
-        // const siblings2 = prevText.match(/(?<=\<)([A-Za-z_]+)(?=.*?\/\>)/g)
         const sentenceParentId = TextArea.currentSentenceId(textarea);
         const getSentenceById = sentenceParentId.fmap(Arethusa.sentenceById);
         const lastSentenceParent = globalState
@@ -91,9 +88,6 @@ TextArea.currentSentence = (textarea) => {
     else {
         return Nothing.of();
     }
-    // const leftBoundary = prevText.lastIndexOf("<")
-    // const rightBoundary = prevText.indexOf("</")
-    // return [leftBoundary, rightBoundary] as [number, number]
 };
 TextArea.currentWordId = (textarea) => {
     const currentNode = TextArea.currentNode(textarea);

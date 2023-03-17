@@ -118,14 +118,12 @@ var UserInput;
         }
     }
     UserInput.keyDownEdgeLabel = keyDownEdgeLabel;
-    function keyDownArethusaInputTextArea(e) {
-        globalState.pressInputArethusaKey();
-    }
-    UserInput.keyDownArethusaInputTextArea = keyDownArethusaInputTextArea;
-    function keyDownEpiDocInputTextArea(e) {
-        globalState.pressInputEpiDocKey();
-    }
-    UserInput.keyDownEpiDocInputTextArea = keyDownEpiDocInputTextArea;
+    // export function keyDownArethusaInputTextArea(this, e: KeyboardEvent) {
+    //     globalState.pressInputArethusaKey()
+    // }
+    // export function keyDownEpiDocInputTextArea(this, e: KeyboardEvent) {
+    //     globalState.pressInputEpiDocKey()
+    // }
     function pageDown(e) {
         // switch (e.key) {
         //     case ("PageDown"):

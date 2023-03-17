@@ -29,12 +29,6 @@ var HTML;
     HTML.value = (elem) => {
         return elem.value;
     };
-    let Btn;
-    (function (Btn) {
-        Btn.setOnclickFunc = (func) => (btn) => {
-            btn.onclick = func;
-        };
-    })(Btn = HTML.Btn || (HTML.Btn = {}));
     let Div;
     (function (Div) {
         Div.textContent = (elem) => {
@@ -64,6 +58,9 @@ var HTML;
         };
         Elem.unsetHidden = (elem) => {
             return HTML.Elem.removeAttr("hidden")(elem);
+        };
+        Elem.setOnclickFunc = (func) => (elem) => {
+            elem.onclick = func;
         };
         Elem.toggleHidden = (elem) => {
             if (MaybeT.of(elem).bind(Elem.getHidden).unpackT("false") == "false") {

@@ -147,11 +147,26 @@ class Frontend {
     static get topToolbarDiv() {
         return HTML.q("div.top.toolbar");
     }
-    static setBtnEvents() {
+    static setDivClickEvents() {
         const arethusaDivClickFunc = (e) => {
             e.stopPropagation();
             ArethusaDiv.click();
         };
+        ArethusaDiv.control
+            .fmapErr("No Arethusa Div", HTML.Elem.setOnclickFunc(arethusaDivClickFunc));
+    }
+    static setTextAreaClickEvents() {
+        const inputTextAreaClickFunc = (e) => {
+            e.stopPropagation();
+        };
+        Frontend.arethusaInputTextArea
+            .fmapErr("No arethusaInputTextArea", HTML.Elem.setOnclickFunc(inputTextAreaClickFunc));
+        Frontend.epidocInputTextArea
+            .fmapErr("No arethusaInputTextArea", HTML.Elem.setOnclickFunc(inputTextAreaClickFunc));
+        Frontend.textInputTextArea
+            .fmapErr("No arethusaInputTextArea", HTML.Elem.setOnclickFunc(inputTextAreaClickFunc));
+    }
+    static setBtnEvents() {
         const epidocExampleBtnFunc = (e) => {
             e.stopPropagation();
             Frontend
@@ -235,68 +250,66 @@ class Frontend {
                 .fmap(TextArea.value)
                 .fmap(Frontend.processText);
         };
-        ArethusaDiv.control
-            .fmapErr("No Arethusa Div", HTML.Div.setOnclickFunc(arethusaDivClickFunc));
         Frontend
             .buttonById("btnAbout")
-            .fmapErr("No about button", HTML.Btn.setOnclickFunc(Frontend.toggleAbout));
+            .fmapErr("No about button", HTML.Elem.setOnclickFunc(Frontend.toggleAbout));
         Frontend
             .inputShowBtn
-            .fmap(HTML.Btn.setOnclickFunc(Frontend.toggleShowInput));
+            .fmap(HTML.Elem.setOnclickFunc(Frontend.toggleShowInput));
         Frontend
             .buttonById("DrawTreeArethusa")
-            .fmap(HTML.Btn.setOnclickFunc(processArethusaInputFunc));
+            .fmap(HTML.Elem.setOnclickFunc(processArethusaInputFunc));
         Frontend
             .buttonById("DrawTreeEpiDoc")
-            .fmap(HTML.Btn.setOnclickFunc(processEpiDocInputFunc));
+            .fmap(HTML.Elem.setOnclickFunc(processEpiDocInputFunc));
         Frontend
             .buttonById("DrawTreeText")
-            .fmap(HTML.Btn.setOnclickFunc(processTextInputFunc));
+            .fmap(HTML.Elem.setOnclickFunc(processTextInputFunc));
         Frontend
             .epidocExampleBtn
-            .fmap(HTML.Btn.setOnclickFunc(epidocExampleBtnFunc));
+            .fmap(HTML.Elem.setOnclickFunc(epidocExampleBtnFunc));
         Frontend
             .arethusaExampleBtn
-            .fmap(HTML.Btn.setOnclickFunc(arethusaExampleBtnFunc));
+            .fmap(HTML.Elem.setOnclickFunc(arethusaExampleBtnFunc));
         Frontend
             .undoBtn
-            .fmap(HTML.Btn.setOnclickFunc(undoFunc));
+            .fmap(HTML.Elem.setOnclickFunc(undoFunc));
         Frontend
             .redoBtn
-            .fmap(HTML.Btn.setOnclickFunc(redoFunc));
+            .fmap(HTML.Elem.setOnclickFunc(redoFunc));
         Frontend
             .appendNewSentenceToArethusaBtn
-            .fmap(HTML.Btn.setOnclickFunc(addNewSentenceFunc));
+            .fmap(HTML.Elem.setOnclickFunc(addNewSentenceFunc));
         Frontend
             .removeSentenceBtn
-            .fmap(HTML.Btn.setOnclickFunc(removeSentenceFunc));
+            .fmap(HTML.Elem.setOnclickFunc(removeSentenceFunc));
         Frontend
             .splitSentenceBtn
-            .fmap(HTML.Btn.setOnclickFunc(splitSentenceFunc));
+            .fmap(HTML.Elem.setOnclickFunc(splitSentenceFunc));
         Frontend
             .insertSentenceBtn
-            .fmap(HTML.Btn.setOnclickFunc(insertSentenceFunc));
+            .fmap(HTML.Elem.setOnclickFunc(insertSentenceFunc));
         Frontend
             .removeWordBtn
-            .fmap(HTML.Btn.setOnclickFunc(removeWordFunc));
+            .fmap(HTML.Elem.setOnclickFunc(removeWordFunc));
         Frontend
             .addNewWordBtn
-            .fmap(HTML.Btn.setOnclickFunc(appendNewWordFunc));
+            .fmap(HTML.Elem.setOnclickFunc(appendNewWordFunc));
         Frontend
             .moveWordToNextSentenceBtn
-            .fmap(HTML.Btn.setOnclickFunc(moveWordToNextSentenceFunc));
+            .fmap(HTML.Elem.setOnclickFunc(moveWordToNextSentenceFunc));
         Frontend
             .moveWordToPrevSentenceBtn
-            .fmap(HTML.Btn.setOnclickFunc(moveWordToPrevSentenceFunc));
+            .fmap(HTML.Elem.setOnclickFunc(moveWordToPrevSentenceFunc));
         Frontend
             .removeWordBtn
-            .fmap(HTML.Btn.setOnclickFunc(removeWordFunc));
+            .fmap(HTML.Elem.setOnclickFunc(removeWordFunc));
         Frontend
             .moveUpBtn
-            .fmap(HTML.Btn.setOnclickFunc(moveWordUpFunc));
+            .fmap(HTML.Elem.setOnclickFunc(moveWordUpFunc));
         Frontend
             .moveDownBtn
-            .fmap(HTML.Btn.setOnclickFunc(moveWordDownFunc));
+            .fmap(HTML.Elem.setOnclickFunc(moveWordDownFunc));
     }
     static get splitSentenceBtn() {
         return HTML.q("button#SplitSentence");

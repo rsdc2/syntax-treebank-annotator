@@ -262,6 +262,7 @@ AthDivCurs.nearestXMLTagFragBoundary = (matchEnd) => (dir) => (regexp) => {
         .fmap(getIndexFunc);
 };
 AthDivCurs.setCursorPosFromAthDivOffset = (divOffset) => {
+    // console.log("Set cursor position.")
     const anchorInfo = AthDivCurs.textNodeOfIdx(divOffset);
     const createCursorPos = CursorPos.of(divOffset - anchorInfo.startIdx);
     const cursorPos = anchorInfo.maybeText.fmap(createCursorPos);

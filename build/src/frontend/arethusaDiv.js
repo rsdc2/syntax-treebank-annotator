@@ -25,6 +25,7 @@ ArethusaDiv.click = () => {
         .textStateIO
         .fmap(TextStateIO.changeView(AthDivCurs.currentWordId)(AthDivCurs.currentSentenceId));
     // Set the cursor position
+    // console.log("click")
     AthDivCurs
         .setCursorPosFromAthDivOffset(divOffset);
 };

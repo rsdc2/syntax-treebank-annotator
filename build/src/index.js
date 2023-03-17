@@ -1,5 +1,6 @@
 let globalState = new GlobalState;
-Frontend.setBtnEvents();
 Observers.setResizeObservers();
-UserInput.setTextInputKeyEvents();
+Frontend.setBtnEvents();
+Frontend.setDivClickEvents();
+Frontend.setTextAreaClickEvents();
 UserInput.setClickOutAboutBox();
