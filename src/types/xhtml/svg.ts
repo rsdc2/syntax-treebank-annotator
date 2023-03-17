@@ -1,5 +1,16 @@
 namespace SVG {
 
+    export namespace Circle {
+
+        export const circleByTokenId = (id: string) => {
+            return HTML.q(`circle[token-id="${id}"]`) as Maybe<SVGCircleElement>
+        }
+
+        export const circleByTreeNodeId = (id: string) => {
+            return HTML.q(`circle[treenode-id="${id}"]`) as Maybe<SVGCircleElement>
+        }
+    }
+
     export namespace Matrix {
         export const d = (matrix: DOMMatrix) => {
             return matrix.d
