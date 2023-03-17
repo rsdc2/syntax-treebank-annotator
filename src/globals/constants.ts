@@ -26,5 +26,4 @@ namespace Constants {
 
     export const defaultRel = "rel"
 
-    // const tabSeparator = "\t"
 }

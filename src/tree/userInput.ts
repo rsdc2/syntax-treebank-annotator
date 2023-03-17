@@ -1,10 +1,5 @@
 namespace UserInput {
-
-    export function leftClickNodeLabel(this: SVGTextElement, e: MouseEvent): void {
-        e.stopPropagation()
-
-        const treeNodeId = HTML.Elem.getAttr ("treenode-id") (this)
-
+    export const leftClickNodeLabelFunc = (treeNodeId: Maybe<string>) => {
         if (globalState.treeStateIO.bind(TreeStateIO.lastClickedId).value === treeNodeId.value
             && globalState.treeStateIO.fmap(TreeStateIO.lastClickType).eq(ClickType.Left)
             ) {
@@ -14,26 +9,63 @@ namespace UserInput {
         }
 
         if (globalState.treeStateIO.bind(TreeStateIO.lastClickedId).isNothing) {
-            globalState.treeStateIO.fmap(TreeStateIO.changeClickState(
-                ClickState.of
-                    (treeNodeId) 
-                    (ElementType.NodeLabel)
-                    (ClickType.Left)
+            // Change the clicked node on the tree
+            globalState
+                .treeStateIO
+                .fmap(
+                    TreeStateIO.changeClickState(
+                        ClickState.of
+                            (treeNodeId) 
+                            (ElementType.NodeLabel)
+                            (ClickType.Left)
+                    )
             )
-            )
+
+
+            // Change the selected word on the output Arethusa
+            const getWordId = treeNodeId
+                .fmap(Str.toNum)
+                .fmap(TreeState.treeNodeIdToTokenId)
+            const wordId = globalState
+                .treeStateIO
+                .fmap(TreeStateIO.currentSentState)
+                .applyBind(getWordId)
+                .fmap(Str.fromNum)
+
+            //  Change the view
+
+            globalState
+                .textStateIO
+                .fmap(
+                    TextStateIO.changeView(wordId)(Nothing.of())
+                )
+
             return
         }
 
         const changeNodeVal = treeNodeId
             .fmap(TreeStateIO.changeNodeValue ('headTreeNodeId'))
 
-        const x = globalState.treeStateIO.applyFmap(globalState.treeStateIO
-            .bind(TreeStateIO.lastClickedId)
-            .applyFmap(changeNodeVal))
+        const x = globalState.treeStateIO.applyFmap(
+                globalState
+                    .treeStateIO
+                    .bind(TreeStateIO.lastClickedId)
+                    .applyFmap(changeNodeVal)
+            )
 
         globalState
             .treeStateIO
             .fmap(TreeStateIO.changeClickState ( ClickState.none() ))
+
+    }
+
+
+    export function leftClickNodeLabel(this: SVGTextElement, e: MouseEvent): void {
+        e.stopPropagation()
+
+        const treeNodeId = HTML.Elem.getAttr ("treenode-id") (this)
+
+        leftClickNodeLabelFunc(treeNodeId)        
     }
     
     export function rightClickNodeLabel(this: SVGTextElement, e: MouseEvent): void {
@@ -49,13 +81,34 @@ namespace UserInput {
         }
 
         if (globalState.treeStateIO.bind(TreeStateIO.lastClickedId).isNothing) {
-            globalState.treeStateIO.fmap(TreeStateIO.changeClickState(
-                ClickState.of
-                    (treeNodeId) 
-                    (ElementType.NodeLabel)
-                    (ClickType.Right)
+            // Change selected node on the tree
+            globalState
+                .treeStateIO
+                .fmap(TreeStateIO.changeClickState(
+                    ClickState.of
+                        (treeNodeId) 
+                        (ElementType.NodeLabel)
+                        (ClickType.Right)
+                )
             )
-            )
+
+            // Change the selected word on the output Arethusa
+            const getWordId = treeNodeId
+                .fmap(Str.toNum)
+                .fmap(TreeState.treeNodeIdToTokenId)
+            const wordId = globalState
+                .treeStateIO
+                .fmap(TreeStateIO.currentSentState)
+                .applyBind(getWordId)
+                .fmap(Str.fromNum)
+
+            //  Change the view
+            globalState
+                .textStateIO
+                .fmap(
+                    TextStateIO.changeView (wordId) (Nothing.of())
+                )
+
             return
         }
 

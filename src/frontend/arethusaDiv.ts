@@ -1,11 +1,20 @@
 class ArethusaDiv {
 
     static click = () => {
-        const divOffset = AthDivCurs.selectionEndIdx
+        const divOffset = AthDivCurs
+            .selectionEndIdx
+
         globalState
             .textStateIO
-            .fmap(TextStateIO.changeView(AthDivCurs.currentWordId) (AthDivCurs.currentSentenceId))
-        AthDivCurs.setCursorPosFromAthDivOffset(divOffset)
+            .fmap(
+                TextStateIO.changeView
+                    (AthDivCurs.currentWordId) 
+                    (AthDivCurs.currentSentenceId)
+            )
+        
+        // Set the cursor position
+        AthDivCurs
+            .setCursorPosFromAthDivOffset(divOffset)
     }
 
     static get control() {

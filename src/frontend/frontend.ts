@@ -347,6 +347,11 @@ class Frontend {
 
     static setBtnEvents() {
 
+        const arethusaDivClickFunc = (e: Event) => {
+            e.stopPropagation()
+            ArethusaDiv.click()
+        }
+
         const epidocExampleBtnFunc = (e: Event) => {
             e.stopPropagation()
             Frontend
@@ -449,6 +454,9 @@ class Frontend {
                 .fmap(TextArea.value)
                 .fmap(Frontend.processText)
         }
+
+        ArethusaDiv.control
+            .fmapErr("No Arethusa Div", HTML.Div.setOnclickFunc(arethusaDivClickFunc))
 
         Frontend
             .buttonById("btnAbout")

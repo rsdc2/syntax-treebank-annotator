@@ -53,6 +53,10 @@ namespace HTML {
         export const textContent = (elem: HTMLDivElement) => {
             return MaybeT.of(elem.textContent)
         }
+
+        export const setOnclickFunc = (func) => (btn: HTMLDivElement) => {
+            btn.onclick = func;
+        }    
     }
 
     export namespace Elem {
