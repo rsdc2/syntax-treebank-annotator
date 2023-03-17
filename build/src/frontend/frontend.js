@@ -148,10 +148,6 @@ class Frontend {
         return HTML.q("div.top.toolbar");
     }
     static setBtnEvents() {
-        const arethusaDivClickFunc = (e) => {
-            e.stopPropagation();
-            ArethusaDiv.click();
-        };
         const epidocExampleBtnFunc = (e) => {
             e.stopPropagation();
             Frontend
@@ -235,8 +231,6 @@ class Frontend {
                 .fmap(TextArea.value)
                 .fmap(Frontend.processText);
         };
-        ArethusaDiv.control
-            .fmapErr("No Arethusa Div", HTML.Div.setOnclickFunc(arethusaDivClickFunc));
         Frontend
             .buttonById("btnAbout")
             .fmapErr("No about button", HTML.Btn.setOnclickFunc(Frontend.toggleAbout));

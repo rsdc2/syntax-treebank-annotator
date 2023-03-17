@@ -22,4 +22,5 @@ var Constants;
         slashes: []
     };
     Constants.defaultRel = "rel";
+    // const tabSeparator = "\t"
 })(Constants || (Constants = {}));

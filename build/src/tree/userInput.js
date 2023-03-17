@@ -1,6 +1,8 @@
 var UserInput;
 (function (UserInput) {
-    UserInput.leftClickNodeLabelFunc = (treeNodeId) => {
+    function leftClickNodeLabel(e) {
+        e.stopPropagation();
+        const treeNodeId = HTML.Elem.getAttr("treenode-id")(this);
         if (globalState.treeStateIO.bind(TreeStateIO.lastClickedId).value === treeNodeId.value
             && globalState.treeStateIO.fmap(TreeStateIO.lastClickType).eq(ClickType.Left)) {
             globalState.treeStateIO
@@ -8,39 +10,17 @@ var UserInput;
             return;
         }
         if (globalState.treeStateIO.bind(TreeStateIO.lastClickedId).isNothing) {
-            // Change the clicked node on the tree
-            globalState
-                .treeStateIO
-                .fmap(TreeStateIO.changeClickState(ClickState.of(treeNodeId)(ElementType.NodeLabel)(ClickType.Left)));
-            // Change the selected word on the output Arethusa
-            const getWordId = treeNodeId
-                .fmap(Str.toNum)
-                .fmap(TreeState.treeNodeIdToTokenId);
-            const wordId = globalState
-                .treeStateIO
-                .fmap(TreeStateIO.currentSentState)
-                .applyBind(getWordId)
-                .fmap(Str.fromNum);
-            //  Change the view
-            globalState
-                .textStateIO
-                .fmap(TextStateIO.changeView(wordId)(Nothing.of()));
+            globalState.treeStateIO.fmap(TreeStateIO.changeClickState(ClickState.of(treeNodeId)(ElementType.NodeLabel)(ClickType.Left)));
             return;
         }
         const changeNodeVal = treeNodeId
             .fmap(TreeStateIO.changeNodeValue('headTreeNodeId'));
-        const x = globalState.treeStateIO.applyFmap(globalState
-            .treeStateIO
+        const x = globalState.treeStateIO.applyFmap(globalState.treeStateIO
             .bind(TreeStateIO.lastClickedId)
             .applyFmap(changeNodeVal));
         globalState
             .treeStateIO
             .fmap(TreeStateIO.changeClickState(ClickState.none()));
-    };
-    function leftClickNodeLabel(e) {
-        e.stopPropagation();
-        const treeNodeId = HTML.Elem.getAttr("treenode-id")(this);
-        UserInput.leftClickNodeLabelFunc(treeNodeId);
     }
     UserInput.leftClickNodeLabel = leftClickNodeLabel;
     function rightClickNodeLabel(e) {
@@ -53,23 +33,7 @@ var UserInput;
             return;
         }
         if (globalState.treeStateIO.bind(TreeStateIO.lastClickedId).isNothing) {
-            // Change selected node on the tree
-            globalState
-                .treeStateIO
-                .fmap(TreeStateIO.changeClickState(ClickState.of(treeNodeId)(ElementType.NodeLabel)(ClickType.Right)));
-            // Change the selected word on the output Arethusa
-            const getWordId = treeNodeId
-                .fmap(Str.toNum)
-                .fmap(TreeState.treeNodeIdToTokenId);
-            const wordId = globalState
-                .treeStateIO
-                .fmap(TreeStateIO.currentSentState)
-                .applyBind(getWordId)
-                .fmap(Str.fromNum);
-            //  Change the view
-            globalState
-                .textStateIO
-                .fmap(TextStateIO.changeView(wordId)(Nothing.of()));
+            globalState.treeStateIO.fmap(TreeStateIO.changeClickState(ClickState.of(treeNodeId)(ElementType.NodeLabel)(ClickType.Right)));
             return;
         }
         const newRel = MaybeT.of(Constants.defaultRel);
