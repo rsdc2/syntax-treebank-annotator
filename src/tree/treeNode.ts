@@ -2,7 +2,7 @@
 // Contain properties needed for D3 representation
 // Plus some others to help me keep track of what is going on
 
-interface ITreeNode {
+interface ITreeNode extends d3.SimulationNodeDatum {
     name: string,
     tokenId: number,
     treeNodeId: number,
@@ -11,33 +11,7 @@ interface ITreeNode {
     distToRoot: number,
     relation: string
     type: NodeType,
-    // token: IToken | null,
     radius?: number | undefined;
-    index?: number | undefined;
-    /**
-     * Node’s current x-position
-     */
-    x?: number | undefined;
-    /**
-     * Node’s current y-position
-     */
-    y?: number | undefined;
-    /**
-     * Node’s current x-velocity
-     */
-    vx?: number | undefined;
-    /**
-     * Node’s current y-velocity
-     */
-    vy?: number | undefined;
-    /**
-     * Node’s fixed x-position (if position was fixed)
-     */
-    fx?: number | null | undefined;
-    /**
-     * Node’s fixed y-position (if position was fixed)
-     */
-    fy?: number | null | undefined;
 }
 
 namespace TreeNode {
