@@ -697,21 +697,35 @@ class TextStateIO {
 
         // Update tree state
 
-        const treeStateFunc = MaybeT.of(simulation).isNothing ? 
+        const treeStateFunc = MaybeT.of(globalState.simulation).isNothing ? 
             ArethusaSentence.toTreeSentState :
-            ArethusaSentence.toTreeSentStateWithNodesFromExistingTree(simulation.nodes())
+            ArethusaSentence.toTreeSentStateWithNodesFromExistingTree(globalState.simulation.nodes())
+
 
         const treeState = this.currentSentence.isNothing ? 
             MaybeT.of(TreeState.of(0) ("1") ([]) ([]) (ClickState.none())) :
             this.currentSentence.bind(treeStateFunc)
 
+        // Convert wordId to treeNodeId
+        const getTreeNodeId = this
+            .currentWordId
+            .fmap(Str.toNum)
+            .fmap(TreeState.tokenIdToTreeNodeId)
+
+        const treeNodeId = treeState.applyBind(getTreeNodeId)
+            .fmap(Str.fromNum)
+
+        const clickState = ClickState.of(treeNodeId)(ElementType.NodeLabel)(ClickType.Left)
+        treeState.fmap(TreeState.setClickState(clickState))
+    
         if (!ext) {
             globalState
                 .treeStateIO
                 .applyFmap(
                     treeState
                         .fmapErr("No tree state", TreeStateIO.push(true)(!ext)))
-                
+            
+            
             this.currentState
                 .fmap(TextState.updateTreeState(treeState))
 
