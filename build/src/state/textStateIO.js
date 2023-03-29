@@ -1,4 +1,18 @@
 class TextStateIO {
+    appendNewSentenceToArethusa() {
+        TextStateIO.appendNewSentenceToArethusa(this);
+    }
+    appendNewWordToSentence() {
+        TextStateIO.appendNewWordToSentence(this);
+    }
+    get outputArethusaP() {
+        return TextStateIO.outputArethusa(this);
+    }
+    get outputArethusaXML() {
+        return this
+            .outputArethusaP
+            .bind(DXML.nodeXMLStr);
+    }
     constructor(initialState) {
         this._textStates = [];
         this._currentStateIdx = Nothing.of();
@@ -141,20 +155,6 @@ class TextStateIO {
             }
         };
         this.appendNewState(false)(initialState);
-    }
-    appendNewSentenceToArethusa() {
-        TextStateIO.appendNewSentenceToArethusa(this);
-    }
-    appendNewWordToSentence() {
-        TextStateIO.appendNewWordToSentence(this);
-    }
-    get outputArethusaP() {
-        return TextStateIO.outputArethusa(this);
-    }
-    get outputArethusaXML() {
-        return this
-            .outputArethusaP
-            .bind(DXML.nodeXMLStr);
     }
     get currentState() {
         return TextStateIO.currentState(this);
