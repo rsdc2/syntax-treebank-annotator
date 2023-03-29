@@ -206,7 +206,7 @@ Arethusa.pushToFrontend = (textStateIO) => {
     const inputArethusaXML = textStateIO
         .inputArethusaXML
         .unpack("");
-    console.log("inputArethusaXML", inputArethusaXML);
+    // console.log("inputArethusaXML", inputArethusaXML)
     if (inputArethusaXML.includes("parsererror")) {
         Frontend
             .arethusaInputTextArea
