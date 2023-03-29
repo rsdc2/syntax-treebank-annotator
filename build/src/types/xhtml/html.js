@@ -40,6 +40,9 @@ var HTML;
     })(Div = HTML.Div || (HTML.Div = {}));
     let Elem;
     (function (Elem) {
+        Elem.click = (elem) => {
+            elem.click();
+        };
         Elem.classList = (elem) => {
             return elem.classList;
         };
@@ -114,4 +117,13 @@ var HTML;
             };
         })(Class = Elem.Class || (Elem.Class = {}));
     })(Elem = HTML.Elem || (HTML.Elem = {}));
+    let URL;
+    (function (URL) {
+        URL.createObjectURL = (blob) => {
+            return window.URL.createObjectURL(blob);
+        };
+        URL.revokeObjectURL = (url) => {
+            return window.URL.revokeObjectURL(url);
+        };
+    })(URL = HTML.URL || (HTML.URL = {}));
 })(HTML || (HTML = {}));

@@ -160,7 +160,9 @@
                 <li>
                   <button
                     id="loadEpiDocFile"
-                    onclick="FileHandling.loadFromDialog('.xml')(MaybeT.of(Frontend.processEpiDoc))"
+                    onclick="FileHandling.loadFromDialog
+                      ('.xml')
+                      (MaybeT.of(Frontend.processEpiDoc))"
                   >
                     Load
                   </button>
@@ -248,6 +250,14 @@
             </li>
             <li>
               <button id="MoveDown">Move word down</button>
+            </li>
+            <li>
+              <button
+                id="saveArethusaFile"
+                onclick="Frontend.downloadArethusa()"
+              >
+                Download
+              </button>
             </li>
           </ul>
         </div>

@@ -311,22 +311,31 @@ class Frontend {
         return MaybeT.of(document.getElementById("sentencesDiv"))
     }
 
+    static downloadArethusa = () => {
+        globalState
+            .textStateIO
+            .bind(TextStateIO.currentState)
+            .bind(TextState.outputArethusaDeep)
+            .fmap(Arethusa.toXMLStr)
+            .fmap(FileHandling.download)
+    }
+
     static showMessage(message:string) {
         HTML.q("div.message")
-            .bindErr("No message element.", HTML.setInnerHTML(message))
+            .bindErr("No message element", HTML.setInnerHTML(message))
             .fmap(HTML.Elem.unsetHidden)
     }
 
     static hideMessage() {
         HTML.q("div.message")
-            .bindErr("No message element.", HTML.setInnerHTML(""))
+            .bindErr("No message element", HTML.setInnerHTML(""))
             .fmap(HTML.Elem.setHidden)
     }
 
     static toggleMessage(message:string) {
         HTML.q("div.message")
             .bindErr(
-                "No message element.", 
+                "No message element", 
                 HTML.setInnerHTML(message)
             )
             .fmap(HTML.Elem.toggleHidden)

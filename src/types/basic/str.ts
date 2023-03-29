@@ -1,5 +1,9 @@
 class Str {
 
+    static blobify = (s: string) => {
+        return new Blob([s], {type: 'text/plain'})
+    }
+
     static concat = (s2: string)  => (s1: string) => {
         return s1.concat(s2);
     }

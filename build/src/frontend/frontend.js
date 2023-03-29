@@ -121,17 +121,17 @@ class Frontend {
     }
     static showMessage(message) {
         HTML.q("div.message")
-            .bindErr("No message element.", HTML.setInnerHTML(message))
+            .bindErr("No message element", HTML.setInnerHTML(message))
             .fmap(HTML.Elem.unsetHidden);
     }
     static hideMessage() {
         HTML.q("div.message")
-            .bindErr("No message element.", HTML.setInnerHTML(""))
+            .bindErr("No message element", HTML.setInnerHTML(""))
             .fmap(HTML.Elem.setHidden);
     }
     static toggleMessage(message) {
         HTML.q("div.message")
-            .bindErr("No message element.", HTML.setInnerHTML(message))
+            .bindErr("No message element", HTML.setInnerHTML(message))
             .fmap(HTML.Elem.toggleHidden);
     }
     static toggleAbout(e) {
@@ -413,6 +413,14 @@ Frontend.pushPlainTextToFrontend = (textStateIO) => {
     Frontend
         .textInputTextArea
         .applyBind(plainText.fmap(Frontend.updateTextArea));
+};
+Frontend.downloadArethusa = () => {
+    globalState
+        .textStateIO
+        .bind(TextStateIO.currentState)
+        .bind(TextState.outputArethusaDeep)
+        .fmap(Arethusa.toXMLStr)
+        .fmap(FileHandling.download);
 };
 Frontend.toggleShowInput = () => {
     Frontend

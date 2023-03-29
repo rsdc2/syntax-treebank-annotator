@@ -1,5 +1,17 @@
 var FileHandling;
 (function (FileHandling) {
+    FileHandling.download = (s) => {
+        const url = MaybeT.of(s)
+            .fmap(Str.blobify)
+            .fmap(HTML.URL.createObjectURL);
+        const setUrl = url.fmap(HTML.Elem.setAttr("href"));
+        MaybeT.of(document.createElement('a'))
+            .fmap(HTML.Elem.setAttr("style")("display: none"))
+            .applyFmap(setUrl)
+            .fmap(HTML.Elem.setAttr("download")('arethusa.xml'))
+            .fmap(HTML.Elem.click);
+        url.fmap(HTML.URL.revokeObjectURL);
+    };
     FileHandling.loadFromDialog = (fileFormats) => (callback) => {
         const fileInput = document
             .createElement('input');

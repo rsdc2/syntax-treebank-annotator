@@ -59,6 +59,10 @@ namespace HTML {
 
     export namespace Elem {
 
+        export const click = (elem: HTMLElement) => {
+            elem.click();
+        }
+
         export const classList = (elem: Element) => {
             return elem.classList
         }
@@ -156,5 +160,14 @@ namespace HTML {
 
     }
 
+    export namespace URL {
+        export const createObjectURL = (blob: Blob) => {
+            return window.URL.createObjectURL(blob)
+        }
+        export const revokeObjectURL = (url: string) => {
+            return window.URL.revokeObjectURL(url)
+        }
+
+    }
 
 }

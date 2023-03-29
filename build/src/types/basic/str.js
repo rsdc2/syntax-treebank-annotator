@@ -19,6 +19,9 @@ class Str {
         return MaybeT.of(x);
     }
 }
+Str.blobify = (s) => {
+    return new Blob([s], { type: 'text/plain' });
+};
 Str.concat = (s2) => (s1) => {
     return s1.concat(s2);
 };

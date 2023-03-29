@@ -31,7 +31,7 @@ class EpiDoc {
             .epidoc
             .fmap(EpiDoc.toXMLStr)
             .unpackT("");
-        console.log("EpiDoc XML", xml);
+        // console.log("EpiDoc XML", xml)
         if (xml.includes("parsererror")) {
             Frontend
                 .epidocInputTextArea
