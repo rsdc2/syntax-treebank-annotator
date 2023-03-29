@@ -42,13 +42,12 @@ namespace Graph {
         endTime = startTime + simulationDurationInMs;
     }
 
-    function dragstarted(event, d: ITreeNode) {
+    function handleDrag(event, d: ITreeNode) {
     
         const draggedObj = d3
             .select(this)
-            .classed("dragging", true);
     
-        function dragged(event, d: ITreeNode) {
+        function duringDrag(event, d: ITreeNode) {
             // Fix the circle until the drag has finished
             const svgElem = HTML.q("svg").value as SVGGraphicsElement | null
             if (svgElem !== null) {
@@ -81,25 +80,21 @@ namespace Graph {
                 .restart();
         }
     
-        function ended(event, d: ITreeNode) {
+        function endDrag(event, d: ITreeNode) {
             delete d.fx;
             delete d.fy;
-            draggedObj.classed("dragging", false);
-            draggedObj.classed("fixed", false);
-            draggedObj.classed("clicked", false);
+            // draggedObj.classed("clicked", false);
         }
     
-        function started(event, d: ITreeNode) {
-            draggedObj.classed("fixed", true);
-            draggedObj.classed("clicked", true);
+        function startDrag(event, d: ITreeNode) {
+            // draggedObj.classed("clicked", true);
     
             event
-                .on("drag", dragged)
-                .on("end", ended);
+                .on("drag", duringDrag)
+                .on("end", endDrag);
         }
     
-        started(event, d)
-    
+        startDrag(event, d)
     }
 
     function drawCircles(nodes: ITreeNode[]) {
@@ -114,7 +109,7 @@ namespace Graph {
     
         d3.select(".circle")
             .selectAll("circle")
-            .call(d3.drag().on("start", dragstarted))
+            .call(d3.drag().on("start", handleDrag))
 
         return circles
     }
@@ -190,7 +185,7 @@ namespace Graph {
     
         d3.select(".text")
             .selectAll("text.node-label")
-            .call(d3.drag().on("start", dragstarted))
+            .call(d3.drag().on("start", handleDrag))
     
         const nodeLabelElems = document
             .querySelectorAll("text.node-label")
