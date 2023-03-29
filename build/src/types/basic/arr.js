@@ -31,10 +31,19 @@ class Arr {
         }
         return [];
     }
+    static head(array) {
+        const length = array.length;
+        if (length > 0) {
+            return MaybeT.of(array[0]);
+        }
+        return Nothing.of();
+    }
     static last(array) {
-        // cf. https://stackoverflow.com/questions/3216013/get-the-last-item-in-an-array
-        const [last] = array.slice(-1);
-        return MaybeT.of(last);
+        const length = array.length;
+        if (length > 0) {
+            return MaybeT.of(array[length - 1]);
+        }
+        return Nothing.of();
     }
     static arrFunc(funcName, arr, newElem) {
         const newArr = [...arr];
