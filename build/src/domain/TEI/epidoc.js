@@ -17,7 +17,8 @@ class EpiDoc {
         const doc = MaybeT.of(epidoc.node);
         return XML
             .xpathMaybe(Edition.xpathAddress)(doc)
-            .fmap(EpiDoc.editionsFromArray).unpack([]);
+            .fmap(EpiDoc.editionsFromArray)
+            .unpack([]);
     }
     get names() {
         return DXML.wordsFromXmlDoc(TEIName, MaybeT.of(this._node.ownerDocument));
@@ -26,19 +27,22 @@ class EpiDoc {
         return this._node;
     }
     static pushToFrontend(textStateIO) {
-        var _a;
-        const epidoc = textStateIO.epidoc;
-        const xml = epidoc
-            .fmap(EpiDoc.toXMLStr);
-        if (xml.isNothing || ((_a = xml.value) === null || _a === void 0 ? void 0 : _a.includes("parsererror"))) {
+        const xml = textStateIO
+            .epidoc
+            .fmap(EpiDoc.toXMLStr)
+            .unpackT("");
+        console.log("EpiDoc XML", xml);
+        if (xml.includes("parsererror")) {
             Frontend
                 .epidocInputTextArea
-                .applyFmap(MaybeT.of("[Not XML]").fmap(Frontend.updateTextArea));
+                .applyFmap(MaybeT.of("")
+                .fmap(Frontend.updateTextArea));
+            Frontend.showMessage("EpiDoc input is not valid XML.");
             return;
         }
         Frontend
             .epidocInputTextArea
-            .applyFmap(xml.fmap(Frontend.updateTextArea));
+            .fmap(Frontend.updateTextArea(xml));
     }
     get text() {
         return MaybeT.of(this._node.textContent);

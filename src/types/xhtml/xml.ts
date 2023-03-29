@@ -341,7 +341,8 @@ class XML {
     }
 
     static fromXMLStr(xml: string): XMLDocument {
-        return new DOMParser().parseFromString(xml, "text/xml")
+        return new DOMParser()
+            .parseFromString(xml, "text/xml")
     }
 
     static hasAttr(attr: string) {

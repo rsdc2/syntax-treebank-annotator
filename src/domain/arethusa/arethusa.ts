@@ -264,13 +264,17 @@ class Arethusa implements ArethusaSentenceable, Wordable {
             .inputArethusaXML
             .unpack("")
 
+        // console.log("inputArethusaXML", inputArethusaXML)
 
         if (inputArethusaXML.includes("parsererror")) {
             Frontend
                 .arethusaInputTextArea
-                .fmap( Frontend.updateTextArea("[Not XML]") ) 
+                .fmap( Frontend.updateTextArea("") ) 
+
+            Frontend.showMessage("Input Arethusa is not valid XML.")
 
         } else {
+            Frontend.hideMessage()
             Frontend
                 .arethusaInputTextArea
                 .fmap( Frontend.updateTextArea(inputArethusaXML) ) 

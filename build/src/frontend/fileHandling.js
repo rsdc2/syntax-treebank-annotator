@@ -6,16 +6,8 @@ var FileHandling;
         fileInput.onchange = InputElem.onchange(callback);
         fileInput.click();
     };
-    FileHandling.saveToDialog = () => {
-        const handle = showSaveFilePicker();
-    };
     let TextFile;
     (function (TextFile) {
-        // export const write = async (fileHandle: FileSystemFileHandle) => (blob: Blob) => {
-        //     const writer = fileHandle.createWritable();
-        //     await writer.write(blob);
-        //     await writer.close();
-        // }
         TextFile.process = (f) => (encoding) => (blob) => {
             const reader = new FileReader();
             reader.readAsText(blob, encoding);

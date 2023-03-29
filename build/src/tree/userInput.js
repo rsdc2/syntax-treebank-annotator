@@ -148,7 +148,7 @@ var UserInput;
     UserInput.setTextInputKeyEvents = setTextInputKeyEvents;
     function setClickOutAboutBox() {
         window.onclick = (ev) => {
-            Frontend.hideAbout();
+            Frontend.hideMessage();
         };
         // Frontend.buttonById("btnAbout")
         //     .fmap(HTML.Btn.setOnclickFunc( (ev: MouseEvent) => {

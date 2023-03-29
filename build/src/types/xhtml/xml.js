@@ -189,7 +189,8 @@ class XML {
         return MaybeT.of(doc.firstChild);
     }
     static fromXMLStr(xml) {
-        return new DOMParser().parseFromString(xml, "text/xml");
+        return new DOMParser()
+            .parseFromString(xml, "text/xml");
     }
     static hasAttr(attr) {
         function _hasAttr(node) {

@@ -37,7 +37,8 @@ class EpiDoc implements TEIEditionable, Wordable {
         const doc = MaybeT.of(epidoc.node)
         return XML
             .xpathMaybe (Edition.xpathAddress) (doc)
-            .fmap(EpiDoc.editionsFromArray).unpack<Edition[]>([])
+            .fmap(EpiDoc.editionsFromArray)
+            .unpack<Edition[]>([])
     }
 
     get names(): TEIName[] {
@@ -51,20 +52,27 @@ class EpiDoc implements TEIEditionable, Wordable {
     }
 
     static pushToFrontend(textStateIO: TextStateIO) {
-        const epidoc = textStateIO.epidoc
-        const xml = epidoc
+        const xml = textStateIO
+            .epidoc
             .fmap(EpiDoc.toXMLStr)
-
-        if (xml.isNothing || xml.value?.includes("parsererror")) {
+            .unpackT("")
+        console.log("EpiDoc XML", xml)
+        
+        if (xml.includes("parsererror")) {
             Frontend
                 .epidocInputTextArea
-                .applyFmap( MaybeT.of("[Not XML]").fmap(Frontend.updateTextArea) )
+                .applyFmap( 
+                    MaybeT.of("")
+                        .fmap(Frontend.updateTextArea) 
+                )
+
+            Frontend.showMessage("EpiDoc input is not valid XML.")
             return 
         }
 
         Frontend
             .epidocInputTextArea
-            .applyFmap( xml.fmap(Frontend.updateTextArea) )
+            .fmap( Frontend.updateTextArea(xml) )
     }
 
     static TEIwordsFromArray = map(TEIWord.of)

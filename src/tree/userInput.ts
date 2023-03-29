@@ -206,7 +206,7 @@ namespace UserInput {
 
     export function setClickOutAboutBox() {
         window.onclick = (ev: MouseEvent) => {
-            Frontend.hideAbout()
+            Frontend.hideMessage()
         }
 
         // Frontend.buttonById("btnAbout")

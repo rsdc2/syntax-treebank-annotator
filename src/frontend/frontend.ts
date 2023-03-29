@@ -311,24 +311,43 @@ class Frontend {
         return MaybeT.of(document.getElementById("sentencesDiv"))
     }
 
+    static showMessage(message:string) {
+        HTML.q("div.message")
+            .bindErr("No message element.", HTML.setInnerHTML(message))
+            .fmap(HTML.Elem.unsetHidden)
+    }
+
+    static hideMessage() {
+        HTML.q("div.message")
+            .bindErr("No message element.", HTML.setInnerHTML(""))
+            .fmap(HTML.Elem.setHidden)
+    }
+
+    static toggleMessage(message:string) {
+        HTML.q("div.message")
+            .bindErr(
+                "No message element.", 
+                HTML.setInnerHTML(message)
+            )
+            .fmap(HTML.Elem.toggleHidden)
+
+    }
+
     static toggleAbout(e: MouseEvent) {
         e.stopPropagation()
-        HTML.q("div.about")
-            .fmap(HTML.Elem.toggleHidden)
+        Frontend.toggleMessage(Constants.messages.about)
         Frontend.buttonById("btnAbout")
             .fmap(HTML.Elem.Class.toggle("active"))
     }
 
     static hideAbout() {
-        HTML.q("div.about")
-            .fmap(HTML.Elem.setHidden)
+        Frontend.hideMessage()
         Frontend.buttonById("btnAbout")
             .fmap(HTML.Elem.Class.remove("active"))
     }
 
     static showAbout() {
-        HTML.q("div.about")
-            .fmap(HTML.Elem.unsetHidden)
+        Frontend.showMessage(Constants.messages.about)
         Frontend.buttonById("btnAbout")
             .fmap(HTML.Elem.Class.add("active"))
     }
