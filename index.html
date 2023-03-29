@@ -59,12 +59,28 @@
             </li> -->
             <!-- <li>
               <button
-                id="Download Arethusa"
+                id="Upload"
                 onclick="Frontend.downloadArethusa()"
               >
                 Download Arethusa XML
               </button>
             </li> -->
+            <li>
+              <button
+                id="Download Arethusa"
+                onclick="Frontend.downloadArethusa()"
+              >
+                Save as
+              </button>
+            </li>
+            <li>
+              <button
+                id="Download Arethusa"
+                onclick="FileHandling.loadFile()"
+              >
+                Load
+              </button>
+            </li>
           </ul>
 
           <div class="Sentences" id="sentencesDiv" contenteditable="false">
@@ -123,9 +139,7 @@
               class="sentence-text input"
               type="text"
               spellcheck="false"
-            >
-Type your text here.</textarea
-            >
+            >Type your text here.</textarea>
           </div>
 
           <div class="epidoc input" hidden>
@@ -238,6 +252,7 @@ Type your text here.</textarea
           contenteditable="false"
           spellcheck="false"
         ></div>
+
       </div>
 
       <div class="divided right">
