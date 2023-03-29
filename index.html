@@ -74,14 +74,6 @@
                 Save as
               </button>
             </li>
-            <li>
-              <button
-                id="loadFile"
-                onclick="FileHandling.loadFile()"
-              >
-                Load
-              </button>
-            </li>
           </ul>
 
           <div class="Sentences" id="sentencesDiv" contenteditable="false">
@@ -134,6 +126,14 @@
                 <li>
                   <button id="DrawTreeText">Render</button>
                 </li>
+                <li>
+                  <button
+                    id="loadFile"
+                    onclick="FileHandling.loadFromDialog(MaybeT.of(Frontend.processText))"
+                  >
+                    Load
+                  </button>
+                </li>
               </ul>
             </div>
 
@@ -169,6 +169,14 @@
                 <li>
                   <button id="ExampleEpiDoc">Example</button>
                 </li>
+                <li>
+                  <button
+                    id="loadFile"
+                    onclick="FileHandling.loadFromDialog(MaybeT.of(Frontend.processEpiDoc))"
+                  >
+                    Load
+                  </button>
+                </li>
               </ul>
             </div>
 
@@ -197,7 +205,15 @@
                 <li>
                   <button id="ExampleArethusa">Example</button>
                 </li>
-              </ul>
+                <li>
+                  <button
+                    id="loadFile"
+                    onclick="FileHandling.loadFromDialog(MaybeT.of(Frontend.processArethusa))"
+                  >
+                    Load
+                  </button>
+                </li>
+                  </ul>
             </div>
             <textarea
               class="arethusa input XML"
