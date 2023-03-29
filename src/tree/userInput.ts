@@ -208,12 +208,6 @@ namespace UserInput {
         window.onclick = (ev: MouseEvent) => {
             Frontend.hideMessage()
         }
-
-        // Frontend.buttonById("btnAbout")
-        //     .fmap(HTML.Btn.setOnclickFunc( (ev: MouseEvent) => {
-        //         // ev.stopPropagation() 
-        //         Frontend.toggleAbout()
-        //     }))
     }
 }
 
