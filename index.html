@@ -116,8 +116,8 @@
                 </li>
                 <li>
                   <button
-                    id="loadFile"
-                    onclick="FileHandling.loadFromDialog(MaybeT.of(Frontend.processText))"
+                    id="loadTextFile"
+                    onclick="FileHandling.loadFromDialog('.txt')(MaybeT.of(Frontend.processText))"
                   >
                     Load
                   </button>
@@ -159,8 +159,8 @@
                 </li>
                 <li>
                   <button
-                    id="loadFile"
-                    onclick="FileHandling.loadFromDialog(MaybeT.of(Frontend.processEpiDoc))"
+                    id="loadEpiDocFile"
+                    onclick="FileHandling.loadFromDialog('.xml')(MaybeT.of(Frontend.processEpiDoc))"
                   >
                     Load
                   </button>
@@ -196,7 +196,7 @@
                 <li>
                   <button
                     id="loadFile"
-                    onclick="FileHandling.loadFromDialog(MaybeT.of(Frontend.processArethusa))"
+                    onclick="FileHandling.loadFromDialog('.xml')(MaybeT.of(Frontend.processArethusa))"
                   >
                     Load
                   </button>

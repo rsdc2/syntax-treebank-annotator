@@ -1,8 +1,10 @@
 var FileHandling;
 (function (FileHandling) {
-    FileHandling.loadFromDialog = (callback) => {
-        const fileInput = document.createElement('input');
+    FileHandling.loadFromDialog = (fileFormats) => (callback) => {
+        const fileInput = document
+            .createElement('input');
         fileInput.type = "file";
+        fileInput.accept = fileFormats;
         fileInput.onchange = InputElem.onchange(callback);
         fileInput.click();
     };

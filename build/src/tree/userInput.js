@@ -146,17 +146,12 @@ var UserInput;
             .fmap(TextArea.setKeydownEvent(inputKeyEvent));
     }
     UserInput.setTextInputKeyEvents = setTextInputKeyEvents;
-    function setClickOutAboutBox() {
+    function setClickOutMessageBox() {
         window.onclick = (ev) => {
             Frontend.hideMessage();
         };
-        // Frontend.buttonById("btnAbout")
-        //     .fmap(HTML.Btn.setOnclickFunc( (ev: MouseEvent) => {
-        //         // ev.stopPropagation() 
-        //         Frontend.toggleAbout()
-        //     }))
     }
-    UserInput.setClickOutAboutBox = setClickOutAboutBox;
+    UserInput.setClickOutMessageBox = setClickOutMessageBox;
 })(UserInput || (UserInput = {}));
 // window.onkeydown = ( 
 //     (e: KeyboardEvent) =>{

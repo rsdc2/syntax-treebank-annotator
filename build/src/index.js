@@ -3,4 +3,4 @@ Observers.setResizeObservers();
 Frontend.setBtnEvents();
 Frontend.setDivClickEvents();
 Frontend.setTextAreaClickEvents();
-UserInput.setClickOutAboutBox();
+UserInput.setClickOutMessageBox();

@@ -1,8 +1,13 @@
 namespace FileHandling {
     
-    export const loadFromDialog = (callback: Maybe<(a: string) => any>) => {
-        const fileInput = document.createElement('input') as HTMLInputElement;
+    export const loadFromDialog = 
+        (fileFormats:string) =>
+        (callback: Maybe<(a: string) => any>) => 
+    {
+        const fileInput = document
+            .createElement('input') as HTMLInputElement;
         fileInput.type = "file";
+        fileInput.accept = fileFormats;
         fileInput.onchange = InputElem.onchange(callback);        
         fileInput.click();
     }

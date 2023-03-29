@@ -204,7 +204,7 @@ namespace UserInput {
             .fmap(TextArea.setKeydownEvent(inputKeyEvent))
     }
 
-    export function setClickOutAboutBox() {
+    export function setClickOutMessageBox() {
         window.onclick = (ev: MouseEvent) => {
             Frontend.hideMessage()
         }
