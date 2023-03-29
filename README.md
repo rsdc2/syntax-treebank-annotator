@@ -2,17 +2,26 @@
 
 The source code for the Syntax Treebank Annotator is written in [TypeScript](https://www.typescriptlang.org/) and transpiled to JavaScript (ECMAScript 2019).
 
-## Online access
+The annotator provides a UI for annotating dependency treebanks. 
+It has been designed for use, in the first instance, 
+with the [I.Sicily](http://sicily.classics.ox.ac.uk/) corpus.
+For information on the encoding of I.Sicily texts in TEI EpiDoc, see
+the [I.Sicily GitHub wiki](https://github.com/ISicily/ISicily/wiki),
+although it can be applied to texts in any language.
+
+## Getting started
+
+### Online access
 
 The Treebank Annotator can be run by following this link:
 
 [https://rsdc2.github.io/syntax-treebank-annotator/](https://rsdc2.github.io/syntax-treebank-annotator/)
 
-## Run on local machine
+### Run locally
 
-Download files and open ```index.html``` in a browser.
+Download or clone the repository and open ```index.html``` in a browser.
 
-## Build
+### Build
 
 ``` bash
 # Install dev dependencies
@@ -21,6 +30,58 @@ npm install
 # Transpile from TS to JS
 npx tsc
 ```
+
+## Relationship to other annotators
+
+My annotator is designed to be compatible with 
+[Arethusa](https://www.perseids.org/tools/arethusa/app/#/), 
+currently the annotator of choice for those working 
+on ancient Greek and Latin texts.
+
+The annotator has similar aims to Arethusa. 
+However, it differs in the following ways, and 
+is therefore somewhat complementary:
+
+
+### No server
+Whereas Arethusa has a backend, 
+this annotator runs entirely in the browser. 
+The advantage of this is that it's easy to
+get up and running.
+The disadvantage is that there are currently
+no backend services, allowing for 
+e.g. collaboration.
+
+
+### Agnostic as to dependency framework
+There are several depdency grammars out there.
+Arethusa is designed for use with the
+[Ancient Greek and Latin dependency Treebank (AGLDT)](http://perseusdl.github.io/treebank_data/).
+My annotator is agnostic as to
+dependency grammar: 
+you are free to use whichever schema you wish (e.g. PROIEL, Universal Dependencies)
+or you can make up your own.
+
+
+### Secondary dependencies
+AGDLT does not allow for the annotation of secondary dependencies.
+However, this is possible both in 
+[PROIEL](http://dev.syntacticus.org/annotation-guide/#introduction) dependencies and in
+[Universal Dependencies](https://universaldependencies.org/u/overview/enhanced-syntax.html).
+Accordingly, you may wish to make use of this.
+
+**To create a secondary dependency in this annotator,**
+**simply right click on the nodes you wish to connect,**
+**rather than left click.** 
+
+
+### Only syntax
+Arethusa allows you to annotate morphology as well
+as syntax. 
+Currently my annotator only allows for the annotation 
+of syntax 
+(although it should preserve any morphology annotation).
+
 
 ## Attributions
 
