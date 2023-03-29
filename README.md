@@ -4,9 +4,7 @@ The source code for the Syntax Treebank Annotator is written in [TypeScript](htt
 
 The annotator provides a UI for annotating dependency treebanks. 
 It has been designed for use, in the first instance, 
-with the [I.Sicily](http://sicily.classics.ox.ac.uk/) corpus.
-For information on the encoding of I.Sicily texts in TEI EpiDoc, see
-the [I.Sicily GitHub wiki](https://github.com/ISicily/ISicily/wiki),
+with the [I.Sicily](http://sicily.classics.ox.ac.uk/) corpus, 
 although it can be applied to texts in any language.
 
 ## Getting started
