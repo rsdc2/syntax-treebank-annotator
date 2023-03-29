@@ -43,13 +43,9 @@ function getNth<T>(a: Array<T>, n: number): Maybe<T> {
 }
 
 
-function head<T>(a: Array<T>): Maybe<T> {
-    return getNth(a, 0)
-}
-
-function last<T>(a: Array<T>): Maybe<T> {
-    return getNth(a, -1)
-}
+// function head<T>(a: Array<T>): Maybe<T> {
+//     return getNth(a, 0)
+// }
 
 function tail<T>(a: Array<T>): T[] {
     if (a.length === 0) {
@@ -93,8 +89,6 @@ function matchFilter(regexp: string | RegExp) {
     return _match
 }
 
-
-
 function maybe<T>(defaultVal: T) {
 
     function _maybe(val: Maybe<T>): T {
@@ -108,14 +102,6 @@ function maybe<T>(defaultVal: T) {
     return _maybe
 }
 
-function mult(x: number) {
-    function _mult(y: number) {
-        return x * y
-    }
-    return _mult
-}
-
-
 const flip = <T, U, V>(f: (a: T) => (b: U) => V) => (y: U) => (x: T) => {
     return f(x)(y)
 }
@@ -127,7 +113,6 @@ const flip_1_to_3 = <T, U, V, W>(f: (a: T) => (b: U) => (c: V) => W) => (y: U) =
 const flip_2_to_3 = <T, U, V, W>(f: (a: T) => (b: U) => (c: V) => W) => (x: T) => (z: V) => (y: U) => {
     return f(x)(y)(z)
 }
-
 
 const apply = <T, U>(f: (a: T) => U) => (x: T) => {
     return f(x)

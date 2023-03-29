@@ -38,6 +38,9 @@ class Arr {
         }
         return Nothing.of();
     }
+    static fromIterable(iterable) {
+        return [...iterable];
+    }
     static last(array) {
         const length = array.length;
         if (length > 0) {

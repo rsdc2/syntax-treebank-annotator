@@ -34,12 +34,9 @@ function getNth(a, n) {
         return new Nothing();
     }
 }
-function head(a) {
-    return getNth(a, 0);
-}
-function last(a) {
-    return getNth(a, -1);
-}
+// function head<T>(a: Array<T>): Maybe<T> {
+//     return getNth(a, 0)
+// }
 function tail(a) {
     if (a.length === 0) {
         return [];
@@ -85,12 +82,6 @@ function maybe(defaultVal) {
         }
     }
     return _maybe;
-}
-function mult(x) {
-    function _mult(y) {
-        return x * y;
-    }
-    return _mult;
 }
 const flip = (f) => (y) => (x) => {
     return f(x)(y);

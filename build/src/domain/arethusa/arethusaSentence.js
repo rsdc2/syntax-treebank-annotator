@@ -14,12 +14,12 @@ class ArethusaSentence {
         return this.doc.fmap(XML.deepcopy);
     }
     static firstWord(sentence) {
-        return head(sentence.wordsProp);
+        return Arr.head(sentence.wordsProp);
     }
     static lastWord(sentence) {
         return MaybeT.of(sentence)
             .fmap(ArethusaSentence.words)
-            .bind(last);
+            .bind(Arr.last);
     }
     get _id() {
         return XML.attr("id")(this._node)
@@ -124,7 +124,7 @@ ArethusaSentence.incrementId = (s) => {
 ArethusaSentence.lastWordId = (sentence) => {
     return MaybeT.of(sentence)
         .fmap(ArethusaSentence.words)
-        .bind(last)
+        .bind(Arr.last)
         .bind(ArethusaWord.id);
 };
 ArethusaSentence.XMLStrFromPlainTextStr = (a) => (str) => {

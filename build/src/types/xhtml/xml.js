@@ -323,7 +323,7 @@ XML.attr = (attrName) => (node) => {
 };
 XML.childById = (id) => (parent) => {
     const children = XML.xpathMaybeC(`child::*[@id="${id}"]`)(MaybeT.of(parent));
-    return children.bind(head);
+    return children.bind(Arr.head);
 };
 XML.childNodes = (node) => {
     let _nodes = [];
@@ -350,7 +350,7 @@ XML.createElement = (elementName) => (attrs) => (xmldoc) => {
 };
 XML.descendantById = (id) => (node) => {
     return XML.xpathMaybeC(`descendant::*[@id="${id}"]`)(MaybeT.of(node))
-        .bind(head);
+        .bind(Arr.head);
 };
 XML.followingTextNodesWithAncestorByAncestorId = (ancestorName) => (attrName) => (attrVal) => (node) => {
     return XML.xpathMaybeC(`following::text()[ancestor::${ancestorName}[@${attrName}="${attrVal}"]]`)(MaybeT.of(node))
@@ -381,7 +381,7 @@ XML.insertAfter = (nodeToInsert) => (refNode) => {
     return insertedNode.bind(XML.parent);
 };
 XML.nextSibling = (node) => {
-    return $$(head)(XML.xpathMaybeC("following-sibling::*")(MaybeT.of(node)).unpackT([]));
+    return Arr.head(XML.xpathMaybeC("following-sibling::*")(MaybeT.of(node)).unpackT([]));
 };
 XML.ownerDocumentOfNodeOrDoc = (nodeOrDoc) => {
     const doc = XML.isDocument(nodeOrDoc) ?
@@ -393,7 +393,7 @@ XML.previous = (node) => {
     return (XML.xpathMaybeC("preceding::*")(MaybeT.of(node)).unpackT([]));
 };
 XML.previousSibling = (node) => {
-    return $$(head)(XML.xpathMaybeC("preceding-sibling::*")(MaybeT.of(node)).unpackT([]));
+    return Arr.head(XML.xpathMaybeC("preceding-sibling::*")(MaybeT.of(node)).unpackT([]));
 };
 XML.previousSiblings = (node) => {
     return (XML.xpathMaybeC("preceding-sibling::*")(MaybeT.of(node)).unpackT([]));
@@ -445,9 +445,9 @@ XML.setId = (id) => (n) => {
     return XML.setAttr("id")(id)(n);
 };
 XML.tagNameFromTagStr = (tagStr) => {
-    return head(Str.matches(XMLTagRegExps.tagWithNameGroup)(tagStr))
+    return Arr.head(Str.matches(XMLTagRegExps.tagWithNameGroup)(tagStr))
         .fmap(RegexMatchT.groups)
-        .bind(head);
+        .bind(Arr.head);
 };
 XML.xpathMaybe = (xpathstr) => (xmldoc) => {
     return xmldoc

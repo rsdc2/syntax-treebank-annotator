@@ -108,7 +108,7 @@ class ArethusaSentence implements Word, Wordable, Formable  {
     }
 
     static firstWord(sentence: ArethusaSentence): Maybe<Formable> {
-        return head (sentence.wordsProp)
+        return Arr.head (sentence.wordsProp)
     }
 
     static incrementId = (s: ArethusaSentence) => {
@@ -128,13 +128,13 @@ class ArethusaSentence implements Word, Wordable, Formable  {
     static lastWord(sentence: ArethusaSentence): Maybe<Formable> {
         return MaybeT.of(sentence)
             .fmap(ArethusaSentence.words)
-            .bind(last)
+            .bind(Arr.last)
     }
 
     static lastWordId = (sentence: ArethusaSentence) => {
         return MaybeT.of(sentence)
             .fmap(ArethusaSentence.words)
-            .bind(last)
+            .bind(Arr.last)
             .bind(ArethusaWord.id)
     }
 

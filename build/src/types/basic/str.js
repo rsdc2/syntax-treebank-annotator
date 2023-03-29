@@ -24,7 +24,7 @@ Str.concat = (s2) => (s1) => {
 };
 Str.firstMatch = (pattern) => (s) => {
     const matches = Str.matches(pattern)(s);
-    return head(matches);
+    return Arr.head(matches);
 };
 Str.add = (increment) => (s) => {
     return Str.fromNum(parseInt(s) + increment);
@@ -46,7 +46,7 @@ Str.lastIndexOf = (substring) => (s) => {
 };
 Str.lastMatch = (pattern) => (s) => {
     const matches = Str.matches(pattern)(s);
-    return last(matches);
+    return Arr.last(matches);
 };
 Str.len = (s) => {
     return s.length;
@@ -77,7 +77,7 @@ Str.search = (pattern) => (s) => {
 Str.searchEnd = (pattern) => (s) => {
     const matches = MaybeT.of(s.match(pattern));
     const firstMatchLength = matches
-        .bind(head)
+        .bind(Arr.head)
         .fmap(Str.len);
     const startPos = MaybeT.ofNonNeg(Str.search(pattern)(s));
     const endPos = startPos.applyFmap(firstMatchLength.fmap(Num.add));

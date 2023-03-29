@@ -95,7 +95,7 @@ class Arethusa implements ArethusaSentenceable, Wordable {
     }
 
     static firstSentence(a: Arethusa): Maybe<Wordable> {
-        return head (a.sentences)
+        return Arr.head (a.sentences)
     }
 
     static fromNode = (node: XMLNode) => {
@@ -208,13 +208,13 @@ class Arethusa implements ArethusaSentenceable, Wordable {
     }
 
     static lastSentence(a: Arethusa): Maybe<Wordable> {
-        return last (a.sentences)
+        return Arr.last (a.sentences)
     }
 
     static lastWord = (a: Arethusa) => {
         return MaybeT.of(a)
             .fmap(Arethusa.words)
-            .bind(last)
+            .bind(Arr.last)
     }
 
     static hasSentence = (sentenceId: string) => (a: Arethusa) => {
@@ -420,7 +420,7 @@ class Arethusa implements ArethusaSentenceable, Wordable {
             )
 
         const words = Arr.removeNothings(maybeWords)
-        return head(words)
+        return Arr.head(words)
             .fmapErr("No first node.", DXML.node)
             .bindErr("No node.", XML.ownerDocument)
             .bindErr("No owner document", XML.documentElement)
@@ -468,7 +468,7 @@ class Arethusa implements ArethusaSentenceable, Wordable {
     static sentenceNodeById = (id: string) => (a: Arethusa) => {
         const sentence = XML
             .xpathMaybe(ArethusaSentence.xpathAddress + `[@id='${id}']`)(a.doc)
-            .bind(head)
+            .bind(Arr.head)
 
         return sentence
     }
@@ -487,7 +487,7 @@ class Arethusa implements ArethusaSentenceable, Wordable {
 
     static sentenceByWordId = (id: string) => (a: Arethusa) => {
         const sentence = XML.xpathMaybe(ArethusaWord.parentSentenceAddress (id)) (a.doc)
-            .bind(head)
+            .bind(Arr.head)
             .fmap(ArethusaSentence.fromXMLNode)
 
         return sentence
@@ -549,7 +549,7 @@ class Arethusa implements ArethusaSentenceable, Wordable {
 
     static wordById = (id: string) => (a: Arethusa) => {
         return XML.xpathMaybe(ArethusaWord.xpathAddress + `[@id='${id}']`)(a.doc)
-            .bind(head)
+            .bind(Arr.head)
             .fmap(ArethusaWord.fromXMLNode)
     }
 

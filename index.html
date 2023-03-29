@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="styles/about.css" />
   </head>
   <body>
+    <input type="file" id="fileInput">
     <div class="about" hidden>
       <p>
         The Treebank Annotator was written by Robert Crellin as part of the
@@ -75,7 +76,7 @@
             </li>
             <li>
               <button
-                id="Download Arethusa"
+                id="loadFile"
                 onclick="FileHandling.loadFile()"
               >
                 Load
@@ -87,6 +88,7 @@
             [Representation of sentences]
           </div>
         </div>
+
 
         <div class="left boundary"></div>
 
@@ -369,6 +371,7 @@
   <script src="build/src/frontend/sentences.js"></script>
   <script src="build/src/frontend/observers.js"></script>
   <script src="build/src/frontend/frontend.js"></script>
+  <script src="build/src/frontend/fileHandling.js"></script>
   <script src="build/src/state/textState.js"></script>
   <script src="build/src/state/textStateIO.js"></script>
   <script src="build/src/state/textViewState.js"></script>

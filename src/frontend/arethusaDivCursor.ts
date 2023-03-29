@@ -52,7 +52,7 @@ class AthDivCurs {
                 const closingTagLastIdx = AthDivCurs
                     .postText
                     .applyFmap(closingTagRegExp.fmap(Str.matches))
-                    .bind(head)
+                    .bind(Arr.head)
                     .fmap(RegexMatchT.lastIndex)
                     .applyFmap(AthDivCurs.addPreTextOffset())
 
@@ -77,7 +77,7 @@ class AthDivCurs {
                 const openingTagFirstIdx = AthDivCurs
                     .preText
                     .applyFmap(openingTagRegExp.fmap(Str.matches))
-                    .bind(last)
+                    .bind(Arr.last)
                     .fmap(RegexMatchT.firstIndex)
 
                 const AthDivCursTagLastIdx = AthDivCurs

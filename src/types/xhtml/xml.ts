@@ -232,7 +232,7 @@ class XML {
 
     static childById = (id: string) => (parent: Node) => {
         const children = XML.xpathMaybeC (`child::*[@id="${id}"]`) (MaybeT.of(parent))
-        return children.bind(head)
+        return children.bind(Arr.head)
     }
 
     static childNodes = (node: Node) => {
@@ -304,7 +304,7 @@ class XML {
 
     static descendantById = (id: string) => (node: Node) => {
         return XML.xpathMaybeC (`descendant::*[@id="${id}"]`) (MaybeT.of(node))
-            .bind(head)
+            .bind(Arr.head)
     }
 
     static descendants(node: Node) {
@@ -431,7 +431,7 @@ class XML {
 
 
     static nextSibling = (node: Node) => {
-        return $$ (head) (XML.xpathMaybeC("following-sibling::*") (MaybeT.of(node)).unpackT([]))
+        return Arr.head (XML.xpathMaybeC("following-sibling::*") (MaybeT.of(node)).unpackT([]))
     }
 
     static nextSiblingElements(node: Node) {
@@ -495,7 +495,7 @@ class XML {
     }
 
     static previousSibling = (node: Node) => {
-        return $$ (head) (XML.xpathMaybeC("preceding-sibling::*") (MaybeT.of(node)).unpackT([]))
+        return Arr.head (XML.xpathMaybeC("preceding-sibling::*") (MaybeT.of(node)).unpackT([]))
     }
 
     static previousSiblings = (node: Node) => {
@@ -578,9 +578,9 @@ class XML {
     }
 
     static tagNameFromTagStr = (tagStr: string) => {
-        return head (Str.matches (XMLTagRegExps.tagWithNameGroup) (tagStr))
+        return Arr.head (Str.matches (XMLTagRegExps.tagWithNameGroup) (tagStr))
             .fmap(RegexMatchT.groups)
-            .bind(head)
+            .bind(Arr.head)
     }
 
     static toStr(root: Node) {

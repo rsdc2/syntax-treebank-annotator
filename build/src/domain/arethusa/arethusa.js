@@ -17,10 +17,10 @@ class Arethusa {
         return this.doc.fmap(XML.deepcopy);
     }
     static firstSentence(a) {
-        return head(a.sentences);
+        return Arr.head(a.sentences);
     }
     static lastSentence(a) {
-        return last(a.sentences);
+        return Arr.last(a.sentences);
     }
     static newNextSentenceId(a) {
         return Arethusa
@@ -193,7 +193,7 @@ Arethusa.insertSentenceBefore = (refSentenceId) => (a) => {
 Arethusa.lastWord = (a) => {
     return MaybeT.of(a)
         .fmap(Arethusa.words)
-        .bind(last);
+        .bind(Arr.last);
 };
 Arethusa.hasSentence = (sentenceId) => (a) => {
     const sentence = Arethusa.sentenceById(sentenceId)(a);
@@ -323,7 +323,7 @@ Arethusa.reorderWordIds = (a) => {
         .fmapErr("Could not make word node.", XML.setId(Str.fromNum(idx + 1)))
         .fmapErr("Could not set ID.", ArethusaWord.fromXMLNode));
     const words = Arr.removeNothings(maybeWords);
-    return head(words)
+    return Arr.head(words)
         .fmapErr("No first node.", DXML.node)
         .bindErr("No node.", XML.ownerDocument)
         .bindErr("No owner document", XML.documentElement)
@@ -361,7 +361,7 @@ Arethusa.sentenceById = (id) => (a) => {
 Arethusa.sentenceNodeById = (id) => (a) => {
     const sentence = XML
         .xpathMaybe(ArethusaSentence.xpathAddress + `[@id='${id}']`)(a.doc)
-        .bind(head);
+        .bind(Arr.head);
     return sentence;
 };
 Arethusa.sentenceNodeIdxById = (id) => (a) => {
@@ -375,7 +375,7 @@ Arethusa.sentenceNodeIdxById = (id) => (a) => {
 };
 Arethusa.sentenceByWordId = (id) => (a) => {
     const sentence = XML.xpathMaybe(ArethusaWord.parentSentenceAddress(id))(a.doc)
-        .bind(head)
+        .bind(Arr.head)
         .fmap(ArethusaSentence.fromXMLNode);
     return sentence;
 };
@@ -417,6 +417,6 @@ Arethusa.words = (a) => {
 };
 Arethusa.wordById = (id) => (a) => {
     return XML.xpathMaybe(ArethusaWord.xpathAddress + `[@id='${id}']`)(a.doc)
-        .bind(head)
+        .bind(Arr.head)
         .fmap(ArethusaWord.fromXMLNode);
 };

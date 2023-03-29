@@ -67,6 +67,10 @@ class Arr {
         return Nothing.of<T>()
     }
 
+    static fromIterable<T>(iterable: Iterable<T>) {
+        return [...iterable]
+    }
+
     static last<T>(array: T[]) {
         const length = array.length;
         if (length > 0) {

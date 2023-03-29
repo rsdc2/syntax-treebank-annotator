@@ -36,11 +36,10 @@ var Graph;
         startTime = Date.now();
         endTime = startTime + simulationDurationInMs;
     }
-    function dragstarted(event, d) {
+    function handleDrag(event, d) {
         const draggedObj = d3
-            .select(this)
-            .classed("dragging", true);
-        function dragged(event, d) {
+            .select(this);
+        function duringDrag(event, d) {
             // Fix the circle until the drag has finished
             const svgElem = HTML.q("svg").value;
             if (svgElem !== null) {
@@ -68,21 +67,16 @@ var Graph;
                 .alphaTarget(alphaTarget)
                 .restart();
         }
-        function ended(event, d) {
+        function endDrag(event, d) {
             delete d.fx;
             delete d.fy;
-            draggedObj.classed("dragging", false);
-            draggedObj.classed("fixed", false);
-            draggedObj.classed("clicked", false);
         }
-        function started(event, d) {
-            draggedObj.classed("fixed", true);
-            draggedObj.classed("clicked", true);
+        function startDrag(event, d) {
             event
-                .on("drag", dragged)
-                .on("end", ended);
+                .on("drag", duringDrag)
+                .on("end", endDrag);
         }
-        started(event, d);
+        startDrag(event, d);
     }
     function drawCircles(nodes) {
         const circles = d3
@@ -95,7 +89,7 @@ var Graph;
             .attr("treenode-id", d => d.treeNodeId);
         d3.select(".circle")
             .selectAll("circle")
-            .call(d3.drag().on("start", dragstarted));
+            .call(d3.drag().on("start", handleDrag));
         return circles;
     }
     function drawEdgeLabels(links) {
@@ -159,7 +153,7 @@ var Graph;
             .html((d) => d.name);
         d3.select(".text")
             .selectAll("text.node-label")
-            .call(d3.drag().on("start", dragstarted));
+            .call(d3.drag().on("start", handleDrag));
         const nodeLabelElems = document
             .querySelectorAll("text.node-label");
         nodeLabelElems.forEach((elem) => {
