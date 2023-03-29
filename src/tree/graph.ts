@@ -83,12 +83,9 @@ namespace Graph {
         function endDrag(event, d: ITreeNode) {
             delete d.fx;
             delete d.fy;
-            // draggedObj.classed("clicked", false);
         }
     
         function startDrag(event, d: ITreeNode) {
-            // draggedObj.classed("clicked", true);
-    
             event
                 .on("drag", duringDrag)
                 .on("end", endDrag);
