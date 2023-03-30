@@ -227,7 +227,7 @@ var Graph;
                 .treeStateIO
                 .fmap(TreeStateIO.changeClickState(ClickState.of(Nothing.of())(ElementType.Unknown)(ClickType.Unknown)));
             unclickAll();
-            // CLear output Arethusa click state
+            // Clear output Arethusa click state
             const currentSentenceId = globalState
                 .textStateIO
                 .bind(TextStateIO.currentSentence)

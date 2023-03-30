@@ -103,6 +103,29 @@ Arethusa.deepcopy = (a) => {
         .docCopy
         .bind(Arethusa.fromNode);
 };
+/**
+ *
+ * @param a Arethusa
+ * @returns the value of the id attribute of the \<document_meta\> node.
+ */
+Arethusa.docId = (a) => {
+    return MaybeT.of(a)
+        .fmap(DXML.node)
+        .bind(XML.xpath(".//document_meta"))
+        .bind(Arr.head)
+        .bind(XML.attrVal('id'));
+};
+/**
+ *
+ * @param a Arethusa
+ * @returns \<document_meta\> node from the Arethusa document.
+ */
+Arethusa.documentMeta = (a) => {
+    return MaybeT.of(a)
+        .fmap(DXML.node)
+        .bind(XML.xpath(".//document_meta"))
+        .bind(Arr.head);
+};
 Arethusa.ensureSentence = (sentenceId) => (a) => {
     if (Arethusa.hasSentence(sentenceId)(a)) {
         return MaybeT.of(a);
@@ -385,6 +408,21 @@ Arethusa.sentenceByWordId = (id) => (a) => {
 Arethusa.sentenceIdByWordId = (id) => (a) => {
     return Arethusa.sentenceByWordId(id)(a)
         .bind(ArethusaSentence.id);
+};
+/**
+ * Sets the id attribute of the <document_meta> node.
+ * Makes the change in place.
+ * @param id string
+ * @param a Arethusa
+ * @returns Maybe\<Arethusa\>
+ */
+Arethusa.setDocId = (id) => (a) => {
+    return MaybeT.of(a)
+        .bind(Arethusa.documentMeta)
+        .fmap(XML.setAttr('id')(id))
+        .bind(XML.ownerDocument)
+        .bind(XML.documentElement)
+        .bind(Arethusa.fromNode);
 };
 Arethusa.splitSentenceAt = (startWordId) => (a) => {
     const moveReduce = (_a, wordId) => {

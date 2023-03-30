@@ -16,6 +16,9 @@ Conversion.epidocXMLToArethusaXML = (epidocXML) => {
         .fmap(XMLFormatter.deprettifyFromRoot(true))
         .fmap(XML.toStr)
         .bind(EpiDoc.fromXMLStr);
+    const docId = epidoc
+        .bind(EpiDoc.filenameId)
+        .unpackT("");
     const words = epidoc
         .fmap(EpiDoc.getEditions)
         .unpackT([])
@@ -23,6 +26,7 @@ Conversion.epidocXMLToArethusaXML = (epidocXML) => {
         .map(FormableT.form);
     const arethusa = Arethusa
         .fromXMLStr(arethusaTemplate)
+        .bind(Arethusa.setDocId(docId))
         .bind(Arethusa.appendSentence)
         .bind(Arethusa.lastSentence)
         .bind(ArethusaSentence.appendMaybeWords(words));

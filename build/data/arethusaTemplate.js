@@ -1,6 +1,7 @@
 const arethusaTemplate = `<?xml version="1.0" encoding="UTF-8"?>
 <treebank xml:lang="" format="aldt" version="1.5">
-<annotator name="" address="" role="" date="" layer=""/>
+    <annotator name="" address="" role="" date="" layer=""/>
+    <document_meta/>
 </treebank>`;
 const arethusaUglifiedExample = `<?xml version="1.0" encoding="UTF-8"?>
 <treebank xml:lang="la" format="aldt" version="1.5">

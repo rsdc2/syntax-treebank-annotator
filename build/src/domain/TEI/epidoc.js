@@ -14,14 +14,14 @@ class EpiDoc {
             .bind(EpiDoc.fromXMLStr);
     }
     static getEditions(epidoc) {
-        const doc = MaybeT.of(epidoc.node);
-        return XML
-            .xpathMaybe(Edition.xpathAddress)(doc)
+        return MaybeT.of(epidoc.node)
+            .bind(XML.xpath(Edition.xpathAddress))
             .fmap(EpiDoc.editionsFromArray)
-            .unpack([]);
+            .unpackT([]);
     }
     get names() {
-        return DXML.wordsFromXmlDoc(TEIName, MaybeT.of(this._node.ownerDocument));
+        return DXML
+            .wordsFromXmlDoc(TEIName, MaybeT.of(this._node.ownerDocument));
     }
     get node() {
         return this._node;
@@ -51,7 +51,8 @@ class EpiDoc {
         return XML.toStr(epidoc.node);
     }
     get wordsProp() {
-        return DXML.wordsFromXmlDoc(TEIWord, MaybeT.of(this._node.ownerDocument));
+        return DXML
+            .wordsFromXmlDoc(TEIWord, MaybeT.of(this._node.ownerDocument));
     }
 }
 EpiDoc.deepcopy = (epidoc) => {
@@ -60,5 +61,12 @@ EpiDoc.deepcopy = (epidoc) => {
         .bind(EpiDoc.fromXMLStr);
 };
 EpiDoc.editionsFromArray = map(Edition.of);
+EpiDoc.filenameId = (epidoc) => {
+    const xpath = ".//t:publicationStmt/t:idno[@type='filename']/text()";
+    return MaybeT.of(epidoc.node)
+        .bind(XML.xpath(xpath))
+        .bind(Arr.head)
+        .bind(XML.nodeValue);
+};
 EpiDoc.namesFromArray = map(TEIName.of);
 EpiDoc.TEIwordsFromArray = map(TEIWord.of);

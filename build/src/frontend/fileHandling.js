@@ -1,7 +1,7 @@
 var FileHandling;
 (function (FileHandling) {
-    FileHandling.download = (s) => {
-        const url = MaybeT.of(s)
+    FileHandling.download = (filename) => (fileContent) => {
+        const url = MaybeT.of(fileContent)
             .fmap(Str.blobify)
             .fmap(HTML.URL.createObjectURL);
         const setUrl = url.fmap(HTML.Elem.setAttr("href"));
@@ -9,7 +9,7 @@ var FileHandling;
             .create('a')
             .fmap(HTML.Elem.setAttr("style")("display: none"))
             .applyFmap(setUrl)
-            .fmap(HTML.Elem.setAttr("download")('arethusa.xml'))
+            .fmap(HTML.Elem.setAttr("download")(`${filename}.xml`))
             .fmap(HTML.Elem.click);
         url.fmap(HTML.URL.revokeObjectURL);
     };

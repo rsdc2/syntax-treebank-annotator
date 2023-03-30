@@ -204,6 +204,7 @@ ArethusaSentence.nextWordIds = (startWordId) => (s) => {
 ArethusaSentence.removeWord = (word) => (sentence) => {
     // Not working
     const wordNode = DXML.node(word);
+    console.log('removing node');
     return MaybeT.of(DXML.node(sentence))
         .fmap(XML.removeChild(wordNode))
         .bind(XML.ownerDocument)
@@ -211,6 +212,7 @@ ArethusaSentence.removeWord = (word) => (sentence) => {
         .bind(Arethusa.fromNode);
 };
 ArethusaSentence.removeWordById = (wordId) => (s) => {
+    console.log('Removing node');
     const removeChild = ArethusaSentence
         .wordById(wordId)(s)
         .fmap(DXML.node)
@@ -221,6 +223,19 @@ ArethusaSentence.removeWordById = (wordId) => (s) => {
         .bind(XML.ownerDocument)
         .bind(XML.documentElement)
         .bind(Arethusa.fromNode);
+};
+/**
+ * Sets the document_id attribute of the <sentence> node.
+ * Makes the change in place.
+ * @param id string
+ * @param sentence ArethusaSentence
+ * @returns Maybe<ArethusaSentence>
+ */
+ArethusaSentence.setDocId = (id) => (sentence) => {
+    return MaybeT.of(sentence)
+        .fmap(DXML.node)
+        .fmap(XML.setAttr('document_id')(id))
+        .fmap(ArethusaSentence.fromXMLNode);
 };
 ArethusaSentence.toTreeSentState = (sentence) => {
     const getTreeSentState = sentence._id

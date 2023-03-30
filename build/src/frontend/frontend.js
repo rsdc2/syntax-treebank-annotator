@@ -119,11 +119,6 @@ class Frontend {
     static get sentencesDiv() {
         return MaybeT.of(document.getElementById("sentencesDiv"));
     }
-    static showMessage(message) {
-        HTML.q("div.message")
-            .bindErr("No message element", HTML.setInnerHTML(message))
-            .fmap(HTML.Elem.unsetHidden);
-    }
     static hideMessage() {
         HTML.q("div.message")
             .bindErr("No message element", HTML.setInnerHTML(""))
@@ -415,12 +410,21 @@ Frontend.pushPlainTextToFrontend = (textStateIO) => {
         .applyBind(plainText.fmap(Frontend.updateTextArea));
 };
 Frontend.downloadArethusa = () => {
-    globalState
+    const arethusa = globalState
         .textStateIO
         .bind(TextStateIO.currentState)
-        .bind(TextState.outputArethusaDeep)
+        .bind(TextState.outputArethusaDeep);
+    const docId = arethusa
+        .bind(Arethusa.docId)
+        .unpackT("tree");
+    arethusa
         .fmap(Arethusa.toXMLStr)
-        .fmap(FileHandling.download);
+        .fmap(FileHandling.download(docId));
+};
+Frontend.showMessage = (message) => {
+    HTML.q("div.message")
+        .bindErr("No message element", HTML.setInnerHTML(message))
+        .fmap(HTML.Elem.unsetHidden);
 };
 Frontend.toggleShowInput = () => {
     Frontend
