@@ -78,7 +78,7 @@ class TextArea {
             const prevText = TextArea.textToPreCursorPos (textarea) (currentNodeBoundaries[0])
         
             const sentenceParentId = TextArea.currentSentenceId(textarea)
-            const getSentenceById = sentenceParentId.fmap(Arethusa.sentenceById)
+            const getSentenceById = sentenceParentId.fmap(ArethusaDoc.sentenceById)
             const lastSentenceParent = globalState
                 .textStateIO
                 .bind(TextStateIO.outputArethusa)
