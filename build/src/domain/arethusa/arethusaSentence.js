@@ -375,8 +375,7 @@ ArethusaSentence.setDocId = (id) => (sentence) => {
 ArethusaSentence.toTreeSentState = (sentence) => {
     const getTreeSentState = sentence._id
         .fmap(TreeState.ofTokens);
-    return MaybeT.of(ArethusaSentence
-        .treeTokens(sentence))
+    return MaybeT.of(ArethusaSentence.treeTokens(sentence))
         .applyFmap(getTreeSentState);
 };
 ArethusaSentence.toTreeSentStateWithNodesFromExistingTree = (nodes) => (sentence) => {
@@ -389,7 +388,7 @@ ArethusaSentence.toTreeSentStateWithNodesFromExistingTree = (nodes) => (sentence
 };
 ArethusaSentence.treeTokens = (sentence) => {
     return MaybeT.of(sentence)
-        .fmap(ArethusaSentence.words)
+        .fmap(ArethusaSentence.tokens)
         .unpackT([])
         .map(ArethusaWord.toTreeToken);
 };

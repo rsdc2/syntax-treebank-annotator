@@ -282,7 +282,6 @@ TreeStateIO.of = (sentState) => {
 TreeStateIO.push = (ext) => (updateGraph) => (ts) => (treeStateIO) => {
     treeStateIO._treeState = ts;
     treeStateIO.currentSentStateIdx = 0;
-    // console.log(ts.clickState)
     if (updateGraph) {
         Graph.updateSimulation_(treeStateIO._treeState);
     }

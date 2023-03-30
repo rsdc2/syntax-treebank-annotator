@@ -588,7 +588,12 @@ namespace Graph {
         setForces(nodes, links)
 
         resetClock()
-        globalState.simulation.on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
+        globalState
+            .simulation
+            .on(
+                'tick', 
+                tick(paths, links, circles, nodeLabels, edgeLabels)
+            );
     }
 
     export function createSimulation_(state: TreeState) {
@@ -605,11 +610,18 @@ namespace Graph {
         setForces(nodes, links)
 
         resetClock()
-        globalState.simulation.on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
+        globalState
+            .simulation
+            .on(
+                'tick', 
+                tick(paths, links, circles, nodeLabels, edgeLabels)
+            );
     }
 
     export const svg = () => {
-        return MaybeT.of(document.querySelector("div.tree-container svg") as SVGElement)
+        return MaybeT.of(
+            document.querySelector("div.tree-container svg") as SVGElement
+        )
     }
 }
 

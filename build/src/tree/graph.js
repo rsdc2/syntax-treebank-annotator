@@ -462,7 +462,9 @@ var Graph;
         globalState.simulation = d3.forceSimulation(nodes);
         setForces(nodes, links);
         resetClock();
-        globalState.simulation.on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
+        globalState
+            .simulation
+            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
     }
     Graph.createSimulation = createSimulation;
     function createSimulation_(state) {
@@ -476,7 +478,9 @@ var Graph;
         globalState.simulation = d3.forceSimulation(nodes);
         setForces(nodes, links);
         resetClock();
-        globalState.simulation.on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
+        globalState
+            .simulation
+            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
     }
     Graph.createSimulation_ = createSimulation_;
     Graph.svg = () => {

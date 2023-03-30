@@ -392,11 +392,15 @@ class TreeStateIO {
         TreeStateIO.push(ext)(update)(ts)(this)
     }
     
-    static push = (ext: boolean) => (updateGraph: boolean) => (ts: TreeState) =>  (treeStateIO: TreeStateIO) => {
+    static push = 
+        (ext: boolean) => 
+        (updateGraph: boolean) => 
+        (ts: TreeState) =>  
+        (treeStateIO: TreeStateIO) => 
+    {
 
         treeStateIO._treeState = ts
         treeStateIO.currentSentStateIdx = 0
-        // console.log(ts.clickState)
 
         if (updateGraph) {
             Graph.updateSimulation_(treeStateIO._treeState)

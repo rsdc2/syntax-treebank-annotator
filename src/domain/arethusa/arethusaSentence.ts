@@ -524,8 +524,9 @@ class ArethusaSentence implements Word, Wordable, Formable  {
         const getTreeSentState = sentence._id
             .fmap(TreeState.ofTokens)
         
-        return MaybeT.of(ArethusaSentence
-            .treeTokens(sentence))
+        return MaybeT.of(
+                ArethusaSentence.treeTokens(sentence)
+            )
             .applyFmap(getTreeSentState)
     }
 
@@ -545,7 +546,7 @@ class ArethusaSentence implements Word, Wordable, Formable  {
 
     static treeTokens = (sentence: ArethusaSentence) => {
         return MaybeT.of(sentence)
-            .fmap(ArethusaSentence.words)
+            .fmap(ArethusaSentence.tokens)
             .unpackT([])
             .map(ArethusaWord.toTreeToken)
     }
