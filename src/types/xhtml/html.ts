@@ -67,6 +67,10 @@ namespace HTML {
             return elem.classList
         }
 
+        export const create = (name: string) => {
+            return MaybeT.of(document.createElement(name))
+        }
+
         export const getAttr = (qualifiedName: string) => (elem: Element) => {
             return MaybeT.of(elem.getAttribute(qualifiedName))
         }
@@ -88,8 +92,14 @@ namespace HTML {
             return HTML.Elem.removeAttr("hidden")(elem)
         }
 
-        export const setOnclickFunc = (func) => (elem: HTMLElement) => {
+        export const setOnChangeFunc = (func) => (elem: HTMLElement) => {
+            elem.onchange = func;
+            return elem;
+        }
+
+        export const setOnClickFunc = (func) => (elem: HTMLElement) => {
             elem.onclick = func;
+            return elem;
         }
 
         export const toggleHidden = (elem: HTMLElement) => {

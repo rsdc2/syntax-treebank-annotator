@@ -7,7 +7,8 @@ namespace FileHandling {
 
         const setUrl = url.fmap(HTML.Elem.setAttr("href"))
 
-        MaybeT.of(document.createElement('a'))
+        HTML.Elem
+            .create('a')
             .fmap(HTML.Elem.setAttr("style")("display: none"))
             .applyFmap(setUrl)
             .fmap(HTML.Elem.setAttr("download")('arethusa.xml'))
@@ -20,12 +21,13 @@ namespace FileHandling {
         (fileFormats:string) =>
         (callback: Maybe<(a: string) => any>) => 
     {
-        const fileInput = document
-            .createElement('input') as HTMLInputElement;
-        fileInput.type = "file";
-        fileInput.accept = fileFormats;
-        fileInput.onchange = InputElem.onchange(callback);        
-        fileInput.click();
+
+        HTML.Elem
+            .create('input')
+            .fmapErr("Error", HTML.Elem.setAttr('type')('file'))
+            .fmapErr("Error", HTML.Elem.setAttr('accept')(fileFormats))
+            .fmap(HTML.Elem.setOnChangeFunc(FileInput.onchange(callback)))
+            .fmapErr("Error", HTML.Elem.click)
     }
 
     export namespace TextFile {
@@ -55,14 +57,14 @@ namespace FileHandling {
         }    
     }
 
-    export namespace InputElem {
+    export namespace FileInput {
         export const files = (elem: HTMLInputElement) => {
             return MaybeT.of(elem.files);
         }
 
         export const onchange = (callback: Maybe<(a: string) => any>) => (e: Event) => {
             MaybeT.of(e.target as HTMLInputElement | null)
-                .bind(InputElem.files)
+                .bind(FileInput.files)
                 .fmap(Arr.fromIterable)
                 .bind(Arr.head)
                 .fmap(TextFile.process (callback) ('UTF-8'))

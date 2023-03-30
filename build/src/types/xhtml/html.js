@@ -46,6 +46,9 @@ var HTML;
         Elem.classList = (elem) => {
             return elem.classList;
         };
+        Elem.create = (name) => {
+            return MaybeT.of(document.createElement(name));
+        };
         Elem.getAttr = (qualifiedName) => (elem) => {
             return MaybeT.of(elem.getAttribute(qualifiedName));
         };
@@ -62,8 +65,13 @@ var HTML;
         Elem.unsetHidden = (elem) => {
             return HTML.Elem.removeAttr("hidden")(elem);
         };
-        Elem.setOnclickFunc = (func) => (elem) => {
+        Elem.setOnChangeFunc = (func) => (elem) => {
+            elem.onchange = func;
+            return elem;
+        };
+        Elem.setOnClickFunc = (func) => (elem) => {
             elem.onclick = func;
+            return elem;
         };
         Elem.toggleHidden = (elem) => {
             if (MaybeT.of(elem).bind(Elem.getHidden).unpackT("false") == "false") {
