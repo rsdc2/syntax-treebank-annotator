@@ -88,7 +88,7 @@ class ArethusaToken implements Formable {
             .split(";")
 
         return secondaryDepStrs.map(
-            Slash.ofStr(
+            SecondaryDep.ofStr(
                 ArethusaToken.id(w).unpackT("-1")
             )
         )
@@ -96,6 +96,24 @@ class ArethusaToken implements Formable {
 
     get text(): Maybe<string> {
         return MaybeT.of(this._node.textContent)
+    }
+
+    static treeTokenType = (w: ArethusaToken): TreeTokenType => {
+        if (ArethusaToken.id(w).eq("0")) {
+            return TreeTokenType.Root
+        }
+
+        const hasLemma = MaybeT.of(w)
+            .fmap(DXML.node)
+            .fmap(XML.hasAttr('lemma'))
+            .unpackT(false)
+
+        if (hasLemma) {
+            return TreeTokenType.NonRoot
+        } 
+        else {
+            return TreeTokenType.Artificial
+        }
     }
 
     static toTreeToken = (w: ArethusaToken): ITreeToken => {
@@ -115,12 +133,10 @@ class ArethusaToken implements Formable {
             postag: "[None]",
             relation: ArethusaToken
                 .relation(w),
-            slashes: ArethusaToken
+            secondaryDeps: ArethusaToken
                 .secondaryDeps(w),
             type: ArethusaToken
-                .id(w).eq("0") ? 
-                    TokenType.Root : 
-                    TokenType.NonRoot,
+                .treeTokenType(w),
         }
     }
 

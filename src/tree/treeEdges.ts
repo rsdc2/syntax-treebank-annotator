@@ -21,7 +21,7 @@ namespace TreeEdge {
             if (count > 100) 
                 throw "Maximum recursion depth exceeded."
 
-            if (headToken.fmap(TreeToken.type).eq(TokenType.Root)) return count
+            if (headToken.fmap(TreeToken.type).eq(TreeTokenType.Root)) return count
 
             const f = flip(_countEdgesToRoot)
 

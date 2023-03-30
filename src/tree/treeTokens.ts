@@ -5,18 +5,24 @@ interface ITreeToken {
     lemma: string,
     postag: string,
     relation: string,
-    type: TokenType,
-    slashes: ISecondaryDep[]
+    type: TreeTokenType,
+    secondaryDeps: ISecondaryDep[]
 }
 
 namespace TreeToken {
-    export const tokenByTokenId = (tokens: ITreeToken[]) => (tokenId: number) => {
+    export const tokenByTokenId = 
+        (tokens: ITreeToken[]) => 
+        (tokenId: number) => 
+    {
         const token = tokens.find((token) => token.id === tokenId)
         return MaybeT.of(token)
     }
     
-    export const tokenIdxByTokenId = (tokens: ITreeToken[]) => (tokenId: number): number => {
-        // Root node is 0
+    export const tokenIdxByTokenId = 
+        (tokens: ITreeToken[]) => 
+        (tokenId: number): number => 
+    {
+        // NB: Root node is 0
         return tokens.findIndex((token) => token.id === tokenId)
     }
 

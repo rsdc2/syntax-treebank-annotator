@@ -218,22 +218,22 @@ class TreeStateIO {
                 .slashBySlashId(slashId)
             
             const currentRel = currentSlash
-                .fmap(Slash.relation)
+                .fmap(SecondaryDep.relation)
 
             const changed = !(currentRel.eq(newRel))
 
             switch (changed) {
                 case (true):
                     const newSlash = currentSlash
-                        .fmap(Slash.changeRel(newRel))
-                        .fmap(Slash.ofI)
+                        .fmap(SecondaryDep.changeRel(newRel))
+                        .fmap(SecondaryDep.ofI)
         
                     const getNode = state
                         .currentTreeState
                         .nodeByTreeNodeId
         
                     const parentNode = newSlash
-                        .bind(Slash.depTreeNodeId(state.currentTreeState))
+                        .bind(SecondaryDep.depTreeNodeId(state.currentTreeState))
                         .fmap(Str.fromNum)
                         .bind(getNode)
         
@@ -354,12 +354,12 @@ class TreeStateIO {
         (state: TreeStateIO) => 
 
         {
-            const slash = Slash.ofTreeNodeIds (state.currentTreeState) (headTreeNodeId) (depTreeNodeId) (newRel)
+            const slash = SecondaryDep.ofTreeNodeIds (state.currentTreeState) (headTreeNodeId) (depTreeNodeId) (newRel)
 
             state
                 .currentTreeState
                 .nodeByTreeNodeId(Str.fromNum(depTreeNodeId))
-                .applyFmap(slash.fmap(TreeNode.appendSlash))
+                .applyFmap(slash.fmap(TreeNode.appendSecondaryDep))
                 .fmap(state.changeNode)
         }
 

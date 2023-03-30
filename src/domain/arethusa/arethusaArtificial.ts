@@ -98,7 +98,7 @@ class ArethusaArtificial implements Formable {
             .split(";")
 
         return slashStrs.map(
-            Slash.ofStr(
+            SecondaryDep.ofStr(
                 ArethusaArtificial.id(w).unpackT("-1")
             )
         )
@@ -125,12 +125,12 @@ class ArethusaArtificial implements Formable {
             postag: "[None]",
             relation: ArethusaArtificial
                 .relation(w),
-            slashes: ArethusaArtificial
+            secondaryDeps: ArethusaArtificial
                 .secondaryDeps(w),
             type: ArethusaArtificial
                 .id(w).eq("0") ? 
-                    TokenType.Root : 
-                    TokenType.NonRoot,
+                    TreeTokenType.Root : 
+                    TreeTokenType.NonRoot,
         }
     }
 

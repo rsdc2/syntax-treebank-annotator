@@ -29,20 +29,20 @@ namespace TreeLinks {
         return `s${srcIdx}t${tgtIdx}-${edgeType}`
     } 
 
-    export const createEdgeLabelIdFromTokenIds = (slash: Slash) => (edgeType: string) => {
-        return `edl-${Slash.createIdFromTokenIds(slash)}-${edgeType}`
+    export const createEdgeLabelIdFromTokenIds = (slash: SecondaryDep) => (edgeType: string) => {
+        return `edl-${SecondaryDep.createIdFromTokenIds(slash)}-${edgeType}`
     }
 
-    export const createPathIdFromTokenIds = (slash: Slash) => (edgeType: string) => {
-        return `edg-${Slash.createIdFromTokenIds(slash)}-${edgeType}`
+    export const createPathIdFromTokenIds = (slash: SecondaryDep) => (edgeType: string) => {
+        return `edg-${SecondaryDep.createIdFromTokenIds(slash)}-${edgeType}`
     }
 
-    export const createEdgeLabelIdFromTreeNodeIds = (sentState: TreeState) => (slash: Slash) => (edgeType: string) => {
-        return `edl-${Slash.createIdFromTreeNodeIds(sentState)(slash)}-${edgeType}`
+    export const createEdgeLabelIdFromTreeNodeIds = (sentState: TreeState) => (slash: SecondaryDep) => (edgeType: string) => {
+        return `edl-${SecondaryDep.createIdFromTreeNodeIds(sentState)(slash)}-${edgeType}`
     }
 
-    export const createPathIdFromTreeNodeIds = (sentState: TreeState) => (slash: Slash) => (edgeType: string) => {
-        return `edg-${Slash.createIdFromTreeNodeIds(sentState)(slash)}-${edgeType}`
+    export const createPathIdFromTreeNodeIds = (sentState: TreeState) => (slash: SecondaryDep) => (edgeType: string) => {
+        return `edg-${SecondaryDep.createIdFromTreeNodeIds(sentState)(slash)}-${edgeType}`
     }
 
 }

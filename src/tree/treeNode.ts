@@ -1,13 +1,13 @@
 // Objects for representing in the tree
 // Contain properties needed for D3 representation
-// Plus some others to help me keep track of what is going on
+// Plus some others to help keep track of what is going on
 
 interface ITreeNode extends d3.SimulationNodeDatum {
     name: string,
-    tokenId: number,
+    arethusaTokenId: number,
     treeNodeId: number,
     headTokenId: number,
-    slashes: ISecondaryDep[],   // a slash is stored on the dependent node
+    secondaryDeps: ISecondaryDep[],   // a secondary dep is stored on the dependent node
     distToRoot: number,
     relation: string
     type: NodeType,
@@ -16,25 +16,33 @@ interface ITreeNode extends d3.SimulationNodeDatum {
 
 namespace TreeNode {
 
-    export const appendSlash = (slash: ISecondaryDep) => (node: ITreeNode) => {
+    export const appendSecondaryDep = 
+        (slash: ISecondaryDep) => 
+        (node: ITreeNode) => 
+    {
         const newNode = Obj.deepcopy(node)
-        newNode.slashes = Arr.push(slash)(newNode.slashes)
+        newNode.secondaryDeps = Arr.push(slash)(newNode.secondaryDeps)
         return newNode
     }
 
-    
-    export const byTokenId = (treeNodes: ITreeNode[], tokenId: number): Maybe<ITreeNode> => {
+    export const byTokenId = 
+        (treeNodes: ITreeNode[], tokenId: number): Maybe<ITreeNode> => 
+    {
         const treeNode = treeNodes.find(
-            (treeNode) => treeNode.tokenId === tokenId
+            (treeNode) => treeNode.arethusaTokenId === tokenId
         )
         return MaybeT.of(treeNode)
     }
 
-    export const changeSlash = (slash: Slash) => (node: ITreeNode) => {
+    export const changeSlash = 
+        (slash: SecondaryDep) => 
+        (node: ITreeNode) => 
+    {
         const slashesIdx = node
-            .slashes
+            .secondaryDeps
             .findIndex( 
-                (_slash: Slash) => _slash.slashIdFromTokenIds === slash.slashIdFromTokenIds
+                (_slash: SecondaryDep) => 
+                    _slash.slashIdFromTokenIds === slash.slashIdFromTokenIds
             )
 
         const nodeCopy = Obj.deepcopy(node)
@@ -49,10 +57,10 @@ namespace TreeNode {
     export const empty = (): ITreeNode => {
         return {
             name: "",
-            tokenId: -1,
+            arethusaTokenId: -1,
             treeNodeId: -1,
             headTokenId: -1,
-            slashes: [],
+            secondaryDeps: [],
             distToRoot: -1,
             relation: AGLDTRel.NONE,
             type: NodeType.None,
@@ -62,20 +70,26 @@ namespace TreeNode {
     export const headTreeNodeId = 
         (sentState: TreeState) => 
         (treeNode: ITreeNode) => 
-        
         {
         return sentState.tokenIdToTreeNodeId(treeNode
             .headTokenId)
     }
 
     export const links = (treeNodes: ITreeNode[]) => {
-        const sentState = TreeState.of(0) ("1") ([]) (treeNodes) (ClickState.none())
+        // const sentState = TreeState.of
+        //     (0) 
+        //     ("1") 
+        //     ([]) 
+        //     (treeNodes) 
+        //     (ClickState.none())
 
-        function slashLinkMapFunc(acc: ITreeLink[], iSlash: ISecondaryDep) {
-            const slash = Slash.ofI(iSlash)
+        function secDepLinkMapFunc(acc: ITreeLink[], iSlash: ISecondaryDep) {
+            const slash = SecondaryDep.ofI(iSlash)
 
-            const headTreeNode = TreeNode.byTokenId(treeNodes, slash._headTokenId)
-            const depTreeNode = TreeNode.byTokenId(treeNodes, slash._depTokenId)
+            const headTreeNode = TreeNode
+                .byTokenId(treeNodes, slash._headTokenId)
+            const depTreeNode = TreeNode
+                .byTokenId(treeNodes, slash._depTokenId)
 
             const headTreeNodeId = headTreeNode
                 .fmap(TreeNode.treeNodeId)
@@ -86,7 +100,8 @@ namespace TreeNode {
                                 TreeLinks.createId(LinkType.Slash)))
 
 
-            if (headTreeNodeId.isNothing || depTreeNodeId.isNothing) return acc
+            if (headTreeNodeId.isNothing || depTreeNodeId.isNothing) 
+                return acc;
 
             const link: ITreeLink = {
                 id: id.unpack(""),
@@ -101,29 +116,40 @@ namespace TreeNode {
             return Arr.push (link) (acc)
         }
 
-        function mainNodeLinkReduceFunc(acc: ITreeLink[], treeNode: ITreeNode, idx: number, treeNodes: ITreeNode[]): ITreeLink[] {
+        function mainNodeLinkReduceFunc(
+            acc: ITreeLink[], 
+            treeNode: ITreeNode, 
+            idx: number, 
+            treeNodes: ITreeNode[]): ITreeLink[] 
+        {
 
             // Add slashes first so that links are created even if 
             // no main head-child relation
 
             const slashes: ITreeLink[] = treeNode
-                .slashes
-                .reduce(slashLinkMapFunc, [])
+                .secondaryDeps
+                .reduce(secDepLinkMapFunc, [])
 
             acc = acc.concat(slashes)
 
             // Head-child relation
 
-            const headTreeNode = TreeNode.byTokenId(treeNodes, treeNode.headTokenId)
-            const depTreeNode = TreeNode.byTokenId(treeNodes, treeNode.tokenId)
+            const headTreeNode = TreeNode
+                .byTokenId(treeNodes, treeNode.headTokenId)
+            const depTreeNode = TreeNode
+                .byTokenId(treeNodes, treeNode.arethusaTokenId)
 
             const headId = headTreeNode
                 .fmap(TreeNode.treeNodeId)
             const depId = depTreeNode
                 .fmap(TreeNode.treeNodeId)
-            const id = depId.applyFmap(headId.fmap(TreeLinks.createId(LinkType.Head)))
+            const id = depId.applyFmap(
+                headId.fmap(
+                    TreeLinks.createId(LinkType.Head)
+                )
+            )
 
-            if (headTreeNode.isNothing) return acc
+            if (headTreeNode.isNothing) return acc;
     
             const link: ITreeLink = {
                 id: id.unpackT(""),
@@ -149,7 +175,7 @@ namespace TreeNode {
             nodes
                 .find(
                     (node: ITreeNode) => 
-                        node.tokenId === parseInt(tokenId))
+                        node.arethusaTokenId === parseInt(tokenId))
             )
     }
     
@@ -183,16 +209,16 @@ namespace TreeNode {
     export const removeSlashBySlashIdFromTreeNodeIds = (sentState: TreeState) => (slashId: string) => (node: ITreeNode) => {
         const newNode = Obj.deepcopy(node)
         const slashArrIdx = newNode
-            .slashes
+            .secondaryDeps
             .findIndex (
                 (slash) => {
-                    return Slash
+                    return SecondaryDep
                         .ofI(slash)
                         .slashIdFromTreeNodeIds(sentState)
                         .eq(slashId)
                 }
         )
-        newNode.slashes = Arr.removeByIdx(newNode.slashes)(slashArrIdx)
+        newNode.secondaryDeps = Arr.removeByIdx(newNode.secondaryDeps)(slashArrIdx)
         return newNode
     }
 
@@ -202,39 +228,43 @@ namespace TreeNode {
 
 
     export const slashByHeadId = (headId: number) => (node: ITreeNode) => {
-        return MaybeT.of(node.slashes.find(
-            (slash: Slash) => {
+        return MaybeT.of(node.secondaryDeps.find(
+            (slash: SecondaryDep) => {
                 slash.headTokenId === headId
             }
         ))
     }
 
     export const slashBySlashId = (slashId: string) => (node: ITreeNode) => {
-        return MaybeT.of(node.slashes.find(
+        return MaybeT.of(node.secondaryDeps.find(
             (islash: ISecondaryDep) => {
-                Slash.ofI(islash).slashIdFromTokenIds === slashId
+                SecondaryDep.ofI(islash).slashIdFromTokenIds === slashId
             }
         ))
     }
 
     export const slashes = (node: ITreeNode) => {
-        return node.slashes
+        return node.secondaryDeps
     }
 
     export const slashesToStr = (node: ITreeNode) => {
-        return node.slashes.map(Slash.toStr).join(";")
+        return node.secondaryDeps.map(SecondaryDep.toStr).join(";")
     }
 
-    export const tokenToTreeNode = (token: ITreeToken, counter: number, tokens: ITreeToken[]): ITreeNode => {
+    export const tokenToTreeNode = (
+        token: ITreeToken, 
+        counter: number, 
+        tokens: ITreeToken[]): ITreeNode => 
+    {
         const node = {
             name: token.form,
-            tokenId: token.id,
+            arethusaTokenId: token.id,
             treeNodeId: counter,
             headTokenId: token.headId,
             relation: token.relation, // === "" ? Constants.defaultRel : token.relation,
-            slashes: token.slashes,
+            secondaryDeps: token.secondaryDeps,
             distToRoot: TreeEdge.countEdgesToRoot(token.id, tokens),
-            type: token.type === TokenType.Root ? 
+            type: token.type === TreeTokenType.Root ? 
                 NodeType.Root : 
                 NodeType.NonRoot
         }
@@ -256,13 +286,13 @@ namespace TreeNode {
         }
         
         _node.name = token.form
-        _node.tokenId = token.id
+        _node.arethusaTokenId = token.id
         _node.treeNodeId = counter
         _node.headTokenId = token.headId
         _node.relation = token.relation
-        _node.slashes = token.slashes
+        _node.secondaryDeps = token.secondaryDeps
         _node.distToRoot = TreeEdge.countEdgesToRoot(token.id, tokens)
-        _node.type = token.type === TokenType.Root ? 
+        _node.type = token.type === TreeTokenType.Root ? 
             NodeType.Root : 
             NodeType.NonRoot
 
@@ -276,7 +306,7 @@ namespace TreeNode {
     }
 
     export const toXMLStr = (node: ITreeNode) => {
-        return `<word id="${node.tokenId}" form="${node.name}" lemma="" postag="" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}"/>`
+        return `<word id="${node.arethusaTokenId}" form="${node.name}" lemma="" postag="" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}"/>`
     }
 
     export const toXMLNode = (node: ITreeNode) => {
@@ -290,7 +320,7 @@ namespace TreeNode {
     }
 
     export const tokenId = (n: ITreeNode) => {
-        return n.tokenId
+        return n.arethusaTokenId
     }
 
 }

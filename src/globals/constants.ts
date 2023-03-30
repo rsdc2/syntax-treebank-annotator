@@ -3,11 +3,11 @@ namespace Constants {
 
     export const rootNode: ITreeNode = {
         name: "ROOT",
-        tokenId: 0,
+        arethusaTokenId: 0,
         treeNodeId: 0,
         headTokenId: -1,
         relation: AGLDTRel.NONE,
-        slashes: [],
+        secondaryDeps: [],
         distToRoot: 0, 
         type: NodeType.Root,
         // token: null,
@@ -20,8 +20,8 @@ namespace Constants {
         lemma: "",
         postag: "",
         relation: AGLDTRel.NONE,
-        type: TokenType.Root,
-        slashes: []
+        type: TreeTokenType.Root,
+        secondaryDeps: []
     }
 
     export const defaultRel = "rel"

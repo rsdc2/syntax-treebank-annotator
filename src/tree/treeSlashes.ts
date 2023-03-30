@@ -4,9 +4,9 @@ interface ISecondaryDep {
     _relation: string
 }
 
-class Slash implements ISecondaryDep {
+class SecondaryDep implements ISecondaryDep {
     _headTokenId: number
-    _depTokenId: number // Slashes stored on the child
+    _depTokenId: number // Secondary dependencies stored on the child
     _relation: string
 
     constructor (srcTokenId: number, tgtTokenId: number, relation: string) {
@@ -16,40 +16,40 @@ class Slash implements ISecondaryDep {
     }
 
     static changeRel = (newRel: AGLDTRel) => (slash: ISecondaryDep) => {
-        return Slash.ofTokenIds
+        return SecondaryDep.ofTokenIds
             (slash._headTokenId)
             (slash._depTokenId)
             (newRel)
     }
 
-    static createIdFromTokenIds = (slash: Slash) => {
+    static createIdFromTokenIds = (slash: SecondaryDep) => {
         return TreeLinks.createId 
             (LinkType.Slash)
             (slash.headTokenId) 
             (slash.depTokenId)
     } 
 
-    static createIdFromTreeNodeIds = (sentState: TreeState) => (slash: Slash) => {
-        const headTreeNodeId = Slash.headTreeNodeId(sentState)(slash)
-        const depTreeNodeId = Slash.depTreeNodeId(sentState)(slash)
+    static createIdFromTreeNodeIds = (sentState: TreeState) => (slash: SecondaryDep) => {
+        const headTreeNodeId = SecondaryDep.headTreeNodeId(sentState)(slash)
+        const depTreeNodeId = SecondaryDep.depTreeNodeId(sentState)(slash)
 
         return depTreeNodeId.applyFmap(headTreeNodeId.fmap(TreeLinks.createId 
             (LinkType.Slash)))
     } 
 
-    static createEdgeLabelIdFromTokenIds = (slash: Slash) => {
+    static createEdgeLabelIdFromTokenIds = (slash: SecondaryDep) => {
         return TreeLinks.createEdgeLabelIdFromTokenIds (slash) ("slash")
     }
 
-    static createEdgeLabelIdFromTreeNodeIds = (sentState: TreeState) => (slash: Slash) => {
+    static createEdgeLabelIdFromTreeNodeIds = (sentState: TreeState) => (slash: SecondaryDep) => {
         return TreeLinks.createEdgeLabelIdFromTreeNodeIds (sentState) (slash) ("slash")
     }
 
-    static createPathIdFromTokenIds = (slash: Slash) => {
+    static createPathIdFromTokenIds = (slash: SecondaryDep) => {
         return TreeLinks.createPathIdFromTokenIds (slash) ("slash")
     }
 
-    static createPathIdFromTreeNodeIds = (sentState: TreeState) => (slash: Slash) => {
+    static createPathIdFromTreeNodeIds = (sentState: TreeState) => (slash: SecondaryDep) => {
         return TreeLinks.createPathIdFromTreeNodeIds (sentState) (slash) ("slash")
     }
 
@@ -66,23 +66,23 @@ class Slash implements ISecondaryDep {
     }
 
     depTreeNodeId = (sentState: TreeState) => {
-        return Slash.depTreeNodeId(sentState)(this)
+        return SecondaryDep.depTreeNodeId(sentState)(this)
     }
 
     get edgeLabelIdFromTokenIds () {
-        return Slash.createEdgeLabelIdFromTokenIds(this)
+        return SecondaryDep.createEdgeLabelIdFromTokenIds(this)
     }
 
     edgeLabelIdFromTreeNodeIds = (sentState: TreeState) => {
-        return Slash.createEdgeLabelIdFromTreeNodeIds(sentState)(this)
+        return SecondaryDep.createEdgeLabelIdFromTreeNodeIds(sentState)(this)
     }
 
     get edgePathIdFromTokenIds () {
-        return Slash.createPathIdFromTokenIds(this)
+        return SecondaryDep.createPathIdFromTokenIds(this)
     }
 
     edgePathIdFromTreeNodeIds = (sentState: TreeState) => {
-        return Slash.createPathIdFromTreeNodeIds(sentState)(this)
+        return SecondaryDep.createPathIdFromTreeNodeIds(sentState)(this)
     }
 
     static headTokenId = (slash: ISecondaryDep) => {
@@ -98,15 +98,15 @@ class Slash implements ISecondaryDep {
     }
 
     headTreeNodeId = (sentState: TreeState) => {
-        return Slash.headTreeNodeId(sentState)(this)
+        return SecondaryDep.headTreeNodeId(sentState)(this)
     }
 
     get slashIdFromTokenIds () {
-        return Slash.createIdFromTokenIds (this)
+        return SecondaryDep.createIdFromTokenIds (this)
     }
 
     slashIdFromTreeNodeIds = (sentState: TreeState) => {
-        return Slash.createIdFromTreeNodeIds (sentState) (this)
+        return SecondaryDep.createIdFromTreeNodeIds (sentState) (this)
     }
 
     static parseSecDep = (s: string): [string, string] => {
@@ -119,7 +119,7 @@ class Slash implements ISecondaryDep {
     }
 
     static ofStr = (depId: string) => (s: string): ISecondaryDep => {
-        const [headId, rel] = Slash.parseSecDep(s)
+        const [headId, rel] = SecondaryDep.parseSecDep(s)
         return {
             _headTokenId: Str.toNum(headId),
             _depTokenId: Str.toNum(depId),
@@ -133,7 +133,7 @@ class Slash implements ISecondaryDep {
         (relation: string) => 
         
         {
-            return new Slash(headTokenId, depTokenId, relation)
+            return new SecondaryDep(headTokenId, depTokenId, relation)
     }
 
     static ofTreeNodeIds =
@@ -146,11 +146,11 @@ class Slash implements ISecondaryDep {
             const headTokenId = sentState.treeNodeIdToTokenId(headTreeNodeId)
             const depTokenId = sentState.treeNodeIdToTokenId(depTreeNodeId)
 
-            return MaybeT.of(relation).applyFmap(depTokenId.applyFmap(headTokenId.fmap(Slash.ofTokenIds)))
+            return MaybeT.of(relation).applyFmap(depTokenId.applyFmap(headTokenId.fmap(SecondaryDep.ofTokenIds)))
     }
 
     static ofI = (islash: ISecondaryDep) => {
-        return new Slash(islash._headTokenId, islash._depTokenId, islash._relation)
+        return new SecondaryDep(islash._headTokenId, islash._depTokenId, islash._relation)
     }
 
     get relation () {
@@ -161,7 +161,7 @@ class Slash implements ISecondaryDep {
         this._relation = value
     }
 
-    static relation = (slash: Slash) => {
+    static relation = (slash: SecondaryDep) => {
         return slash.relation
     }
 

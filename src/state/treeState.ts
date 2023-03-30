@@ -98,18 +98,24 @@ class TreeState implements ITreeState {
         return TreeState.nodeByTreeNodeId (depIdx) (this)
     }
 
-    static nodeBySlashIdFromTreeNodeIds = (slashId: string) => (sentState: TreeState) => {
+    static nodeBySlashIdFromTreeNodeIds = 
+        (slashId: string) => 
+        (sentState: TreeState) => 
+    {
         return MaybeT.of(
             sentState
                 .slashes
                 .find(
                     (islash: ISecondaryDep) => {
-                        return Slash.ofI(islash).slashIdFromTreeNodeIds(sentState).eq(slashId)
+                        return SecondaryDep
+                            .ofI(islash)
+                            .slashIdFromTreeNodeIds(sentState)
+                            .eq(slashId)
                     }
                 )
             )
 
-            .bind(Slash.depTreeNodeId(sentState))
+            .bind(SecondaryDep.depTreeNodeId(sentState))
             .fmap(Str.fromNum)
             .bind(sentState.nodeByTreeNodeId)
     }
@@ -173,22 +179,28 @@ class TreeState implements ITreeState {
         (sentence_id: string) =>
         (tokens: ITreeToken[]) => {
 
-            const tokensWithRoot = Arr.unshift(Obj.deepcopy(tokens), Constants.rootToken)
+            const tokensWithRoot = Arr
+                .unshift(
+                    Obj.deepcopy(tokens), Constants.rootToken
+                )
             const _nodes = tokensWithRoot
-                .map(TreeNode.tokenToTreeNodeFromExistingNode(nodes))
+                .map(
+                    TreeNode.tokenToTreeNodeFromExistingNode(nodes)
+                )
             
             return new TreeState(
                 globalState
                     .treeStateIO
                     .fmap(TreeStateIO.currentStateId)
                     .fmap(Num.add(1))
-                    .unpackT(0), sentence_id, tokens, _nodes, ClickState.none())
+                    .unpackT(0)
+                , sentence_id, tokens, _nodes, ClickState.none())
         }
 
     get slashes ()  {
         return this.nodes
-            .reduce ( (acc: Slash[], node:ITreeNode) => {
-                return Arr.concat(acc)(node.slashes.map(Slash.ofI))
+            .reduce ( (acc: SecondaryDep[], node:ITreeNode) => {
+                return Arr.concat(acc)(node.secondaryDeps.map(SecondaryDep.ofI))
             }
             , [])
     }
@@ -198,7 +210,7 @@ class TreeState implements ITreeState {
             .slashes
             .find (
                 (slash: ISecondaryDep) => {
-                    return Slash.ofI(slash).slashIdFromTokenIds === slashId
+                    return SecondaryDep.ofI(slash).slashIdFromTokenIds === slashId
                 }
             ))
     }

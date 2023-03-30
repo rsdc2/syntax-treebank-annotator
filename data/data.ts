@@ -21,10 +21,10 @@ const treebank: ITreebank = {
                     lemma: "Deus",
                     postag: "n-p---mb-",
                     relation: AGLDTRel.NONE,
-                    slashes: [
-                        Slash.ofTokenIds (2) (1) (AGLDTRel.ADV)
+                    secondaryDeps: [
+                        SecondaryDep.ofTokenIds (2) (1) (AGLDTRel.ADV)
                     ],
-                    type: TokenType.NonRoot
+                    type: TreeTokenType.NonRoot
                 },
                 {
                     form: "Manibus", 
@@ -33,10 +33,10 @@ const treebank: ITreebank = {
                     lemma: "manes",
                     postag: "n-p---fb-",
                     relation: AGLDTRel.APOS,
-                    slashes: [
-                        Slash.ofTokenIds (1) (2) (AGLDTRel.PRED), 
+                    secondaryDeps: [
+                        SecondaryDep.ofTokenIds (1) (2) (AGLDTRel.PRED), 
                     ],
-                    type: TokenType.NonRoot
+                    type: TreeTokenType.NonRoot
                 },
                 {
                     form: "Zethi", 
@@ -45,8 +45,8 @@ const treebank: ITreebank = {
                     lemma: "Zethi",
                     postag: "p-s---mn-",
                     relation: AGLDTRel.SUB,
-                    slashes: [],
-                    type: TokenType.NonRoot
+                    secondaryDeps: [],
+                    type: TreeTokenType.NonRoot
                 },
                 {
                     form: "vixit", 
@@ -55,8 +55,8 @@ const treebank: ITreebank = {
                     lemma: "vivo",
                     postag: "v3sria---",
                     relation: AGLDTRel.PRED,
-                    slashes: [],
-                    type: TokenType.NonRoot
+                    secondaryDeps: [],
+                    type: TreeTokenType.NonRoot
                 },
                 {
                     form: "annis", 
@@ -65,8 +65,8 @@ const treebank: ITreebank = {
                     lemma: "vivo",
                     postag: "v3sria---",
                     relation: AGLDTRel.ATR,
-                    slashes: [],
-                    type: TokenType.NonRoot
+                    secondaryDeps: [],
+                    type: TreeTokenType.NonRoot
                 },
                 {
                     form: "VI", 
@@ -75,8 +75,8 @@ const treebank: ITreebank = {
                     lemma: "VI",
                     postag: "u--------",
                     relation: AGLDTRel.ATR,
-                    slashes: [],
-                    type: TokenType.NonRoot
+                    secondaryDeps: [],
+                    type: TreeTokenType.NonRoot
                 }
             ]
         }
@@ -106,10 +106,10 @@ const treebank2: ITreebank = {
                     lemma: "Deus",
                     postag: "n-p---mb-",
                     relation: AGLDTRel.NONE,
-                    slashes: [
-                        Slash.ofTokenIds (4) (3) (AGLDTRel.ADV)
+                    secondaryDeps: [
+                        SecondaryDep.ofTokenIds (4) (3) (AGLDTRel.ADV)
                     ],
-                    type: TokenType.NonRoot
+                    type: TreeTokenType.NonRoot
                 },
                 {
                     form: "Manibus", 
@@ -118,10 +118,10 @@ const treebank2: ITreebank = {
                     lemma: "manes",
                     postag: "n-p---fb-",
                     relation: AGLDTRel.APOS,
-                    slashes: [
-                        Slash.ofTokenIds (3) (4) (AGLDTRel.PRED), 
+                    secondaryDeps: [
+                        SecondaryDep.ofTokenIds (3) (4) (AGLDTRel.PRED), 
                     ],
-                    type: TokenType.NonRoot
+                    type: TreeTokenType.NonRoot
                 },
                 {
                     form: "Zethi", 
@@ -130,8 +130,8 @@ const treebank2: ITreebank = {
                     lemma: "Zethi",
                     postag: "p-s---mn-",
                     relation: AGLDTRel.SUB,
-                    slashes: [],
-                    type: TokenType.NonRoot
+                    secondaryDeps: [],
+                    type: TreeTokenType.NonRoot
                 },
                 {
                     form: "vixit", 
@@ -140,8 +140,8 @@ const treebank2: ITreebank = {
                     lemma: "vivo",
                     postag: "v3sria---",
                     relation: AGLDTRel.PRED,
-                    slashes: [],
-                    type: TokenType.NonRoot
+                    secondaryDeps: [],
+                    type: TreeTokenType.NonRoot
                 },
                 {
                     form: "annis", 
@@ -150,8 +150,8 @@ const treebank2: ITreebank = {
                     lemma: "vivo",
                     postag: "v3sria---",
                     relation: AGLDTRel.ATR,
-                    slashes: [],
-                    type: TokenType.NonRoot
+                    secondaryDeps: [],
+                    type: TreeTokenType.NonRoot
                 },
                 {
                     form: "VI", 
@@ -160,8 +160,8 @@ const treebank2: ITreebank = {
                     lemma: "VI",
                     postag: "u--------",
                     relation: AGLDTRel.ATR,
-                    slashes: [],
-                    type: TokenType.NonRoot
+                    secondaryDeps: [],
+                    type: TreeTokenType.NonRoot
                 }
             ]
         }
@@ -192,10 +192,10 @@ const treebank3: ITreebank = {
                     lemma: "Deus",
                     postag: "n-p---mb-",
                     relation: AGLDTRel.NONE,
-                    slashes: [
-                        Slash.ofTokenIds (4) (3) (AGLDTRel.ADV)
+                    secondaryDeps: [
+                        SecondaryDep.ofTokenIds (4) (3) (AGLDTRel.ADV)
                     ],
-                    type: TokenType.NonRoot
+                    type: TreeTokenType.NonRoot
                 },
                 {
                     form: "Manibus", 
@@ -204,10 +204,10 @@ const treebank3: ITreebank = {
                     lemma: "manes",
                     postag: "n-p---fb-",
                     relation: AGLDTRel.APOS,
-                    slashes: [
-                        Slash.ofTokenIds (3) (4) (AGLDTRel.PRED), 
+                    secondaryDeps: [
+                        SecondaryDep.ofTokenIds (3) (4) (AGLDTRel.PRED), 
                     ],
-                    type: TokenType.NonRoot
+                    type: TreeTokenType.NonRoot
                 },
                 {
                     form: "Zethi", 
@@ -216,8 +216,8 @@ const treebank3: ITreebank = {
                     lemma: "Zethi",
                     postag: "p-s---mn-",
                     relation: AGLDTRel.SUB,
-                    slashes: [],
-                    type: TokenType.NonRoot
+                    secondaryDeps: [],
+                    type: TreeTokenType.NonRoot
                 },
                 {
                     form: "vixit", 
@@ -226,8 +226,8 @@ const treebank3: ITreebank = {
                     lemma: "vivo",
                     postag: "v3sria---",
                     relation: AGLDTRel.PRED,
-                    slashes: [],
-                    type: TokenType.NonRoot
+                    secondaryDeps: [],
+                    type: TreeTokenType.NonRoot
                 },
                 {
                     form: "annis", 
@@ -236,8 +236,8 @@ const treebank3: ITreebank = {
                     lemma: "vivo",
                     postag: "v3sria---",
                     relation: AGLDTRel.ATR,
-                    slashes: [],
-                    type: TokenType.NonRoot
+                    secondaryDeps: [],
+                    type: TreeTokenType.NonRoot
                 },
                 {
                     form: "VI", 
@@ -246,8 +246,8 @@ const treebank3: ITreebank = {
                     lemma: "VI",
                     postag: "u--------",
                     relation: AGLDTRel.ATR,
-                    slashes: [],
-                    type: TokenType.NonRoot
+                    secondaryDeps: [],
+                    type: TreeTokenType.NonRoot
                 }
             ]
         }

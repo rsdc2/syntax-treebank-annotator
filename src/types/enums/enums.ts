@@ -43,7 +43,8 @@ enum NodeType {
     None = "none"
 }
 
-enum TokenType {
+enum TreeTokenType {
     Root = "root",
-    NonRoot = "non-root"
+    NonRoot = "non-root",
+    Artificial = "artificial"
 }

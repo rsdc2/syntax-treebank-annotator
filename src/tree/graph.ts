@@ -101,7 +101,7 @@ namespace Graph {
             .data(nodes)
             .join('circle')
             .attr("r", 6)
-            .attr("token-id", d => d.tokenId)
+            .attr("token-id", d => d.arethusaTokenId)
             .attr("treenode-id", d => d.treeNodeId)
     
         d3.select(".circle")
@@ -169,7 +169,7 @@ namespace Graph {
             .enter().append("text")
             .attr("class", "node-label")
             .attr("treenode-id", (d) => d.treeNodeId )
-            .attr("token-id", (d) => d.tokenId )
+            .attr("token-id", (d) => d.arethusaTokenId )
             .attr("x", "0.5em")
             .attr("y", "1em")
             .attr("width", "1") // cf. https://stackoverflow.com/questions/16254651/auto-height-for-a-foreignobject-in-svg
