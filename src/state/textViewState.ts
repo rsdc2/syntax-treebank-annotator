@@ -5,36 +5,36 @@ enum ViewType {
 }
 
 class ViewState {
-    _wordId: Maybe<string>
+    _tokenId: Maybe<string>
     _sentenceId: Maybe<string>
     _arethusa: Maybe<ArethusaDoc>
 
     constructor (
-        wordId: Maybe<string>, 
+        tokenId: Maybe<string>, 
         sentenceId: Maybe<string>, 
         arethusa: Maybe<ArethusaDoc>
-        ) 
-        {
+    ) 
+    {
 
-        const getWordId = wordId.fmap(ArethusaDoc.sentenceIdByTokenId)
+        const getTokenId = tokenId.fmap(ArethusaDoc.sentenceIdByTokenId)
         const sentenceIdFromWord = arethusa
-            .applyBind(getWordId)
+            .applyBind(getTokenId)
 
-        this._sentenceId = wordId.isNothing ? 
+        this._sentenceId = tokenId.isNothing ? 
             sentenceId : 
             sentenceIdFromWord
             
-        this._wordId = wordId
+        this._tokenId = tokenId
         this._arethusa = arethusa.bind(ArethusaDoc.deepcopy)
 
     }
 
     get currentWordId () {
-        return this._wordId
+        return this._tokenId
     }
 
     set currentWordId (value: Maybe<string>) {
-        this._wordId = value
+        this._tokenId = value
     }
 
     get currentSentenceId () {  
@@ -49,12 +49,12 @@ class ViewState {
         return vs._sentenceId
     }
 
-    static currentWordId = (state: ViewState) => {
-        return state._wordId
+    static currentTokenId = (state: ViewState) => {
+        return state._tokenId
     }
 
     static deepcopy = (s: ViewState) => {
-        return new ViewState (s._wordId, s._sentenceId, s._arethusa.bind(ArethusaDoc.deepcopy))
+        return new ViewState (s._tokenId, s._sentenceId, s._arethusa.bind(ArethusaDoc.deepcopy))
     }
 
     get isSentence () {
@@ -75,7 +75,7 @@ class ViewState {
     }
 
     static setCurrentWordId = (value: Maybe<string>) => (s: ViewState) => {
-        s._wordId = value
+        s._tokenId = value
     }
 
     get viewType () {

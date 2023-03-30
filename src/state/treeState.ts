@@ -161,18 +161,18 @@ class TreeState implements ITreeState {
 
     static ofTokens = 
         (sentence_id: string) =>
-        (tokens: ITreeToken[]) => {
+        (tokens: ITreeToken[]) => 
+    {
+        const nodes = tokens
+            .map(TreeNode.tokenToTreeNode)
 
-            const nodes = tokens
-                .map(TreeNode.tokenToTreeNode)
-
-            return new TreeState(
-                globalState
-                    .treeStateIO
-                    .fmap(TreeStateIO.currentStateId)
-                    .fmap(Num.add(1))
-                    .unpackT(0), sentence_id, tokens, nodes, ClickState.none())
-        }
+        return new TreeState(
+            globalState
+                .treeStateIO
+                .fmap(TreeStateIO.currentStateId)
+                .fmap(Num.add(1))
+                .unpackT(0), sentence_id, tokens, nodes, ClickState.none())
+    }
 
     static ofTokensWithExistingNodes = 
         (nodes: ITreeNode[]) => 

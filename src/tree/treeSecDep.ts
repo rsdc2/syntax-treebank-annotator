@@ -1,8 +1,3 @@
-interface ISecondaryDep {
-    _headTokenId: number
-    _depTokenId: number
-    _relation: string
-}
 
 class SecondaryDep implements ISecondaryDep {
     _headTokenId: number

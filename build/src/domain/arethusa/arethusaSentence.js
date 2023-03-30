@@ -387,10 +387,11 @@ ArethusaSentence.toTreeSentStateWithNodesFromExistingTree = (nodes) => (sentence
         .applyFmap(getTreeSentState);
 };
 ArethusaSentence.treeTokens = (sentence) => {
+    console.log('treeTokens');
     return MaybeT.of(sentence)
         .fmap(ArethusaSentence.tokens)
         .unpackT([])
-        .map(ArethusaWord.toTreeToken);
+        .map(ArethusaToken.toTreeToken);
 };
 ArethusaSentence.wordByWordAndSentenceId = (wordId) => (sentenceId) => (a) => {
     return MaybeT.of(ArethusaDoc

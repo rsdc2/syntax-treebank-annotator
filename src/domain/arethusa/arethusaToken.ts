@@ -117,27 +117,12 @@ class ArethusaToken implements Formable {
     }
 
     static toTreeToken = (w: ArethusaToken): ITreeToken => {
-        return {
-            form: ArethusaToken
-                .form(w)
-                .unpackT("[None]"),
-            headId: ArethusaToken
-                .head(w)
-                .bind(Str.toMaybeNum)
-                .unpackT(-1),
-            id: ArethusaToken
-                .id(w)
-                .fmap(Str.toNum)
-                .unpackT(-1),
-            lemma: "[None]",
-            postag: "[None]",
-            relation: ArethusaToken
-                .relation(w),
-            secondaryDeps: ArethusaToken
-                .secondaryDeps(w),
-            type: ArethusaToken
-                .treeTokenType(w),
+        if (ArethusaToken.treeTokenType(w) === TreeTokenType.Artificial) {
+            console.log("To artificial token")
+            return ArethusaArtificial.toTreeToken(w)
         }
+        console.log("To word token")
+        return ArethusaWord.toTreeToken(w)
     }
 
     static get xpathAddress(): string {

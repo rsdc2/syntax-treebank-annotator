@@ -2,11 +2,11 @@ var Constants;
 (function (Constants) {
     Constants.rootNode = {
         name: "ROOT",
-        tokenId: 0,
+        arethusaTokenId: 0,
         treeNodeId: 0,
         headTokenId: -1,
         relation: AGLDTRel.NONE,
-        slashes: [],
+        secondaryDeps: [],
         distToRoot: 0,
         type: NodeType.Root,
         // token: null,
@@ -18,8 +18,8 @@ var Constants;
         lemma: "",
         postag: "",
         relation: AGLDTRel.NONE,
-        type: TokenType.Root,
-        slashes: []
+        type: TreeTokenType.Root,
+        secondaryDeps: []
     };
     Constants.defaultRel = "rel";
     Constants.messages = {

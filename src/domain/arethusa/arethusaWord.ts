@@ -107,7 +107,7 @@ class ArethusaWord implements Formable {
         return MaybeT.of(this._node.textContent)
     }
 
-    static toTreeToken = (w: ArethusaWord): ITreeToken => {
+    static toTreeToken = (w: ArethusaWord): ITreeWord => {
         return {
             form: ArethusaWord
                 .form(w)

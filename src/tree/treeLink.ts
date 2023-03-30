@@ -9,15 +9,7 @@ enum ArcType {
     Curved = "curved"
 }
 
-interface ITreeLink {
-    id: string,
-    source: ITreeNode,
-    target: ITreeNode,
-    type: LinkType,
-    relation: string,
-    headTreeNodeId: number,
-    depTreeNodeId: number
-}
+
 
 namespace TreeLinks {
     export const createId = 

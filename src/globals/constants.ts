@@ -13,7 +13,7 @@ namespace Constants {
         // token: null,
     }
 
-    export const rootToken: ITreeToken = {
+    export const rootToken: ITreeWord = {
         form: "[ROOT]",
         headId: -1,
         id: 0,

@@ -5,21 +5,21 @@ var ViewType;
     ViewType["Unknown"] = "unknown";
 })(ViewType || (ViewType = {}));
 class ViewState {
-    constructor(wordId, sentenceId, arethusa) {
-        const getWordId = wordId.fmap(ArethusaDoc.sentenceIdByTokenId);
+    constructor(tokenId, sentenceId, arethusa) {
+        const getTokenId = tokenId.fmap(ArethusaDoc.sentenceIdByTokenId);
         const sentenceIdFromWord = arethusa
-            .applyBind(getWordId);
-        this._sentenceId = wordId.isNothing ?
+            .applyBind(getTokenId);
+        this._sentenceId = tokenId.isNothing ?
             sentenceId :
             sentenceIdFromWord;
-        this._wordId = wordId;
+        this._tokenId = tokenId;
         this._arethusa = arethusa.bind(ArethusaDoc.deepcopy);
     }
     get currentWordId() {
-        return this._wordId;
+        return this._tokenId;
     }
     set currentWordId(value) {
-        this._wordId = value;
+        this._tokenId = value;
     }
     get currentSentenceId() {
         return this._sentenceId;
@@ -56,11 +56,11 @@ class ViewState {
 ViewState.currentSentenceId = (vs) => {
     return vs._sentenceId;
 };
-ViewState.currentWordId = (state) => {
-    return state._wordId;
+ViewState.currentTokenId = (state) => {
+    return state._tokenId;
 };
 ViewState.deepcopy = (s) => {
-    return new ViewState(s._wordId, s._sentenceId, s._arethusa.bind(ArethusaDoc.deepcopy));
+    return new ViewState(s._tokenId, s._sentenceId, s._arethusa.bind(ArethusaDoc.deepcopy));
 };
 ViewState.of = (wordId) => (sentenceId) => (arethusa) => {
     return new ViewState(MaybeT.of(wordId), MaybeT.of(sentenceId), MaybeT.of(arethusa));
@@ -69,7 +69,7 @@ ViewState.setCurrentSentenceId = (value) => (s) => {
     s._sentenceId = value;
 };
 ViewState.setCurrentWordId = (value) => (s) => {
-    s._wordId = value;
+    s._tokenId = value;
 };
 ViewState.viewType = (vs) => {
     return vs.viewType;

@@ -34,7 +34,6 @@ enum XMLLang {
     LAT = "lat"
 }
 
-
 enum NodeType {
     Root = "root",
     Leaf = "leaf",
@@ -45,6 +44,5 @@ enum NodeType {
 
 enum TreeTokenType {
     Root = "root",
-    NonRoot = "non-root",
-    Artificial = "artificial"
+    NonRoot = "non-root"
 }

@@ -85,7 +85,7 @@ var Graph;
             .data(nodes)
             .join('circle')
             .attr("r", 6)
-            .attr("token-id", d => d.tokenId)
+            .attr("token-id", d => d.arethusaTokenId)
             .attr("treenode-id", d => d.treeNodeId);
         d3.select(".circle")
             .selectAll("circle")
@@ -142,7 +142,7 @@ var Graph;
             .enter().append("text")
             .attr("class", "node-label")
             .attr("treenode-id", (d) => d.treeNodeId)
-            .attr("token-id", (d) => d.tokenId)
+            .attr("token-id", (d) => d.arethusaTokenId)
             .attr("x", "0.5em")
             .attr("y", "1em")
             .attr("width", "1") // cf. https://stackoverflow.com/questions/16254651/auto-height-for-a-foreignobject-in-svg
@@ -313,17 +313,17 @@ var Graph;
             .distance(linkDistance)
             .strength(linkStrength))
             .force('x', d3.forceX().x((d) => {
-            switch (treebank.direction) {
-                case (TextDir.LTR): {
-                    return d.treeNodeId * xMult;
-                }
-                case (TextDir.RTL): {
-                    return (nodes.length - d.treeNodeId) * xMult;
-                }
-                default: {
-                    return d.treeNodeId * xMult;
-                }
-            }
+            // switch (treebank.direction) {
+            //     case (TextDir.LTR): {
+            //         return d.treeNodeId * xMult;
+            //     }
+            //     case (TextDir.RTL): {
+            //         return (nodes.length - d.treeNodeId) * xMult;
+            //     }
+            //     default: {
+            return d.treeNodeId * xMult;
+            //     }
+            // }
         })
             .strength(xStrength))
             .force('y', d3.forceY().y(function (d) {

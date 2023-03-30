@@ -2,17 +2,7 @@
 // Contain properties needed for D3 representation
 // Plus some others to help keep track of what is going on
 
-interface ITreeNode extends d3.SimulationNodeDatum {
-    name: string,
-    arethusaTokenId: number,
-    treeNodeId: number,
-    headTokenId: number,
-    secondaryDeps: ISecondaryDep[],   // a secondary dep is stored on the dependent node
-    distToRoot: number,
-    relation: string
-    type: NodeType,
-    radius?: number | undefined;
-}
+
 
 namespace TreeNode {
 
@@ -272,8 +262,14 @@ namespace TreeNode {
         return node
     }
 
-    export const tokenToTreeNodeFromExistingNode = (nodes: ITreeNode[]) => 
-        (token: ITreeToken, counter: number, tokens: ITreeToken[]): ITreeNode => {
+    export const tokenToTreeNodeFromExistingNode = 
+        (nodes: ITreeNode[]) => 
+        (
+            token: ITreeToken, 
+            counter: number, 
+            tokens: ITreeToken[]
+        ): ITreeNode => 
+    {
 
         const _node = TreeNode
             .nodeByTokenId
@@ -300,7 +296,8 @@ namespace TreeNode {
 
     }
     
-    export const tokensToTreeNodes = (tokens: ITreeToken[]): ITreeNode[] => {
+    export const tokensToTreeNodes = 
+        (tokens: ITreeToken[]): ITreeNode[] => {
         return tokens
             .map(TreeNode.tokenToTreeNode)
     }

@@ -1,13 +1,4 @@
-interface ITreeToken {
-    form: string,
-    headId: number,
-    id: number,
-    lemma: string,
-    postag: string,
-    relation: string,
-    type: TreeTokenType,
-    secondaryDeps: ISecondaryDep[]
-}
+
 
 namespace TreeToken {
     export const tokenByTokenId = 

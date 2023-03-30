@@ -396,17 +396,17 @@ namespace Graph {
         )
         .force('x', d3.forceX().x(
             (d: ITreeNode) => {
-                switch (treebank.direction) {
-                    case (TextDir.LTR): {
+                // switch (treebank.direction) {
+                //     case (TextDir.LTR): {
+                //         return d.treeNodeId * xMult;
+                //     }
+                //     case (TextDir.RTL): {
+                //         return (nodes.length - d.treeNodeId) * xMult;
+                //     }
+                //     default: {
                         return d.treeNodeId * xMult;
-                    }
-                    case (TextDir.RTL): {
-                        return (nodes.length - d.treeNodeId) * xMult;
-                    }
-                    default: {
-                        return d.treeNodeId * xMult;
-                    }
-                }
+                //     }
+                // }
             }
         )
             .strength(xStrength)    

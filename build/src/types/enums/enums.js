@@ -41,8 +41,9 @@ var NodeType;
     NodeType["NonRoot"] = "non-root";
     NodeType["None"] = "none";
 })(NodeType || (NodeType = {}));
-var TokenType;
-(function (TokenType) {
-    TokenType["Root"] = "root";
-    TokenType["NonRoot"] = "non-root";
-})(TokenType || (TokenType = {}));
+var TreeTokenType;
+(function (TreeTokenType) {
+    TreeTokenType["Root"] = "root";
+    TreeTokenType["NonRoot"] = "non-root";
+    TreeTokenType["Artificial"] = "artificial";
+})(TreeTokenType || (TreeTokenType = {}));

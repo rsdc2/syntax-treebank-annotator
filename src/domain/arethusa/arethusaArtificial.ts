@@ -108,7 +108,7 @@ class ArethusaArtificial implements Formable {
         return MaybeT.of(this._node.textContent)
     }
 
-    static toTreeToken = (w: ArethusaArtificial): ITreeToken => {
+    static toTreeToken = (w: ArethusaArtificial): ITreeArtificial => {
         return {
             form: ArethusaArtificial
                 .form(w)
@@ -121,8 +121,8 @@ class ArethusaArtificial implements Formable {
                 .id(w)
                 .fmap(Str.toNum)
                 .unpackT(-1),
-            lemma: "[None]",
-            postag: "[None]",
+            artificial: "elliptical",
+            insertion_id: "",
             relation: ArethusaArtificial
                 .relation(w),
             secondaryDeps: ArethusaArtificial

@@ -81,7 +81,7 @@ ArethusaArtificial.secondaryDeps = (w) => {
         return new Array;
     const slashStrs = slashStr
         .split(";");
-    return slashStrs.map(Slash.ofStr(ArethusaArtificial.id(w).unpackT("-1")));
+    return slashStrs.map(SecondaryDep.ofStr(ArethusaArtificial.id(w).unpackT("-1")));
 };
 ArethusaArtificial.toTreeToken = (w) => {
     return {
@@ -96,15 +96,15 @@ ArethusaArtificial.toTreeToken = (w) => {
             .id(w)
             .fmap(Str.toNum)
             .unpackT(-1),
-        lemma: "[None]",
-        postag: "[None]",
+        artificial: "elliptical",
+        insertion_id: "",
         relation: ArethusaArtificial
             .relation(w),
-        slashes: ArethusaArtificial
+        secondaryDeps: ArethusaArtificial
             .secondaryDeps(w),
         type: ArethusaArtificial
             .id(w).eq("0") ?
-            TokenType.Root :
-            TokenType.NonRoot,
+            TreeTokenType.Root :
+            TreeTokenType.NonRoot,
     };
 };

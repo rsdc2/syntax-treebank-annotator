@@ -14,7 +14,7 @@ class TreeState {
             return MaybeT.of(this
                 .slashes
                 .find((slash) => {
-                return Slash.ofI(slash).slashIdFromTokenIds === slashId;
+                return SecondaryDep.ofI(slash).slashIdFromTokenIds === slashId;
             }));
         };
         this.tokenIdToTreeNodeId = (tokenId) => {
@@ -59,7 +59,7 @@ class TreeState {
     get slashes() {
         return this.nodes
             .reduce((acc, node) => {
-            return Arr.concat(acc)(node.slashes.map(Slash.ofI));
+            return Arr.concat(acc)(node.secondaryDeps.map(SecondaryDep.ofI));
         }, []);
     }
     get tokens() {
@@ -95,9 +95,12 @@ TreeState.nodeBySlashIdFromTreeNodeIds = (slashId) => (sentState) => {
     return MaybeT.of(sentState
         .slashes
         .find((islash) => {
-        return Slash.ofI(islash).slashIdFromTreeNodeIds(sentState).eq(slashId);
+        return SecondaryDep
+            .ofI(islash)
+            .slashIdFromTreeNodeIds(sentState)
+            .eq(slashId);
     }))
-        .bind(Slash.depTreeNodeId(sentState))
+        .bind(SecondaryDep.depTreeNodeId(sentState))
         .fmap(Str.fromNum)
         .bind(sentState.nodeByTreeNodeId);
 };
@@ -119,7 +122,8 @@ TreeState.ofTokens = (sentence_id) => (tokens) => {
         .unpackT(0), sentence_id, tokens, nodes, ClickState.none());
 };
 TreeState.ofTokensWithExistingNodes = (nodes) => (sentence_id) => (tokens) => {
-    const tokensWithRoot = Arr.unshift(Obj.deepcopy(tokens), Constants.rootToken);
+    const tokensWithRoot = Arr
+        .unshift(Obj.deepcopy(tokens), Constants.rootToken);
     const _nodes = tokensWithRoot
         .map(TreeNode.tokenToTreeNodeFromExistingNode(nodes));
     return new TreeState(globalState

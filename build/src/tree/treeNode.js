@@ -1,20 +1,20 @@
 // Objects for representing in the tree
 // Contain properties needed for D3 representation
-// Plus some others to help me keep track of what is going on
+// Plus some others to help keep track of what is going on
 var TreeNode;
 (function (TreeNode) {
-    TreeNode.appendSlash = (slash) => (node) => {
+    TreeNode.appendSecondaryDep = (slash) => (node) => {
         const newNode = Obj.deepcopy(node);
-        newNode.slashes = Arr.push(slash)(newNode.slashes);
+        newNode.secondaryDeps = Arr.push(slash)(newNode.secondaryDeps);
         return newNode;
     };
     TreeNode.byTokenId = (treeNodes, tokenId) => {
-        const treeNode = treeNodes.find((treeNode) => treeNode.tokenId === tokenId);
+        const treeNode = treeNodes.find((treeNode) => treeNode.arethusaTokenId === tokenId);
         return MaybeT.of(treeNode);
     };
     TreeNode.changeSlash = (slash) => (node) => {
         const slashesIdx = node
-            .slashes
+            .secondaryDeps
             .findIndex((_slash) => _slash.slashIdFromTokenIds === slash.slashIdFromTokenIds);
         const nodeCopy = Obj.deepcopy(node);
         MaybeT.of(nodeCopy)
@@ -26,10 +26,10 @@ var TreeNode;
     TreeNode.empty = () => {
         return {
             name: "",
-            tokenId: -1,
+            arethusaTokenId: -1,
             treeNodeId: -1,
             headTokenId: -1,
-            slashes: [],
+            secondaryDeps: [],
             distToRoot: -1,
             relation: AGLDTRel.NONE,
             type: NodeType.None,
@@ -40,11 +40,18 @@ var TreeNode;
             .headTokenId);
     };
     TreeNode.links = (treeNodes) => {
-        const sentState = TreeState.of(0)("1")([])(treeNodes)(ClickState.none());
-        function slashLinkMapFunc(acc, iSlash) {
-            const slash = Slash.ofI(iSlash);
-            const headTreeNode = TreeNode.byTokenId(treeNodes, slash._headTokenId);
-            const depTreeNode = TreeNode.byTokenId(treeNodes, slash._depTokenId);
+        // const sentState = TreeState.of
+        //     (0) 
+        //     ("1") 
+        //     ([]) 
+        //     (treeNodes) 
+        //     (ClickState.none())
+        function secDepLinkMapFunc(acc, iSlash) {
+            const slash = SecondaryDep.ofI(iSlash);
+            const headTreeNode = TreeNode
+                .byTokenId(treeNodes, slash._headTokenId);
+            const depTreeNode = TreeNode
+                .byTokenId(treeNodes, slash._depTokenId);
             const headTreeNodeId = headTreeNode
                 .fmap(TreeNode.treeNodeId);
             const depTreeNodeId = depTreeNode
@@ -67,12 +74,14 @@ var TreeNode;
             // Add slashes first so that links are created even if 
             // no main head-child relation
             const slashes = treeNode
-                .slashes
-                .reduce(slashLinkMapFunc, []);
+                .secondaryDeps
+                .reduce(secDepLinkMapFunc, []);
             acc = acc.concat(slashes);
             // Head-child relation
-            const headTreeNode = TreeNode.byTokenId(treeNodes, treeNode.headTokenId);
-            const depTreeNode = TreeNode.byTokenId(treeNodes, treeNode.tokenId);
+            const headTreeNode = TreeNode
+                .byTokenId(treeNodes, treeNode.headTokenId);
+            const depTreeNode = TreeNode
+                .byTokenId(treeNodes, treeNode.arethusaTokenId);
             const headId = headTreeNode
                 .fmap(TreeNode.treeNodeId);
             const depId = depTreeNode
@@ -97,7 +106,7 @@ var TreeNode;
     };
     TreeNode.nodeByTokenId = (tokenId) => (nodes) => {
         return MaybeT.of(nodes
-            .find((node) => node.tokenId === parseInt(tokenId)));
+            .find((node) => node.arethusaTokenId === parseInt(tokenId)));
     };
     /**
      * In order that links do not overlap, it is important to find nodes joined by multiple links.
@@ -118,45 +127,45 @@ var TreeNode;
     TreeNode.removeSlashBySlashIdFromTreeNodeIds = (sentState) => (slashId) => (node) => {
         const newNode = Obj.deepcopy(node);
         const slashArrIdx = newNode
-            .slashes
+            .secondaryDeps
             .findIndex((slash) => {
-            return Slash
+            return SecondaryDep
                 .ofI(slash)
                 .slashIdFromTreeNodeIds(sentState)
                 .eq(slashId);
         });
-        newNode.slashes = Arr.removeByIdx(newNode.slashes)(slashArrIdx);
+        newNode.secondaryDeps = Arr.removeByIdx(newNode.secondaryDeps)(slashArrIdx);
         return newNode;
     };
     TreeNode.setHeadTokenId = (value) => (node) => {
         node.headTokenId = value;
     };
     TreeNode.slashByHeadId = (headId) => (node) => {
-        return MaybeT.of(node.slashes.find((slash) => {
+        return MaybeT.of(node.secondaryDeps.find((slash) => {
             slash.headTokenId === headId;
         }));
     };
     TreeNode.slashBySlashId = (slashId) => (node) => {
-        return MaybeT.of(node.slashes.find((islash) => {
-            Slash.ofI(islash).slashIdFromTokenIds === slashId;
+        return MaybeT.of(node.secondaryDeps.find((islash) => {
+            SecondaryDep.ofI(islash).slashIdFromTokenIds === slashId;
         }));
     };
     TreeNode.slashes = (node) => {
-        return node.slashes;
+        return node.secondaryDeps;
     };
     TreeNode.slashesToStr = (node) => {
-        return node.slashes.map(Slash.toStr).join(";");
+        return node.secondaryDeps.map(SecondaryDep.toStr).join(";");
     };
     TreeNode.tokenToTreeNode = (token, counter, tokens) => {
         const node = {
             name: token.form,
-            tokenId: token.id,
+            arethusaTokenId: token.id,
             treeNodeId: counter,
             headTokenId: token.headId,
             relation: token.relation,
-            slashes: token.slashes,
+            secondaryDeps: token.secondaryDeps,
             distToRoot: TreeEdge.countEdgesToRoot(token.id, tokens),
-            type: token.type === TokenType.Root ?
+            type: token.type === TreeTokenType.Root ?
                 NodeType.Root :
                 NodeType.NonRoot
         };
@@ -170,13 +179,13 @@ var TreeNode;
             return TreeNode.tokenToTreeNode(token, counter, tokens);
         }
         _node.name = token.form;
-        _node.tokenId = token.id;
+        _node.arethusaTokenId = token.id;
         _node.treeNodeId = counter;
         _node.headTokenId = token.headId;
         _node.relation = token.relation;
-        _node.slashes = token.slashes;
+        _node.secondaryDeps = token.secondaryDeps;
         _node.distToRoot = TreeEdge.countEdgesToRoot(token.id, tokens);
-        _node.type = token.type === TokenType.Root ?
+        _node.type = token.type === TreeTokenType.Root ?
             NodeType.Root :
             NodeType.NonRoot;
         return _node;
@@ -186,7 +195,7 @@ var TreeNode;
             .map(TreeNode.tokenToTreeNode);
     };
     TreeNode.toXMLStr = (node) => {
-        return `<word id="${node.tokenId}" form="${node.name}" lemma="" postag="" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}"/>`;
+        return `<word id="${node.arethusaTokenId}" form="${node.name}" lemma="" postag="" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}"/>`;
     };
     TreeNode.toXMLNode = (node) => {
         return MaybeT.of(TreeNode
@@ -197,6 +206,6 @@ var TreeNode;
         return n.treeNodeId;
     };
     TreeNode.tokenId = (n) => {
-        return n.tokenId;
+        return n.arethusaTokenId;
     };
 })(TreeNode || (TreeNode = {}));

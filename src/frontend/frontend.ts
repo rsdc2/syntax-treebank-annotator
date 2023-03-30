@@ -496,7 +496,7 @@ class Frontend {
             e.stopPropagation()
             globalState
                 .textStateIO
-                .fmap(TextStateIO.removeArethusaWord)
+                .fmap(TextStateIO.removeArethusaToken)
         }
 
         const moveWordUpFunc = (e: Event) => {

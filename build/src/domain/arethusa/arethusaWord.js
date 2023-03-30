@@ -82,7 +82,7 @@ ArethusaWord.slashes = (w) => {
         return new Array;
     const slashStrs = slashStr
         .split(";");
-    return slashStrs.map(Slash.ofStr(ArethusaWord.id(w).unpackT("-1")));
+    return slashStrs.map(SecondaryDep.ofStr(ArethusaWord.id(w).unpackT("-1")));
 };
 ArethusaWord.toTreeToken = (w) => {
     return {
@@ -105,11 +105,11 @@ ArethusaWord.toTreeToken = (w) => {
             .unpackT("[None]"),
         relation: ArethusaWord
             .relation(w),
-        slashes: ArethusaWord
+        secondaryDeps: ArethusaWord
             .slashes(w),
         type: ArethusaWord
             .id(w).eq("0") ?
-            TokenType.Root :
-            TokenType.NonRoot,
+            TreeTokenType.Root :
+            TreeTokenType.NonRoot,
     };
 };

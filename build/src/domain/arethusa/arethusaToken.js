@@ -75,30 +75,28 @@ ArethusaToken.secondaryDeps = (w) => {
         return new Array;
     const secondaryDepStrs = secondaryDepStr
         .split(";");
-    return secondaryDepStrs.map(Slash.ofStr(ArethusaToken.id(w).unpackT("-1")));
+    return secondaryDepStrs.map(SecondaryDep.ofStr(ArethusaToken.id(w).unpackT("-1")));
+};
+ArethusaToken.treeTokenType = (w) => {
+    if (ArethusaToken.id(w).eq("0")) {
+        return TreeTokenType.Root;
+    }
+    const hasLemma = MaybeT.of(w)
+        .fmap(DXML.node)
+        .fmap(XML.hasAttr('lemma'))
+        .unpackT(false);
+    if (hasLemma) {
+        return TreeTokenType.NonRoot;
+    }
+    else {
+        return TreeTokenType.Artificial;
+    }
 };
 ArethusaToken.toTreeToken = (w) => {
-    return {
-        form: ArethusaToken
-            .form(w)
-            .unpackT("[None]"),
-        headId: ArethusaToken
-            .head(w)
-            .bind(Str.toMaybeNum)
-            .unpackT(-1),
-        id: ArethusaToken
-            .id(w)
-            .fmap(Str.toNum)
-            .unpackT(-1),
-        lemma: "[None]",
-        postag: "[None]",
-        relation: ArethusaToken
-            .relation(w),
-        slashes: ArethusaToken
-            .secondaryDeps(w),
-        type: ArethusaToken
-            .id(w).eq("0") ?
-            TokenType.Root :
-            TokenType.NonRoot,
-    };
+    if (ArethusaToken.treeTokenType(w) === TreeTokenType.Artificial) {
+        console.log("To artificial token");
+        return ArethusaArtificial.toTreeToken(w);
+    }
+    console.log("To word token");
+    return ArethusaWord.toTreeToken(w);
 };
