@@ -3,13 +3,13 @@ class Conversion {
         return MaybeT.of(epidoc)
             .fmap(EpiDoc.toXMLStr)
             .bind(Conversion.epidocXMLToArethusaXML)
-            .bind(Arethusa.fromXMLStr)
+            .bind(ArethusaDoc.fromXMLStr)
     }
 
     static epidocXMLToArethusa = (epidocXML: string) => {
         return MaybeT.of(epidocXML)
             .bind(Conversion.epidocXMLToArethusaXML)
-            .bind(Arethusa.fromXMLStr)
+            .bind(ArethusaDoc.fromXMLStr)
     }
 
     static epidocXMLToArethusaXML = (epidocXML: string) => {
@@ -22,24 +22,29 @@ class Conversion {
             .fmap(XML.toStr)
             .bind(EpiDoc.fromXMLStr)
     
+        const docId = epidoc
+            .bind(EpiDoc.filenameId)
+            .unpackT("")
+
         const words = epidoc
             .fmap(EpiDoc.getEditions)
             .unpackT([])
             .flatMap(WordableT.words)
             .map(FormableT.form)
     
-        const arethusa = Arethusa
+        const arethusa = ArethusaDoc
             .fromXMLStr(arethusaTemplate)
-            .bind(Arethusa.appendSentence)
-            .bind(Arethusa.lastSentence)
+            .bind(ArethusaDoc.setDocId(docId))
+            .bind(ArethusaDoc.appendSentence)
+            .bind(ArethusaDoc.lastSentence)
             .bind(ArethusaSentence.appendMaybeWords(words))
     
         const arethusaXML = arethusa
             .fmap(DXML.node)
             .fmap(XMLFormatter.deprettifyFromRoot(true))
             .fmap(XMLFormatter.prettifyFromRoot(true))
-            .bind(Arethusa.fromNode)
-            .fmap(Arethusa.toXMLStr)
+            .bind(ArethusaDoc.fromNode)
+            .fmap(ArethusaDoc.toXMLStr)
     
         return arethusaXML
     }
