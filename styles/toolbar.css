@@ -57,7 +57,7 @@ div.toolbar ul {
 div.toolbar ul button {
   background-color: blue;
   color: white;
-  padding: 15px;
+  padding: 10px;
   display: inline;
   border: none;
   margin: 0;
@@ -73,6 +73,7 @@ div.toolbar.tree ul button {
 
 div.toolbar ul button:hover {
   background-color: orange;
+  color: black;
 }
 
 div.toolbar ul button:active {
