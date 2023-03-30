@@ -18,15 +18,17 @@ namespace FileHandling {
     }
 
     export const loadFromDialog = 
-        (fileFormats:string) =>
+        (fileFormat:string) =>
         (callback: Maybe<(a: string) => any>) => 
     {
+        const onchangeFunc = FileInput.onchange(callback)
+        const setOnChangeFunc = HTML.Elem.setOnChangeFunc(onchangeFunc)
 
         HTML.Elem
             .create('input')
             .fmapErr("Error", HTML.Elem.setAttr('type')('file'))
-            .fmapErr("Error", HTML.Elem.setAttr('accept')(fileFormats))
-            .fmap(HTML.Elem.setOnChangeFunc(FileInput.onchange(callback)))
+            .fmapErr("Error", HTML.Elem.setAttr('accept')(fileFormat))
+            .fmap(setOnChangeFunc)
             .fmapErr("Error", HTML.Elem.click)
     }
 

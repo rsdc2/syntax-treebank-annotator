@@ -13,13 +13,14 @@ var FileHandling;
             .fmap(HTML.Elem.click);
         url.fmap(HTML.URL.revokeObjectURL);
     };
-    FileHandling.loadFromDialog = (fileFormats) => (callback) => {
-        // const setCallback = callback.fmap(HTML.Elem.setOnChangeFunc)
+    FileHandling.loadFromDialog = (fileFormat) => (callback) => {
+        const onchangeFunc = FileInput.onchange(callback);
+        const setOnChangeFunc = HTML.Elem.setOnChangeFunc(onchangeFunc);
         HTML.Elem
             .create('input')
             .fmapErr("Error", HTML.Elem.setAttr('type')('file'))
-            .fmapErr("Error", HTML.Elem.setAttr('accept')(fileFormats))
-            .fmap(HTML.Elem.setOnChangeFunc(FileInput.onchange(callback)))
+            .fmapErr("Error", HTML.Elem.setAttr('accept')(fileFormat))
+            .fmap(setOnChangeFunc)
             .fmapErr("Error", HTML.Elem.click);
     };
     let TextFile;
