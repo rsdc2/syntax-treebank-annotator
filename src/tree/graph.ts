@@ -283,7 +283,7 @@ namespace Graph {
                     )
                 unclickAll()
 
-                // CLear output Arethusa click state
+                // Clear output Arethusa click state
                 const currentSentenceId = globalState
                     .textStateIO
                     .bind(TextStateIO.currentSentence)
