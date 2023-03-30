@@ -34,15 +34,24 @@ class EpiDoc implements TEIEditionable, Wordable {
     }
 
     static getEditions(epidoc: EpiDoc) {
-        const doc = MaybeT.of(epidoc.node)
-        return XML
-            .xpathMaybe (Edition.xpathAddress) (doc)
+        return MaybeT.of(epidoc.node)
+            .bind(XML.xpath (Edition.xpathAddress))
             .fmap(EpiDoc.editionsFromArray)
-            .unpack<Edition[]>([])
+            .unpackT([])
+    }
+
+    static filenameId = (epidoc: EpiDoc) => {
+        const xpath = ".//t:publicationStmt/t:idno[@type='filename']/text()"
+
+        return MaybeT.of(epidoc.node)
+            .bind(XML.xpath (xpath))
+            .bind(Arr.head)
+            .bind(XML.nodeValue)
     }
 
     get names(): TEIName[] {
-        return DXML.wordsFromXmlDoc(TEIName, MaybeT.of(this._node.ownerDocument))
+        return DXML
+            .wordsFromXmlDoc(TEIName, MaybeT.of(this._node.ownerDocument))
     }
 
     static namesFromArray = map(TEIName.of)
@@ -57,7 +66,6 @@ class EpiDoc implements TEIEditionable, Wordable {
             .fmap(EpiDoc.toXMLStr)
             .unpackT("")
         // console.log("EpiDoc XML", xml)
-        
         if (xml.includes("parsererror")) {
             Frontend
                 .epidocInputTextArea
@@ -86,6 +94,7 @@ class EpiDoc implements TEIEditionable, Wordable {
     }
 
     get wordsProp(): TEIWord[] {
-        return DXML.wordsFromXmlDoc(TEIWord, MaybeT.of(this._node.ownerDocument))
+        return DXML
+            .wordsFromXmlDoc(TEIWord, MaybeT.of(this._node.ownerDocument))
     }
 }

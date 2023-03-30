@@ -1,8 +1,8 @@
-class ArethusaWord implements Formable {
+class ArethusaArtificial extends ArethusaWord {
     _node: Node
 
     constructor(node: Node) {
-        this._node = node
+        super(node);
     }
 
     static id = (w: ArethusaWord) => {
@@ -15,10 +15,12 @@ class ArethusaWord implements Formable {
             .bind(XML.nodeValue)
     }
 
-    static createFormDict = (form: string): IMorph => {
+    static createFormDict = (form: string): IArtificial => {
         return {
             "form": form,
             "lemma": "",
+            "artificial": "elliptic",
+            "insertion_id": "",
             "postag": "",
             "relation": "",
             "head": "",

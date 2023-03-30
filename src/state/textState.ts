@@ -4,30 +4,30 @@ class TextState {
     _viewState: Maybe<ViewState>
     _treeState: Maybe<TreeState>
     _inputPlainText: Maybe<string>
-    _inputArethusa: Maybe<Arethusa>
-    _outputArethusa: Maybe<Arethusa>
+    _inputArethusa: Maybe<ArethusaDoc>
+    _outputArethusa: Maybe<ArethusaDoc>
     _epidoc: Maybe<EpiDoc>
 
     static inputArethusaDeep = (state: TextState) => {
-        return state._inputArethusa.bind(Arethusa.deepcopy)
+        return state._inputArethusa.bind(ArethusaDoc.deepcopy)
     }
 
     static outputArethusaDeep = (state: TextState) => {
-        return state._outputArethusa.bind(Arethusa.deepcopy)
+        return state._outputArethusa.bind(ArethusaDoc.deepcopy)
     }
 
     static arethusaXML = (state: TextState) => {
         return MaybeT.of(state)
             .bind(TextState.outputArethusaDeep)
-            .fmap(Arethusa.toXMLStr)
+            .fmap(ArethusaDoc.toXMLStr)
     }
 
     constructor (
         viewState: Maybe<ViewState>,
         treeState: Maybe<TreeState>,
         inputPlainText: Maybe<string>,
-        inputArethusa: Maybe<Arethusa>,
-        outputArethusa: Maybe<Arethusa>,
+        inputArethusa: Maybe<ArethusaDoc>,
+        outputArethusa: Maybe<ArethusaDoc>,
         epidoc: Maybe<EpiDoc>
     ) {
         this._viewState = viewState
@@ -37,7 +37,7 @@ class TextState {
         this._outputArethusa = outputArethusa
             .fmap(DXML.node)
             .fmap(XMLFormatter.prettifyFromRoot(true))
-            .bind(Arethusa.fromNode)    
+            .bind(ArethusaDoc.fromNode)    
         this._epidoc = epidoc
     }
 
@@ -52,11 +52,11 @@ class TextState {
 
         const newOutputArethusa = MaybeT.of(state)
             .bind(TextState.outputArethusaDeep)
-            .bind(Arethusa.deepcopy)
+            .bind(ArethusaDoc.deepcopy)
 
         const newInputArethusa = MaybeT.of(state)
             .bind(TextState.outputArethusaDeep)
-            .bind(Arethusa.deepcopy)
+            .bind(ArethusaDoc.deepcopy)
 
         const newEpiDoc = MaybeT.of(state)
             .bind(TextState.epidocDeep)
@@ -89,8 +89,8 @@ class TextState {
         viewState: Maybe<ViewState>,
         treeState: Maybe<TreeState>,
         inputPlainText: Maybe<string>,
-        inputArethusa: Maybe<Arethusa>,
-        outputArethusa: Maybe<Arethusa>,
+        inputArethusa: Maybe<ArethusaDoc>,
+        outputArethusa: Maybe<ArethusaDoc>,
         epidoc: Maybe<EpiDoc>
     ) => {
         
@@ -110,8 +110,8 @@ class TextState {
         viewState: Maybe<ViewState>,
         treeState: Maybe<TreeState>,
         inputPlainText: Maybe<string>,
-        inputArethusa: Maybe<Arethusa>,
-        outputArethusa: Maybe<Arethusa>,
+        inputArethusa: Maybe<ArethusaDoc>,
+        outputArethusa: Maybe<ArethusaDoc>,
         epidoc: Maybe<EpiDoc>        
     ) => {
 
@@ -129,7 +129,7 @@ class TextState {
         return s._inputPlainText
     }
 
-    static setArethusa = (value: Maybe<Arethusa>) => (s: TextState) => {
+    static setArethusa = (value: Maybe<ArethusaDoc>) => (s: TextState) => {
         s._outputArethusa = value
     }
 

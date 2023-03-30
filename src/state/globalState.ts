@@ -36,7 +36,7 @@ class GlobalState {
     }
 
     createTextStateIO = (
-        arethusa: Maybe<Arethusa>,
+        arethusa: Maybe<ArethusaDoc>,
         epidoc: Maybe<EpiDoc>,
         plainText: Maybe<string>
     ) => 

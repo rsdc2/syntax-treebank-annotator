@@ -11,7 +11,7 @@ class TextStateIO {
 
         const newSentenceId = maybeS
             .bind(TextStateIO.outputArethusa)
-            .fmap(Arethusa.newNextSentenceId)
+            .fmap(ArethusaDoc.newNextSentenceId)
 
         s.pushOutputArethusa 
             (false) 
@@ -19,7 +19,7 @@ class TextStateIO {
             (s.treeState) 
             (maybeS
                 .bind(TextStateIO.outputArethusa)
-                .bind(Arethusa.appendSentence)
+                .bind(ArethusaDoc.appendSentence)
             )
     }
 
@@ -74,7 +74,7 @@ class TextStateIO {
     static appendNewWordToSentence = (s: TextStateIO) => {
         const appendWord = s
             .currentSentenceId
-            .fmap(Arethusa.appendWordToSentence ({}))
+            .fmap(ArethusaDoc.appendWordToSentence ({}))
 
         const newArethusa = s
             .outputArethusaP
@@ -82,7 +82,7 @@ class TextStateIO {
 
         const getSentence = s
             .currentSentenceId
-            .fmap(Arethusa.sentenceById)
+            .fmap(ArethusaDoc.sentenceById)
 
         const nextWordId = newArethusa
             .applyBind(getSentence)
@@ -101,7 +101,7 @@ class TextStateIO {
         return TextStateIO.outputArethusa(this)
     }
 
-    static outputArethusa = (s: TextStateIO): Maybe<Arethusa> => {
+    static outputArethusa = (s: TextStateIO): Maybe<ArethusaDoc> => {
         return s
             .currentState
             .bind(TextState.outputArethusaDeep)
@@ -120,7 +120,7 @@ class TextStateIO {
     static changeArethusaSentence = (ext: boolean)  => (s: TextStateIO) => (newS: ArethusaSentence) => {
         const newArethusa = s
             .outputArethusaP
-            .bind(flip(Arethusa.replaceSentence)(newS))
+            .bind(flip(ArethusaDoc.replaceSentence)(newS))
 
         s.pushOutputArethusa
             (ext)
@@ -174,7 +174,7 @@ class TextStateIO {
     static currentSentence = (textStateIO: TextStateIO) => {
         const getSent = textStateIO
             .currentSentenceId
-            .fmap(Arethusa.sentenceById)
+            .fmap(ArethusaDoc.sentenceById)
 
         const sent = textStateIO
             .outputArethusaP
@@ -183,7 +183,7 @@ class TextStateIO {
         if (sent.isNothing) {
             return textStateIO
                 .outputArethusaP
-                .bind(Arethusa.lastSentence)
+                .bind(ArethusaDoc.lastSentence)
         }
 
         return sent
@@ -203,7 +203,7 @@ class TextStateIO {
 
         const getWord = s
             .currentWordId
-            .fmap(Arethusa.wordById) 
+            .fmap(ArethusaDoc.wordById) 
         return s
             .outputArethusaP
             .applyBind(getWord)
@@ -274,7 +274,7 @@ class TextStateIO {
             .fmapErr("No prettified input Arethusa XML string", XML.toStr)
     
         const newInputArethusa = formattedXML
-            .bindErr("No formatted input Arethusa XML string.", Arethusa.fromXMLStr)
+            .bindErr("No formatted input Arethusa XML string.", ArethusaDoc.fromXMLStr)
 
         s.pushInputArethusa(newInputArethusa)
     } 
@@ -307,7 +307,7 @@ class TextStateIO {
             case (ViewType.Word): {
                 const getWord = this
                     .currentWordId
-                    .fmap(Arethusa.wordById)
+                    .fmap(ArethusaDoc.wordById)
                 
                 return this
                     .outputArethusaP
@@ -318,7 +318,7 @@ class TextStateIO {
             case (ViewType.Sentence): {
                 const getSentence = this
                     .currentSentenceId
-                    .fmap(Arethusa.sentenceById)
+                    .fmap(ArethusaDoc.sentenceById)
                 
                 return this
                     .outputArethusaP
@@ -337,7 +337,7 @@ class TextStateIO {
         return TextStateIO.inputArethusa(this)
     }
 
-    static inputArethusa = (s: TextStateIO): Maybe<Arethusa> => {
+    static inputArethusa = (s: TextStateIO): Maybe<ArethusaDoc> => {
         return s
             .currentState
             .bind(TextState.inputArethusaDeep)
@@ -356,7 +356,7 @@ class TextStateIO {
     static insertSentence = (s: TextStateIO) => {
         const newArethusa = s
             .outputArethusaP
-            .applyBind(s.currentSentenceId.fmap(Arethusa.insertSentenceBefore))  
+            .applyBind(s.currentSentenceId.fmap(ArethusaDoc.insertSentenceBefore))  
 
         s.pushOutputArethusa 
             (false)
@@ -385,14 +385,14 @@ class TextStateIO {
         s.moveWord (ArethusaSentence.moveWordUp)
     }
 
-    moveWord = (moveFunc: (id: string) => (sentence: ArethusaSentence) => Maybe<Arethusa>) => {
+    moveWord = (moveFunc: (id: string) => (sentence: ArethusaSentence) => Maybe<ArethusaDoc>) => {
         const moveWord = this
             .currentWordId
             .fmap(moveFunc)
 
         const getSentence = this
             .currentSentenceId
-            .fmap(Arethusa.sentenceById)
+            .fmap(ArethusaDoc.sentenceById)
 
         const sentence = this
             .currentState
@@ -416,11 +416,11 @@ class TextStateIO {
     static moveWordToNextSentence = (s: TextStateIO) => {
         const pushWordToNextSentence = s
             .currentWordId
-            .fmap(Arethusa.moveWordToNextSentence)
+            .fmap(ArethusaDoc.moveWordToNextSentence)
     
         const newArethusa = s
             .outputArethusaP
-            .applyBind(pushWordToNextSentence) as Maybe<Arethusa>
+            .applyBind(pushWordToNextSentence) as Maybe<ArethusaDoc>
         
         s.pushOutputArethusa 
             (false) 
@@ -436,7 +436,7 @@ class TextStateIO {
     static moveWordToPrevSentence = (s: TextStateIO) => {
         const pushWordToPrevSentence = s
             .currentWordId
-            .fmap(Arethusa.moveWordToPrevSentence)
+            .fmap(ArethusaDoc.moveWordToPrevSentence)
 
         const newArethusa = s
             .outputArethusaP
@@ -470,8 +470,8 @@ class TextStateIO {
         viewState: Maybe<ViewState>,
         treeState: Maybe<TreeState>,
         inputPlainText: Maybe<string>,
-        inputArethusa: Maybe<Arethusa>,
-        outputArethusa: Maybe<Arethusa>,
+        inputArethusa: Maybe<ArethusaDoc>,
+        outputArethusa: Maybe<ArethusaDoc>,
         epidoc: Maybe<EpiDoc>
     ) => 
     {
@@ -510,11 +510,11 @@ class TextStateIO {
         this._currentStateIdx = MaybeT.ofNonNeg(Arr.len(this._textStates) - 1)
     }
 
-    pushInputArethusa = (arethusa: Maybe<Arethusa>) => {
+    pushInputArethusa = (arethusa: Maybe<ArethusaDoc>) => {
         TextStateIO.pushInputArethusa(arethusa)(this)
     }
 
-    static pushInputArethusa = (arethusa: Maybe<Arethusa>) => 
+    static pushInputArethusa = (arethusa: Maybe<ArethusaDoc>) => 
         (s: TextStateIO) => {
         s.appendNewState(false) (TextState.of(
             s.viewState,
@@ -531,7 +531,7 @@ class TextStateIO {
         (ext: boolean) => 
         (viewState: ViewState) => 
         (treeState: Maybe<TreeState>) => 
-        (outputArethusa: Maybe<Arethusa>) =>
+        (outputArethusa: Maybe<ArethusaDoc>) =>
     {
         this.appendNewState 
             (ext) 
@@ -600,7 +600,7 @@ class TextStateIO {
     static removeSentence = (s: TextStateIO) => {
         const removeSentence = s
             .currentSentenceId
-            .fmap(Arethusa.removeSentenceById)
+            .fmap(ArethusaDoc.removeSentenceById)
 
         const newArethusa = s
             .outputArethusaP
@@ -622,7 +622,7 @@ class TextStateIO {
             .currentSentenceId
             .applyFmap(
                 s.currentWordId
-                    .fmap(Arethusa.removeWordByWordAndSentenceId)
+                    .fmap(ArethusaDoc.removeWordByWordAndSentenceId)
             )
         
         const newArethusa = s
@@ -643,7 +643,7 @@ class TextStateIO {
     static splitSentenceAtCurrentWord = (s: TextStateIO) => {
         const splitAtWord = s
             .currentWordId
-            .fmap(Arethusa.splitSentenceAt)
+            .fmap(ArethusaDoc.splitSentenceAt)
 
         const newArethusa = s
             .outputArethusaP
@@ -670,7 +670,7 @@ class TextStateIO {
 
         const sentences = this
             .outputArethusaP
-            .fmap(Arethusa.sentences)
+            .fmap(ArethusaDoc.sentences)
             .unpackT([])
 
         const sentenceStrs = sentences
@@ -690,7 +690,7 @@ class TextStateIO {
 
     private show = (ext: boolean) => {
         EpiDoc.pushToFrontend(this)
-        Arethusa.pushToFrontend(this)
+        ArethusaDoc.pushToFrontend(this)
         Frontend.pushPlainTextToFrontend(this)
 
         SentencesDiv.setText(this.sentencesRep)

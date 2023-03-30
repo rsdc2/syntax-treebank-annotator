@@ -7,16 +7,16 @@ enum ViewType {
 class ViewState {
     _wordId: Maybe<string>
     _sentenceId: Maybe<string>
-    _arethusa: Maybe<Arethusa>
+    _arethusa: Maybe<ArethusaDoc>
 
     constructor (
         wordId: Maybe<string>, 
         sentenceId: Maybe<string>, 
-        arethusa: Maybe<Arethusa>
+        arethusa: Maybe<ArethusaDoc>
         ) 
         {
 
-        const getWordId = wordId.fmap(Arethusa.sentenceIdByWordId)
+        const getWordId = wordId.fmap(ArethusaDoc.sentenceIdByWordId)
         const sentenceIdFromWord = arethusa
             .applyBind(getWordId)
 
@@ -25,7 +25,7 @@ class ViewState {
             sentenceIdFromWord
             
         this._wordId = wordId
-        this._arethusa = arethusa.bind(Arethusa.deepcopy)
+        this._arethusa = arethusa.bind(ArethusaDoc.deepcopy)
 
     }
 
@@ -54,7 +54,7 @@ class ViewState {
     }
 
     static deepcopy = (s: ViewState) => {
-        return new ViewState (s._wordId, s._sentenceId, s._arethusa.bind(Arethusa.deepcopy))
+        return new ViewState (s._wordId, s._sentenceId, s._arethusa.bind(ArethusaDoc.deepcopy))
     }
 
     get isSentence () {
@@ -66,7 +66,7 @@ class ViewState {
         return this.currentWordId.value !== Nothing.of().value
     }
 
-    static of = (wordId: string) => (sentenceId: string) => (arethusa: Arethusa) => {
+    static of = (wordId: string) => (sentenceId: string) => (arethusa: ArethusaDoc) => {
         return new ViewState(MaybeT.of(wordId), MaybeT.of(sentenceId), MaybeT.of(arethusa))
     }
 

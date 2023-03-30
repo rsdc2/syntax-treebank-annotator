@@ -22,9 +22,9 @@ class Frontend {
         return HTML.q("sentence-text input") as Maybe<TextArea>
     }
 
-    static get inputArethusa(): Maybe<Arethusa> {
+    static get inputArethusa(): Maybe<ArethusaDoc> {
         return Frontend.inputArethusaXML
-            .bind(Arethusa.fromXMLStr)
+            .bind(ArethusaDoc.fromXMLStr)
     }
 
     static get appendNewSentenceToArethusaBtn() {
@@ -193,7 +193,7 @@ class Frontend {
 
         const arethusa = MaybeT
             .of(arethusaStr)
-            .bind(Arethusa.fromXMLStr)
+            .bind(ArethusaDoc.fromXMLStr)
 
         const textstate = TextState.of(
             arethusa.fmap(ViewState.of("1")("1")),
@@ -220,7 +220,7 @@ class Frontend {
 
         const arethusa = MaybeT
             .of(textStr)
-            .bind(Arethusa.fromPlainTextStr)
+            .bind(ArethusaDoc.fromPlainTextStr)
 
         const textstate = TextState.of(
             arethusa.fmap(ViewState.of("1")("1")),
@@ -312,15 +312,21 @@ class Frontend {
     }
 
     static downloadArethusa = () => {
-        globalState
+        const arethusa = globalState
             .textStateIO
             .bind(TextStateIO.currentState)
             .bind(TextState.outputArethusaDeep)
-            .fmap(Arethusa.toXMLStr)
-            .fmap(FileHandling.download)
+        
+        const docId = arethusa
+            .bind(ArethusaDoc.docId)
+            .unpackT("tree")
+
+        arethusa
+            .fmap(ArethusaDoc.toXMLStr)
+            .fmap(FileHandling.download(docId))
     }
 
-    static showMessage(message:string) {
+    static showMessage = (message:string) => {
         HTML.q("div.message")
             .bindErr("No message element", HTML.setInnerHTML(message))
             .fmap(HTML.Elem.unsetHidden)
