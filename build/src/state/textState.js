@@ -13,7 +13,7 @@ class TextState {
         this._outputArethusa = outputArethusa
             .fmap(DXML.node)
             .fmap(XMLFormatter.prettifyFromRoot(true))
-            .bind(Arethusa.fromNode);
+            .bind(ArethusaDoc.fromNode);
         this._epidoc = epidoc;
     }
     get hasNoArethusa() {
@@ -25,15 +25,15 @@ class TextState {
     }
 }
 TextState.inputArethusaDeep = (state) => {
-    return state._inputArethusa.bind(Arethusa.deepcopy);
+    return state._inputArethusa.bind(ArethusaDoc.deepcopy);
 };
 TextState.outputArethusaDeep = (state) => {
-    return state._outputArethusa.bind(Arethusa.deepcopy);
+    return state._outputArethusa.bind(ArethusaDoc.deepcopy);
 };
 TextState.arethusaXML = (state) => {
     return MaybeT.of(state)
         .bind(TextState.outputArethusaDeep)
-        .fmap(Arethusa.toXMLStr);
+        .fmap(ArethusaDoc.toXMLStr);
 };
 TextState.deepcopy = (state) => {
     const newViewState = state
@@ -44,10 +44,10 @@ TextState.deepcopy = (state) => {
         .fmap(TreeState.deepcopy);
     const newOutputArethusa = MaybeT.of(state)
         .bind(TextState.outputArethusaDeep)
-        .bind(Arethusa.deepcopy);
+        .bind(ArethusaDoc.deepcopy);
     const newInputArethusa = MaybeT.of(state)
         .bind(TextState.outputArethusaDeep)
-        .bind(Arethusa.deepcopy);
+        .bind(ArethusaDoc.deepcopy);
     const newEpiDoc = MaybeT.of(state)
         .bind(TextState.epidocDeep)
         .bind(EpiDoc.deepcopy);

@@ -6,14 +6,14 @@ var ViewType;
 })(ViewType || (ViewType = {}));
 class ViewState {
     constructor(wordId, sentenceId, arethusa) {
-        const getWordId = wordId.fmap(Arethusa.sentenceIdByWordId);
+        const getWordId = wordId.fmap(ArethusaDoc.sentenceIdByWordId);
         const sentenceIdFromWord = arethusa
             .applyBind(getWordId);
         this._sentenceId = wordId.isNothing ?
             sentenceId :
             sentenceIdFromWord;
         this._wordId = wordId;
-        this._arethusa = arethusa.bind(Arethusa.deepcopy);
+        this._arethusa = arethusa.bind(ArethusaDoc.deepcopy);
     }
     get currentWordId() {
         return this._wordId;
@@ -60,7 +60,7 @@ ViewState.currentWordId = (state) => {
     return state._wordId;
 };
 ViewState.deepcopy = (s) => {
-    return new ViewState(s._wordId, s._sentenceId, s._arethusa.bind(Arethusa.deepcopy));
+    return new ViewState(s._wordId, s._sentenceId, s._arethusa.bind(ArethusaDoc.deepcopy));
 };
 ViewState.of = (wordId) => (sentenceId) => (arethusa) => {
     return new ViewState(MaybeT.of(wordId), MaybeT.of(sentenceId), MaybeT.of(arethusa));

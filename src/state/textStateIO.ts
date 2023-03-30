@@ -665,8 +665,11 @@ class TextStateIO {
         s.show(false)
     }
 
+    /**
+     * Representation of all the sentences in a string
+     */
+
     get sentencesRep () {
-        // sentences representation
 
         const sentences = this
             .outputArethusaP

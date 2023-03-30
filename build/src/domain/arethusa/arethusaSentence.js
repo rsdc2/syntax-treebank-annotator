@@ -5,7 +5,7 @@ class ArethusaSentence {
     get arethusa() {
         return this.doc
             .bind(XML.documentElement)
-            .bind(Arethusa.fromNode);
+            .bind(ArethusaDoc.fromNode);
     }
     get doc() {
         return MaybeT.of(this._node.ownerDocument);
@@ -39,27 +39,27 @@ class ArethusaSentence {
     }
 }
 ArethusaSentence.appendWordToSentenceFromAttrs = (attrs) => (sentence) => {
-    const arethusa = Arethusa
+    const arethusa = ArethusaDoc
         .parentArethusa(sentence);
-    const nextId = { "id": arethusa.fmap(Arethusa.nextWordId).unpack("") };
+    const nextId = { "id": arethusa.fmap(ArethusaDoc.nextWordId).unpack("") };
     const createWordElement = XML
         .createElement("word")({ ...nextId, ...attrs });
     const wordElement = sentence
         .docCopy
         .fmap(createWordElement);
     const sentenceById = sentence._id
-        .fmap(Arethusa.sentenceById);
+        .fmap(ArethusaDoc.sentenceById);
     return MaybeT.of(sentence)
-        .bind(Arethusa.parentArethusa)
+        .bind(ArethusaDoc.parentArethusa)
         .fmap(DXML.node)
         .fmap(XML.deepcopy)
-        .bind(Arethusa.fromNode)
+        .bind(ArethusaDoc.fromNode)
         .applyBind(sentenceById)
         .fmap(DXML.node)
         .bind(XML.appendElementToNodePretty(wordElement))
         .bind(XML.ownerDocument)
         .bind(XML.documentElement)
-        .bind(Arethusa.fromNode);
+        .bind(ArethusaDoc.fromNode);
 };
 ArethusaSentence.appendWord = (word) => (sentence) => {
     const wordNode = DXML
@@ -69,7 +69,7 @@ ArethusaSentence.appendWord = (word) => (sentence) => {
         .bind(XML.appendChildToNode(wordNode))
         .bind(XML.ownerDocument)
         .bind(XML.documentElement)
-        .bind(Arethusa.fromNode);
+        .bind(ArethusaDoc.fromNode);
 };
 ArethusaSentence.prependWord = (word) => (sentence) => {
     const wordNode = DXML
@@ -79,13 +79,13 @@ ArethusaSentence.prependWord = (word) => (sentence) => {
         .fmap(XML.prependChildToNode(wordNode))
         .bind(XML.ownerDocument)
         .bind(XML.documentElement)
-        .bind(Arethusa.fromNode);
+        .bind(ArethusaDoc.fromNode);
 };
 ArethusaSentence.appendMaybeWords = (words) => (s) => {
     function _reduce(a, item) {
         const getSent = ArethusaSentence
             .id(s)
-            .fmap(Arethusa.sentenceById);
+            .fmap(ArethusaDoc.sentenceById);
         const appendWord = item
             .fmap(ArethusaWord.createFormDict)
             .fmap(ArethusaSentence.appendWordToSentenceFromAttrs);
@@ -99,7 +99,7 @@ ArethusaSentence.appendWords = (words) => (s) => {
     function _reduce(a, item) {
         const getSent = ArethusaSentence
             .id(s)
-            .fmap(Arethusa.sentenceById);
+            .fmap(ArethusaDoc.sentenceById);
         const appendWord = MaybeT.of(item)
             .fmap(ArethusaWord.createFormDict)
             .fmap(ArethusaSentence.appendWordToSentenceFromAttrs);
@@ -112,10 +112,10 @@ ArethusaSentence.appendWords = (words) => (s) => {
 ArethusaSentence.incrementId = (s) => {
     const id = ArethusaSentence.id(s);
     const newId = id.fmap(Str.increment);
-    const getSentence = id.fmap(Arethusa.sentenceById);
+    const getSentence = id.fmap(ArethusaDoc.sentenceById);
     return s
         .docCopy
-        .bind(Arethusa.fromNode)
+        .bind(ArethusaDoc.fromNode)
         .applyBind(getSentence)
         .fmap(DXML.node)
         .applyFmap(newId.fmap(XML.setId))
@@ -130,7 +130,7 @@ ArethusaSentence.lastWordId = (sentence) => {
 ArethusaSentence.XMLStrFromPlainTextStr = (a) => (str) => {
     const sentenceElem = a
         .doc
-        .fmapErr("No XML document.", XML.createElement("sentence")({ id: Arethusa.newNextSentenceId(a) }));
+        .fmapErr("No XML document.", XML.createElement("sentence")({ id: ArethusaDoc.newNextSentenceId(a) }));
     const doc = MaybeT
         .of(a)
         .fmap(DXML.node)
@@ -170,7 +170,7 @@ ArethusaSentence.moveWord = (moveFunc) => (id) => (refNodeId) => (sentence) => {
         .applyFmap(wordNode.fmap(XML.removeChild))
         .bind(XML.ownerDocument)
         .bind(XML.documentElement)
-        .bind(Arethusa.fromNode);
+        .bind(ArethusaDoc.fromNode);
 };
 ArethusaSentence.moveWordDown = (wordId) => (sentence) => {
     const wordNode = ArethusaSentence.wordById(wordId)(sentence)
@@ -204,15 +204,13 @@ ArethusaSentence.nextWordIds = (startWordId) => (s) => {
 ArethusaSentence.removeWord = (word) => (sentence) => {
     // Not working
     const wordNode = DXML.node(word);
-    console.log('removing node');
     return MaybeT.of(DXML.node(sentence))
         .fmap(XML.removeChild(wordNode))
         .bind(XML.ownerDocument)
         .bind(XML.documentElement)
-        .bind(Arethusa.fromNode);
+        .bind(ArethusaDoc.fromNode);
 };
 ArethusaSentence.removeWordById = (wordId) => (s) => {
-    console.log('Removing node');
     const removeChild = ArethusaSentence
         .wordById(wordId)(s)
         .fmap(DXML.node)
@@ -222,7 +220,7 @@ ArethusaSentence.removeWordById = (wordId) => (s) => {
         .applyFmap(removeChild)
         .bind(XML.ownerDocument)
         .bind(XML.documentElement)
-        .bind(Arethusa.fromNode);
+        .bind(ArethusaDoc.fromNode);
 };
 /**
  * Sets the document_id attribute of the <sentence> node.
@@ -259,7 +257,7 @@ ArethusaSentence.treeTokens = (sentence) => {
         .map(ArethusaWord.toTreeToken);
 };
 ArethusaSentence.wordByWordAndSentenceId = (wordId) => (sentenceId) => (a) => {
-    return MaybeT.of(Arethusa
+    return MaybeT.of(ArethusaDoc
         .sentenceById(sentenceId)(a)
         .fmap(ArethusaSentence.words)
         .unpackT([])

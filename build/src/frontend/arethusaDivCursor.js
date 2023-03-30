@@ -74,7 +74,7 @@ class AthDivCurs {
         else if (AthDivCurs.currentXMLNodeName.eq("word")) {
             const getSentenceByWordId = AthDivCurs
                 .currentWordId
-                .fmap(Arethusa.sentenceByWordId);
+                .fmap(ArethusaDoc.sentenceByWordId);
             return globalState
                 .textStateIO
                 .bind(TextStateIO.outputArethusa)

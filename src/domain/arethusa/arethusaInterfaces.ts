@@ -1,14 +1,17 @@
 
-interface IMorph {
+interface IArethusaToken {
     form: string,
-    lemma: string,
-    postag: string,
     relation: string,
     head: string,
     secdeps: string
 }
 
-interface IArtificial extends IMorph {
+interface IMorph extends IArethusaToken{
+    lemma: string,
+    postag: string,
+}
+
+interface IArtificial extends IArethusaToken {
     artificial: string,
     insertion_id: string
 }

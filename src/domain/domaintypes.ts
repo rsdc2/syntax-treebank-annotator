@@ -1,1 +1,6 @@
-type docComponentT = typeof ArethusaSentence | typeof ArethusaWord | typeof TEIWord | typeof TEIWord
+type docComponentT = 
+    typeof ArethusaSentence | 
+    typeof ArethusaWord |
+    typeof ArethusaArtificial |
+    typeof ArethusaToken | 
+    typeof TEIWord 

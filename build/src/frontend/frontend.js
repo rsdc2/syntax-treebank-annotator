@@ -18,7 +18,7 @@ class Frontend {
     }
     static get inputArethusa() {
         return Frontend.inputArethusaXML
-            .bind(Arethusa.fromXMLStr);
+            .bind(ArethusaDoc.fromXMLStr);
     }
     static get appendNewSentenceToArethusaBtn() {
         return Frontend.buttonById("AddNewSentence");
@@ -375,7 +375,7 @@ Frontend.processArethusa = (arethusaStr) => {
     Frontend.saveCurrentState();
     const arethusa = MaybeT
         .of(arethusaStr)
-        .bind(Arethusa.fromXMLStr);
+        .bind(ArethusaDoc.fromXMLStr);
     const textstate = TextState.of(arethusa.fmap(ViewState.of("1")("1")), Nothing.of(), Nothing.of(), arethusa, arethusa, Nothing.of());
     globalState
         .textStateIO
@@ -387,7 +387,7 @@ Frontend.processText = (textStr) => {
     Frontend.saveCurrentState();
     const arethusa = MaybeT
         .of(textStr)
-        .bind(Arethusa.fromPlainTextStr);
+        .bind(ArethusaDoc.fromPlainTextStr);
     const textstate = TextState.of(arethusa.fmap(ViewState.of("1")("1")), Nothing.of(), MaybeT.of(textStr), arethusa, arethusa, Nothing.of());
     globalState
         .textStateIO
@@ -415,10 +415,10 @@ Frontend.downloadArethusa = () => {
         .bind(TextStateIO.currentState)
         .bind(TextState.outputArethusaDeep);
     const docId = arethusa
-        .bind(Arethusa.docId)
+        .bind(ArethusaDoc.docId)
         .unpackT("tree");
     arethusa
-        .fmap(Arethusa.toXMLStr)
+        .fmap(ArethusaDoc.toXMLStr)
         .fmap(FileHandling.download(docId));
 };
 Frontend.showMessage = (message) => {

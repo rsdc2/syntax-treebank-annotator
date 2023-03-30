@@ -1,56 +1,51 @@
-class ArethusaWord implements Formable {
+class ArethusaToken implements Formable {
     _node: Node
 
     constructor(node: Node) {
         this._node = node
     }
 
-    static id = (w: ArethusaWord) => {
+    static id = (w: ArethusaToken) => {
         return XML.attr ("id") (w._node)
             .bind(XML.nodeValue)
     }
 
-    static form = (w: ArethusaWord) => {
+    static form = (w: ArethusaToken) => {
         return XML.attr ("form") (w._node)
             .bind(XML.nodeValue)
     }
 
-    static createFormDict = (form: string): IMorph => {
+    static createFormDict = (form: string): IArethusaToken => {
         return {
             "form": form,
-            "lemma": "",
-            "postag": "",
             "relation": "",
             "head": "",
             "secdeps": ""
         }
     }
 
-    static matchId = (id: string) => (word: ArethusaWord) => {
-        return ArethusaWord.id(word).unpack("") === id
+    static matchId = (id: string) => (word: ArethusaToken) => {
+        return ArethusaToken
+            .id(word)
+            .unpack("") === id
     }
 
-    static of(node: XMLNode): ArethusaWord {
-        return new ArethusaWord(node)
+    static of(node: XMLNode): ArethusaToken {
+        return new ArethusaToken(node)
     }
 
     static fromAttrs = (a: ArethusaDoc) => (attrs: IMorph) =>  {
         return a.doc
             .fmap(XML.createElement("word")(attrs))   
-            .fmap(ArethusaWord.fromXMLNode)
+            .fmap(ArethusaToken.fromXMLNode)
     }
 
     static fromXMLNode = (node: Node) => {
-        return new ArethusaWord(node)
+        return new ArethusaToken(node)
     }
 
-    static head = (w: ArethusaWord) => {
+    static head = (w: ArethusaToken) => {
         return XML.attr ("head") (w._node)
-            .bind(XML.nodeValue)
-    }
-
-    static lemma = (w: ArethusaWord) => {
-        return XML.attr ("lemma") (w._node)
             .bind(XML.nodeValue)
     }
 
@@ -58,23 +53,19 @@ class ArethusaWord implements Formable {
         return `./treebank/sentence[child::word[@id="${wordId}"]]`
     }
 
-    static parentSentence = (word: ArethusaWord) => {
+    static parentSentence = (word: ArethusaToken) => {
         return MaybeT.of(DXML.node(word))
             .bind(XML.parent)
             .fmap(ArethusaSentence.fromXMLNode)
     }
 
-    static parentSentenceId = (word: ArethusaWord) => {
-        return ArethusaWord.parentSentence(word)
+    static parentSentenceId = (word: ArethusaToken) => {
+        return ArethusaToken
+            .parentSentence(word)
             .bind(ArethusaSentence.id)
     }
 
-    static postag = (w: ArethusaWord) => {
-        return XML.attr ("postag") (w._node)
-            .bind(XML.nodeValue)
-    }
-
-    static relation = (w: ArethusaWord) => {
+    static relation = (w: ArethusaToken) => {
         const rel = XML.attr ("relation") (w._node)
             .bind(XML.nodeValue)
             .unpackT("")
@@ -86,19 +77,19 @@ class ArethusaWord implements Formable {
         return rel
     }
 
-    static slashes = (w: ArethusaWord) => {
-        const slashStr = XML.attr ("secdeps") (w._node)
+    static secondaryDeps = (w: ArethusaToken) => {
+        const secondaryDepStr = XML.attr ("secdeps") (w._node)
             .bind(XML.nodeValue)
             .unpackT("")
 
-        if (slashStr === "") return new Array<ISecondaryDep>
+        if (secondaryDepStr === "") return new Array<ISecondaryDep>
 
-        const slashStrs = slashStr
+        const secondaryDepStrs = secondaryDepStr
             .split(";")
 
-        return slashStrs.map(
+        return secondaryDepStrs.map(
             Slash.ofStr(
-                ArethusaWord.id(w).unpackT("-1")
+                ArethusaToken.id(w).unpackT("-1")
             )
         )
     }
@@ -107,30 +98,26 @@ class ArethusaWord implements Formable {
         return MaybeT.of(this._node.textContent)
     }
 
-    static toTreeToken = (w: ArethusaWord): ITreeToken => {
+    static toTreeToken = (w: ArethusaToken): ITreeToken => {
         return {
-            form: ArethusaWord
+            form: ArethusaToken
                 .form(w)
                 .unpackT("[None]"),
-            headId: ArethusaWord
+            headId: ArethusaToken
                 .head(w)
                 .bind(Str.toMaybeNum)
                 .unpackT(-1),
-            id: ArethusaWord
+            id: ArethusaToken
                 .id(w)
                 .fmap(Str.toNum)
                 .unpackT(-1),
-            lemma: ArethusaWord
-                .lemma(w)
-                .unpackT("[None]"),
-            postag: ArethusaWord
-                .postag(w)
-                .unpackT("[None]"),
-            relation: ArethusaWord
+            lemma: "[None]",
+            postag: "[None]",
+            relation: ArethusaToken
                 .relation(w),
-            slashes: ArethusaWord
-                .slashes(w),
-            type: ArethusaWord
+            slashes: ArethusaToken
+                .secondaryDeps(w),
+            type: ArethusaToken
                 .id(w).eq("0") ? 
                     TokenType.Root : 
                     TokenType.NonRoot,

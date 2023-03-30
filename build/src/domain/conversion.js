@@ -4,12 +4,12 @@ Conversion.epidocToArethusa = (epidoc) => {
     return MaybeT.of(epidoc)
         .fmap(EpiDoc.toXMLStr)
         .bind(Conversion.epidocXMLToArethusaXML)
-        .bind(Arethusa.fromXMLStr);
+        .bind(ArethusaDoc.fromXMLStr);
 };
 Conversion.epidocXMLToArethusa = (epidocXML) => {
     return MaybeT.of(epidocXML)
         .bind(Conversion.epidocXMLToArethusaXML)
-        .bind(Arethusa.fromXMLStr);
+        .bind(ArethusaDoc.fromXMLStr);
 };
 Conversion.epidocXMLToArethusaXML = (epidocXML) => {
     const epidoc = MaybeT.of(XML.fromXMLStr(epidocXML))
@@ -24,17 +24,17 @@ Conversion.epidocXMLToArethusaXML = (epidocXML) => {
         .unpackT([])
         .flatMap(WordableT.words)
         .map(FormableT.form);
-    const arethusa = Arethusa
+    const arethusa = ArethusaDoc
         .fromXMLStr(arethusaTemplate)
-        .bind(Arethusa.setDocId(docId))
-        .bind(Arethusa.appendSentence)
-        .bind(Arethusa.lastSentence)
+        .bind(ArethusaDoc.setDocId(docId))
+        .bind(ArethusaDoc.appendSentence)
+        .bind(ArethusaDoc.lastSentence)
         .bind(ArethusaSentence.appendMaybeWords(words));
     const arethusaXML = arethusa
         .fmap(DXML.node)
         .fmap(XMLFormatter.deprettifyFromRoot(true))
         .fmap(XMLFormatter.prettifyFromRoot(true))
-        .bind(Arethusa.fromNode)
-        .fmap(Arethusa.toXMLStr);
+        .bind(ArethusaDoc.fromNode)
+        .fmap(ArethusaDoc.toXMLStr);
     return arethusaXML;
 };

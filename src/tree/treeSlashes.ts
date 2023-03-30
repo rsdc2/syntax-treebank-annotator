@@ -1,10 +1,10 @@
-interface ISlash {
+interface ISecondaryDep {
     _headTokenId: number
     _depTokenId: number
     _relation: string
 }
 
-class Slash implements ISlash {
+class Slash implements ISecondaryDep {
     _headTokenId: number
     _depTokenId: number // Slashes stored on the child
     _relation: string
@@ -15,7 +15,7 @@ class Slash implements ISlash {
         this._headTokenId = srcTokenId
     }
 
-    static changeRel = (newRel: AGLDTRel) => (slash: ISlash) => {
+    static changeRel = (newRel: AGLDTRel) => (slash: ISecondaryDep) => {
         return Slash.ofTokenIds
             (slash._headTokenId)
             (slash._depTokenId)
@@ -53,7 +53,7 @@ class Slash implements ISlash {
         return TreeLinks.createPathIdFromTreeNodeIds (sentState) (slash) ("slash")
     }
 
-    static depTokenId = (slash: ISlash) => {
+    static depTokenId = (slash: ISecondaryDep) => {
         return slash._depTokenId
     }
 
@@ -61,7 +61,7 @@ class Slash implements ISlash {
         return this._depTokenId
     }
 
-    static depTreeNodeId = (sentState: TreeState) => (slash: ISlash) => {
+    static depTreeNodeId = (sentState: TreeState) => (slash: ISecondaryDep) => {
         return sentState.tokenIdToTreeNodeId(slash._depTokenId)
     }
 
@@ -85,7 +85,7 @@ class Slash implements ISlash {
         return Slash.createPathIdFromTreeNodeIds(sentState)(this)
     }
 
-    static headTokenId = (slash: ISlash) => {
+    static headTokenId = (slash: ISecondaryDep) => {
         return slash._headTokenId
     }
 
@@ -93,7 +93,7 @@ class Slash implements ISlash {
         return this._headTokenId
     }
 
-    static headTreeNodeId = (sentState: TreeState) => (slash: ISlash) => {
+    static headTreeNodeId = (sentState: TreeState) => (slash: ISecondaryDep) => {
         return sentState.tokenIdToTreeNodeId(slash._headTokenId)
     }
 
@@ -118,7 +118,7 @@ class Slash implements ISlash {
         return [parts[0], parts[1]]
     }
 
-    static ofStr = (depId: string) => (s: string): ISlash => {
+    static ofStr = (depId: string) => (s: string): ISecondaryDep => {
         const [headId, rel] = Slash.parseSecDep(s)
         return {
             _headTokenId: Str.toNum(headId),
@@ -149,7 +149,7 @@ class Slash implements ISlash {
             return MaybeT.of(relation).applyFmap(depTokenId.applyFmap(headTokenId.fmap(Slash.ofTokenIds)))
     }
 
-    static ofI = (islash: ISlash) => {
+    static ofI = (islash: ISecondaryDep) => {
         return new Slash(islash._headTokenId, islash._depTokenId, islash._relation)
     }
 
@@ -165,7 +165,7 @@ class Slash implements ISlash {
         return slash.relation
     }
 
-    static toStr = (iSlash: ISlash) => {
+    static toStr = (iSlash: ISecondaryDep) => {
         return `${iSlash._headTokenId}:${iSlash._relation}`
     }
     

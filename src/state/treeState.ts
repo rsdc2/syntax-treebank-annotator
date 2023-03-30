@@ -103,7 +103,7 @@ class TreeState implements ITreeState {
             sentState
                 .slashes
                 .find(
-                    (islash: ISlash) => {
+                    (islash: ISecondaryDep) => {
                         return Slash.ofI(islash).slashIdFromTreeNodeIds(sentState).eq(slashId)
                     }
                 )
@@ -197,7 +197,7 @@ class TreeState implements ITreeState {
         return MaybeT.of(this
             .slashes
             .find (
-                (slash: ISlash) => {
+                (slash: ISecondaryDep) => {
                     return Slash.ofI(slash).slashIdFromTokenIds === slashId
                 }
             ))

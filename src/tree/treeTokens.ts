@@ -6,7 +6,7 @@ interface ITreeToken {
     postag: string,
     relation: string,
     type: TokenType,
-    slashes: ISlash[]
+    slashes: ISecondaryDep[]
 }
 
 namespace TreeToken {

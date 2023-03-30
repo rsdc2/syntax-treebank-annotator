@@ -7,7 +7,7 @@ interface ITreeNode extends d3.SimulationNodeDatum {
     tokenId: number,
     treeNodeId: number,
     headTokenId: number,
-    slashes: ISlash[],   // a slash is stored on the dependent node
+    slashes: ISecondaryDep[],   // a slash is stored on the dependent node
     distToRoot: number,
     relation: string
     type: NodeType,
@@ -16,7 +16,7 @@ interface ITreeNode extends d3.SimulationNodeDatum {
 
 namespace TreeNode {
 
-    export const appendSlash = (slash: ISlash) => (node: ITreeNode) => {
+    export const appendSlash = (slash: ISecondaryDep) => (node: ITreeNode) => {
         const newNode = Obj.deepcopy(node)
         newNode.slashes = Arr.push(slash)(newNode.slashes)
         return newNode
@@ -71,7 +71,7 @@ namespace TreeNode {
     export const links = (treeNodes: ITreeNode[]) => {
         const sentState = TreeState.of(0) ("1") ([]) (treeNodes) (ClickState.none())
 
-        function slashLinkMapFunc(acc: ITreeLink[], iSlash: ISlash) {
+        function slashLinkMapFunc(acc: ITreeLink[], iSlash: ISecondaryDep) {
             const slash = Slash.ofI(iSlash)
 
             const headTreeNode = TreeNode.byTokenId(treeNodes, slash._headTokenId)
@@ -211,7 +211,7 @@ namespace TreeNode {
 
     export const slashBySlashId = (slashId: string) => (node: ITreeNode) => {
         return MaybeT.of(node.slashes.find(
-            (islash: ISlash) => {
+            (islash: ISecondaryDep) => {
                 Slash.ofI(islash).slashIdFromTokenIds === slashId
             }
         ))
