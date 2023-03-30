@@ -1,7 +1,10 @@
 namespace FileHandling {
 
-    export const download = (s: string) => {
-        const url = MaybeT.of(s)
+    export const download = 
+        (filename: string) =>
+        (fileContent: string) => 
+    {
+        const url = MaybeT.of(fileContent)
             .fmap(Str.blobify)
             .fmap(HTML.URL.createObjectURL)
 
@@ -11,7 +14,7 @@ namespace FileHandling {
             .create('a')
             .fmap(HTML.Elem.setAttr("style")("display: none"))
             .applyFmap(setUrl)
-            .fmap(HTML.Elem.setAttr("download")('arethusa.xml'))
+            .fmap(HTML.Elem.setAttr("download")(`${filename}.xml`))
             .fmap(HTML.Elem.click)
       
         url.fmap(HTML.URL.revokeObjectURL);
