@@ -13,17 +13,18 @@ class ArethusaSentence {
     get docCopy() {
         return this.doc.fmap(XML.deepcopy);
     }
+    static firstToken(sentence) {
+        return Arr.head(sentence.tokensProp);
+    }
     static firstWord(sentence) {
         return Arr.head(sentence.wordsProp);
-    }
-    static lastWord(sentence) {
-        return MaybeT.of(sentence)
-            .fmap(ArethusaSentence.words)
-            .bind(Arr.last);
     }
     get _id() {
         return XML.attr("id")(this._node)
             .bind(XML.nodeValue);
+    }
+    get tokensProp() {
+        return ArethusaSentence.tokens(this);
     }
     get wordsProp() {
         return ArethusaSentence.words(this);
@@ -38,10 +39,41 @@ class ArethusaSentence {
         return MaybeT.of(this._node.textContent);
     }
 }
+ArethusaSentence.appendArtificialToSentenceFromAttrs = (attrs) => (sentence) => {
+    const arethusa = ArethusaDoc
+        .parentArethusa(sentence);
+    const nextId = {
+        "id": arethusa
+            .fmap(ArethusaDoc.nextTokenId)
+            .unpackT("")
+    };
+    const createWordElement = XML
+        .createElement("word")({ ...nextId, ...attrs });
+    const wordElement = sentence
+        .docCopy
+        .fmap(createWordElement);
+    const sentenceById = sentence._id
+        .fmap(ArethusaDoc.sentenceById);
+    return MaybeT.of(sentence)
+        .bind(ArethusaDoc.parentArethusa)
+        .fmap(DXML.node)
+        .fmap(XML.deepcopy)
+        .bind(ArethusaDoc.fromNode)
+        .applyBind(sentenceById)
+        .fmap(DXML.node)
+        .bind(XML.appendElementToNodePretty(wordElement))
+        .bind(XML.ownerDocument)
+        .bind(XML.documentElement)
+        .bind(ArethusaDoc.fromNode);
+};
 ArethusaSentence.appendWordToSentenceFromAttrs = (attrs) => (sentence) => {
     const arethusa = ArethusaDoc
         .parentArethusa(sentence);
-    const nextId = { "id": arethusa.fmap(ArethusaDoc.nextWordId).unpack("") };
+    const nextId = {
+        "id": arethusa
+            .fmap(ArethusaDoc.nextTokenId)
+            .unpackT("")
+    };
     const createWordElement = XML
         .createElement("word")({ ...nextId, ...attrs });
     const wordElement = sentence
@@ -71,6 +103,51 @@ ArethusaSentence.appendWord = (word) => (sentence) => {
         .bind(XML.documentElement)
         .bind(ArethusaDoc.fromNode);
 };
+ArethusaSentence.appendArtificial = (artificial) => (sentence) => {
+    const artificialNode = DXML
+        .node(artificial)
+        .cloneNode(true);
+    return MaybeT.of(DXML.node(sentence))
+        .bind(XML.appendChildToNode(artificialNode))
+        .bind(XML.ownerDocument)
+        .bind(XML.documentElement)
+        .bind(ArethusaDoc.fromNode);
+};
+ArethusaSentence.tokenById = (tokenId) => (sentence) => {
+    return MaybeT.of(MaybeT.of(sentence)
+        .fmap(ArethusaSentence.tokens)
+        .unpackT([])
+        .find(ArethusaWord.matchId(tokenId)));
+};
+ArethusaSentence.arethusaTokenIds = (s) => {
+    return ArethusaSentence
+        .words(s)
+        .map(ArethusaToken.id)
+        .filter((item) => item.isSomething)
+        .map((item) => item.value);
+};
+ArethusaSentence.tokens = (s) => {
+    return MaybeT.of(s)
+        .fmap(DXML.node)
+        .fmap(XML.childNodes)
+        .fmap(ArethusaSentence.arethusaTokensFromNodes)
+        .unpackT([]);
+};
+ArethusaSentence.arethusaTokensFromNodes = (nodes) => {
+    return nodes
+        .filter((node) => node.nodeName === "word")
+        .map(ArethusaToken.fromXMLNode);
+};
+ArethusaSentence.prependArtificial = (artificial) => (sentence) => {
+    const artificialNode = DXML
+        .node(artificial)
+        .cloneNode(true);
+    return MaybeT.of(DXML.node(sentence))
+        .fmap(XML.prependChildToNode(artificialNode))
+        .bind(XML.ownerDocument)
+        .bind(XML.documentElement)
+        .bind(ArethusaDoc.fromNode);
+};
 ArethusaSentence.prependWord = (word) => (sentence) => {
     const wordNode = DXML
         .node(word)
@@ -87,7 +164,7 @@ ArethusaSentence.appendMaybeWords = (words) => (s) => {
             .id(s)
             .fmap(ArethusaDoc.sentenceById);
         const appendWord = item
-            .fmap(ArethusaWord.createFormDict)
+            .fmap(ArethusaWord.createAttrs)
             .fmap(ArethusaSentence.appendWordToSentenceFromAttrs);
         return a
             .applyBind(getSent)
@@ -101,13 +178,20 @@ ArethusaSentence.appendWords = (words) => (s) => {
             .id(s)
             .fmap(ArethusaDoc.sentenceById);
         const appendWord = MaybeT.of(item)
-            .fmap(ArethusaWord.createFormDict)
+            .fmap(ArethusaWord.createAttrs)
             .fmap(ArethusaSentence.appendWordToSentenceFromAttrs);
         return a
             .applyBind(getSent)
             .applyBind(appendWord);
     }
     return words.reduce(_reduce, s.arethusa);
+};
+ArethusaSentence.arethusaTokenByTokenAndSentenceId = (tokenId) => (sentenceId) => (a) => {
+    return MaybeT.of(ArethusaDoc
+        .sentenceById(sentenceId)(a)
+        .fmap(ArethusaSentence.tokens)
+        .unpackT([])
+        .find(ArethusaWord.matchId(tokenId)));
 };
 ArethusaSentence.incrementId = (s) => {
     const id = ArethusaSentence.id(s);
@@ -121,12 +205,21 @@ ArethusaSentence.incrementId = (s) => {
         .applyFmap(newId.fmap(XML.setId))
         .fmap(ArethusaSentence.fromXMLNode);
 };
-ArethusaSentence.lastWordId = (sentence) => {
+ArethusaSentence.lastToken = (sentence) => {
     return MaybeT.of(sentence)
-        .fmap(ArethusaSentence.words)
-        .bind(Arr.last)
-        .bind(ArethusaWord.id);
+        .fmap(ArethusaSentence.tokens)
+        .bind(Arr.last);
 };
+ArethusaSentence.lastTokenId = (sentence) => {
+    return MaybeT.of(sentence)
+        .bind(ArethusaSentence.lastToken)
+        .bind(ArethusaToken.id);
+};
+/**
+ * Creates an XML string from a plain text string.
+ * @param a
+ * @returns
+ */
 ArethusaSentence.XMLStrFromPlainTextStr = (a) => (str) => {
     const sentenceElem = a
         .doc
@@ -135,7 +228,9 @@ ArethusaSentence.XMLStrFromPlainTextStr = (a) => (str) => {
         .of(a)
         .fmap(DXML.node)
         .bind(XML.ownerDocument);
-    const createWord = doc.fmap(flip(XML.createElement("word"))).unpack(null);
+    const createWord = doc
+        .fmap(flip(XML.createElement("word")))
+        .unpack(null);
     if (createWord === null) {
         console.error("create word function is null.");
         return sentenceElem;
@@ -144,7 +239,7 @@ ArethusaSentence.XMLStrFromPlainTextStr = (a) => (str) => {
         .fmapErr("Error with string.", Str.split(/[\s\t\n]/g))
         .unpackT([])
         .map(Str.strip)
-        .map(ArethusaWord.createFormDict)
+        .map(ArethusaWord.createAttrs)
         .map(createWord);
     sentenceElem.fmap(XML.appendChildrenToNode(wordElems));
     return sentenceElem;
@@ -155,6 +250,46 @@ ArethusaSentence.fromXMLNode = (node) => {
 ArethusaSentence.id = (s) => {
     return XML.attr("id")(s._node)
         .bind(XML.nodeValue);
+};
+ArethusaSentence.moveArethusaToken = (moveFunc) => (id) => (refNodeId) => (sentence) => {
+    const tokenNode = ArethusaSentence
+        .tokenById(id)(sentence)
+        .fmap(DXML.node);
+    const refNode = ArethusaSentence
+        .tokenById(refNodeId)(sentence)
+        .fmap(DXML.node);
+    const wordNodeCopy = tokenNode.fmap(XML.deepcopy);
+    const insertNode = wordNodeCopy
+        .fmap(moveFunc);
+    const newSentenceNode = refNode
+        .applyBind(insertNode);
+    return newSentenceNode
+        .applyFmap(tokenNode.fmap(XML.removeChild))
+        .bind(XML.ownerDocument)
+        .bind(XML.documentElement)
+        .bind(ArethusaDoc.fromNode);
+};
+ArethusaSentence.moveArethusaTokenDown = (tokenId) => (sentence) => {
+    const tokenNode = ArethusaSentence
+        .tokenById(tokenId)(sentence)
+        .fmap(DXML.node);
+    const previousSibNodeId = tokenNode
+        .bind(XML.nextSibling)
+        .bind(XML.attrVal("id"));
+    const moveNode = previousSibNodeId
+        .fmap(ArethusaSentence.moveArethusaToken(XML.insertAfter)(tokenId));
+    return MaybeT.of(sentence)
+        .applyBind(moveNode);
+};
+ArethusaSentence.moveArethusaTokenUp = (tokenId) => (sentence) => {
+    const tokenNode = ArethusaSentence.tokenById(tokenId)(sentence)
+        .fmap(DXML.node);
+    const previousSibNodeId = tokenNode
+        .bind(XML.previousSibling)
+        .bind(XML.attrVal("id"));
+    const moveNode = previousSibNodeId
+        .fmap(ArethusaSentence.moveArethusaToken(XML.insertBefore)(tokenId));
+    return MaybeT.of(sentence).applyBind(moveNode);
 };
 ArethusaSentence.moveWord = (moveFunc) => (id) => (refNodeId) => (sentence) => {
     const wordNode = ArethusaSentence.wordById(id)(sentence)
@@ -178,7 +313,8 @@ ArethusaSentence.moveWordDown = (wordId) => (sentence) => {
     const previousSibNodeId = wordNode
         .bind(XML.nextSibling)
         .bind(XML.attrVal("id"));
-    const moveNode = previousSibNodeId.fmap(ArethusaSentence.moveWord(XML.insertAfter)(wordId));
+    const moveNode = previousSibNodeId
+        .fmap(ArethusaSentence.moveWord(XML.insertAfter)(wordId));
     return MaybeT.of(sentence).applyBind(moveNode);
 };
 ArethusaSentence.moveWordUp = (wordId) => (sentence) => {
@@ -187,12 +323,13 @@ ArethusaSentence.moveWordUp = (wordId) => (sentence) => {
     const previousSibNodeId = wordNode
         .bind(XML.previousSibling)
         .bind(XML.attrVal("id"));
-    const moveNode = previousSibNodeId.fmap(ArethusaSentence.moveWord(XML.insertBefore)(wordId));
+    const moveNode = previousSibNodeId
+        .fmap(ArethusaSentence.moveWord(XML.insertBefore)(wordId));
     return MaybeT.of(sentence).applyBind(moveNode);
 };
-ArethusaSentence.nextWordIds = (startWordId) => (s) => {
+ArethusaSentence.nextTokenIds = (startTokenId) => (s) => {
     return ArethusaSentence
-        .wordById(startWordId)(s)
+        .tokenById(startTokenId)(s)
         .fmap(DXML.node)
         .bind(XML.nextSiblingElements)
         .unpackT([])
@@ -201,18 +338,18 @@ ArethusaSentence.nextWordIds = (startWordId) => (s) => {
         .filter((item) => item.isSomething)
         .map((item) => item.value);
 };
-ArethusaSentence.removeWord = (word) => (sentence) => {
+ArethusaSentence.removeToken = (token) => (sentence) => {
     // Not working
-    const wordNode = DXML.node(word);
+    const tokenNode = DXML.node(token);
     return MaybeT.of(DXML.node(sentence))
-        .fmap(XML.removeChild(wordNode))
+        .fmap(XML.removeChild(tokenNode))
         .bind(XML.ownerDocument)
         .bind(XML.documentElement)
         .bind(ArethusaDoc.fromNode);
 };
-ArethusaSentence.removeWordById = (wordId) => (s) => {
+ArethusaSentence.removeTokenById = (tokenId) => (s) => {
     const removeChild = ArethusaSentence
-        .wordById(wordId)(s)
+        .tokenById(tokenId)(s)
         .fmap(DXML.node)
         .fmap(XML.removeChild);
     return MaybeT.of(s)
@@ -264,7 +401,7 @@ ArethusaSentence.wordByWordAndSentenceId = (wordId) => (sentenceId) => (a) => {
         .find(ArethusaWord.matchId(wordId)));
 };
 ArethusaSentence.wordById = (wordId) => (sentence) => {
-    return $$(MaybeT.of)(MaybeT.of(sentence)
+    return MaybeT.of(MaybeT.of(sentence)
         .fmap(ArethusaSentence.words)
         .unpackT([])
         .find(ArethusaWord.matchId(wordId)));
@@ -286,5 +423,6 @@ ArethusaSentence.words = (s) => {
 ArethusaSentence.wordsFromNodes = (nodes) => {
     return nodes
         .filter((node) => node.nodeName === "word")
+        .filter((node) => XML.hasAttr('lemma')(node) === true)
         .map(ArethusaWord.fromXMLNode);
 };

@@ -20,7 +20,7 @@ ArethusaToken.form = (w) => {
     return XML.attr("form")(w._node)
         .bind(XML.nodeValue);
 };
-ArethusaToken.createFormDict = (form) => {
+ArethusaToken.createAttrs = (form) => {
     return {
         "form": form,
         "relation": "",

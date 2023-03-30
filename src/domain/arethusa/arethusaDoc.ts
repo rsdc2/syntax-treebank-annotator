@@ -5,6 +5,29 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
         this._node = node
     }
 
+    static appendArtificial = 
+        (attrs: IArtificial) => 
+        (a: ArethusaDoc) => 
+    {
+
+        return ArethusaDoc
+            .lastSentence(a)
+            .bind(
+                ArethusaSentence.appendArtificialToSentenceFromAttrs(attrs)
+            )      
+
+    }
+
+    static appendArtificialToSentence = 
+        (attrs: IArtificial) => 
+        (sentenceId: string) => 
+        (a: ArethusaDoc) => 
+    {
+        return ArethusaDoc
+            .sentenceById (sentenceId) (a)
+            .bind(ArethusaSentence.appendArtificialToSentenceFromAttrs(attrs))
+    }
+
     static appendSentence = (a: ArethusaDoc) => {
         return ArethusaDoc
             .appendSentenceWithId 
@@ -12,7 +35,10 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
                 (a)
     }
 
-    static appendSentenceWithId = (sentenceId: string) => (a: ArethusaDoc) => {
+    static appendSentenceWithId = 
+        (sentenceId: string) => 
+        (a: ArethusaDoc) => 
+    {
         const id = {"id": sentenceId}
         const sentenceElement = a
             .docCopy
@@ -47,10 +73,17 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
 
         return ArethusaDoc
             .lastSentence(a)
-            .bind(ArethusaSentence.appendWordToSentenceFromAttrs({}))                        
+            .bind(
+                ArethusaSentence.appendWordToSentenceFromAttrs(
+                    ArethusaWord.createAttrs("---")
+                )
+            )                        
     }
 
-    static appendWord = (attrs: object) => (a: ArethusaDoc) => {
+    static appendWord = 
+        (attrs: IArethusaWord) => 
+        (a: ArethusaDoc) => 
+    {
 
         return ArethusaDoc
             .lastSentence(a)
@@ -58,7 +91,11 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
 
     }
 
-    static appendWordToSentence = (attrs: object) => (sentenceId: string) => (a: ArethusaDoc) => {
+    static appendWordToSentence = 
+        (attrs: IArethusaWord) => 
+        (sentenceId: string) => 
+        (a: ArethusaDoc) => 
+    {
         return ArethusaDoc
             .sentenceById (sentenceId) (a)
             .bind(ArethusaSentence.appendWordToSentenceFromAttrs(attrs))
@@ -194,7 +231,10 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
     }
 
     static insertSentence = 
-        (insertFunc: (nodeToInsert: Node | Element | Text) => (refNode: Node) => Maybe<ParentNode>) => 
+        (insertFunc: 
+            (nodeToInsert: Node | Element | Text) => 
+            (refNode: Node) => Maybe<ParentNode>
+        ) => 
         (refSentenceId: string) => 
         (a: ArethusaDoc) => 
     {
@@ -223,14 +263,23 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
         return ArethusaDoc.insertSentence(XML.insertAfter)(refSentenceId)(a)
     }
 
-    static insertSentenceBefore = (refSentenceId: string) => (a: ArethusaDoc): Maybe<ArethusaDoc> => {
+    static insertSentenceBefore = 
+        (refSentenceId: string) => 
+        (a: ArethusaDoc): Maybe<ArethusaDoc> => 
+    {
         return ArethusaDoc.insertSentence(XML.insertBefore)(refSentenceId)(a)
     }
 
     static lastSentence(a: ArethusaDoc): Maybe<Wordable> {
         return Arr.last (a.sentences)
     }
-
+    
+    static lastToken = (a: ArethusaDoc) => {
+        return MaybeT.of(a)
+            .fmap(ArethusaDoc.tokens)
+            .bind(Arr.last)
+    }
+    
     static lastWord = (a: ArethusaDoc) => {
         return MaybeT.of(a)
             .fmap(ArethusaDoc.words)
@@ -248,6 +297,15 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
             .bind(ArethusaSentence.id)
             .fmap(Str.increment)
             .unpack("1")
+    }
+
+    static nextTokenId = (arethusa: ArethusaDoc) => {
+        const nextId = ArethusaDoc
+            .lastToken(arethusa)
+            .bind(ArethusaToken.id)
+            .fmap(Str.increment)
+
+        return nextId.unpack("1")
     }
 
     static nextWordId(arethusa: ArethusaDoc) {
@@ -341,7 +399,7 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
             .applyBind(getThisSentence)   
                         
         const newArethusa2 = thisSentence
-            .bind(ArethusaSentence.removeWordById(wordId))
+            .bind(ArethusaSentence.removeTokenById(wordId))
         
         return newArethusa2
     }
@@ -509,16 +567,17 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
             )
     }
 
-    static sentenceByWordId = (id: string) => (a: ArethusaDoc) => {
-        const sentence = XML.xpathMaybe(ArethusaWord.parentSentenceAddress (id)) (a.doc)
+    static sentenceByTokenId = (id: string) => (a: ArethusaDoc) => {
+        const sentence = XML
+            .xpathMaybe(ArethusaWord.parentSentenceAddress (id)) (a.doc)
             .bind(Arr.head)
             .fmap(ArethusaSentence.fromXMLNode)
 
         return sentence
     }
 
-    static sentenceIdByWordId = (id: string) => (a: ArethusaDoc) => {
-        return ArethusaDoc.sentenceByWordId (id) (a)
+    static sentenceIdByTokenId = (id: string) => (a: ArethusaDoc) => {
+        return ArethusaDoc.sentenceByTokenId (id) (a)
             .bind(ArethusaSentence.id)
     }
 
@@ -538,27 +597,28 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
             .bind(ArethusaDoc.fromNode)
     }
 
-    static splitSentenceAt = (startWordId: string) => (a: ArethusaDoc) => {
+    static splitSentenceAt = (startTokenId: string) => (a: ArethusaDoc) => {
 
         const moveReduce = (_a: Maybe<ArethusaDoc>, wordId: string) => {
             const newArethusa = _a.bind(ArethusaDoc.deepcopy)
-            return newArethusa.bind(ArethusaDoc.moveWordToNextSentence(wordId))
+            return newArethusa
+                .bind(ArethusaDoc.moveWordToNextSentence(wordId))
         } 
 
-        const nextWordIds = ArethusaDoc
-            .sentenceByWordId (startWordId) (a)
-            .fmap(ArethusaSentence.nextWordIds (startWordId))
+        const nextTokenIds = ArethusaDoc
+            .sentenceByTokenId (startTokenId) (a)
+            .fmap(ArethusaSentence.nextTokenIds (startTokenId))
             .unpackT([])
 
         const currentSentenceId = ArethusaDoc
-            .sentenceIdByWordId(startWordId)(a)
+            .sentenceIdByTokenId(startTokenId)(a)
         
         // const startForIncrement = currentSentenceId
         //     .fmap(Str.increment)
         //     .fmap(Str.increment)
 
         const insertSentence = MaybeT.of(a)
-            .bind(ArethusaDoc.sentenceIdByWordId(startWordId))
+            .bind(ArethusaDoc.sentenceIdByTokenId(startTokenId))
             .fmap(ArethusaDoc.insertSentenceAfter)
 
         const arethusaWithNewSentenceAndIds = MaybeT.of(a)
@@ -566,7 +626,7 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
             // .applyBind(startForIncrement.fmap(Arethusa.incrementSentenceIdsFrom))
 
         return Arr
-            .reverse([startWordId].concat(nextWordIds))
+            .reverse([startTokenId].concat(nextTokenIds))
             .reduce(moveReduce, arethusaWithNewSentenceAndIds)       
     }
 
@@ -578,12 +638,22 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
         return XML.toStr(a.node)
     }
 
-    static words = (a: ArethusaDoc) => {
+    static tokens = (a: ArethusaDoc): ArethusaToken[] => {
         return ArethusaDoc
             .sentences(a)
             .map(DXML.node)
             .flatMap(XML.childNodes)
-            .filter( (node:Node) => node.nodeName === "word" )
+            .filter( (node: Node) => node.nodeName === "word" )
+            .map(ArethusaWord.fromXMLNode)
+    }
+
+    static words = (a: ArethusaDoc): ArethusaWord[] => {
+        return ArethusaDoc
+            .sentences(a)
+            .map(DXML.node)
+            .flatMap(XML.childNodes)
+            .filter( (node: Node) => node.nodeName === "word" )
+            .filter( (node: Node) => XML.hasAttr('lemma')(node) === true)
             .map(ArethusaWord.fromXMLNode)
     }
 

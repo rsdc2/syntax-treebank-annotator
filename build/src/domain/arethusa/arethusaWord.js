@@ -20,7 +20,7 @@ ArethusaWord.form = (w) => {
     return XML.attr("form")(w._node)
         .bind(XML.nodeValue);
 };
-ArethusaWord.createFormDict = (form) => {
+ArethusaWord.createAttrs = (form) => {
     return {
         "form": form,
         "lemma": "",

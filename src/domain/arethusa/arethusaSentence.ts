@@ -6,10 +6,17 @@ class ArethusaSentence implements Word, Wordable, Formable  {
         this._node = node
     }
 
-    static appendWordToSentenceFromAttrs = (attrs: object) => (sentence: ArethusaSentence) => {
+    static appendArtificialToSentenceFromAttrs = 
+        (attrs: IArtificial) => 
+        (sentence: ArethusaSentence) => 
+    {
         const arethusa = ArethusaDoc
             .parentArethusa(sentence)
-        const nextId = {"id": arethusa.fmap(ArethusaDoc.nextWordId).unpack("")}
+        const nextId = {
+            "id": arethusa
+                .fmap(ArethusaDoc.nextTokenId)
+                .unpackT("")
+        }
         const createWordElement = XML
             .createElement("word")({...nextId, ...attrs})
         const wordElement = sentence
@@ -31,13 +38,115 @@ class ArethusaSentence implements Word, Wordable, Formable  {
             .bind(ArethusaDoc.fromNode) 
     }
 
-    static appendWord = (word: ArethusaWord) => (sentence: ArethusaSentence) => {
+
+    static appendWordToSentenceFromAttrs = 
+        (attrs: IArethusaWord) => 
+        (sentence: ArethusaSentence) => 
+    {
+        const arethusa = ArethusaDoc
+            .parentArethusa(sentence)
+        const nextId = {
+            "id": arethusa
+                .fmap(ArethusaDoc.nextTokenId)
+                .unpackT("")
+        }
+        const createWordElement = XML
+            .createElement("word")({...nextId, ...attrs})
+        const wordElement = sentence
+            .docCopy
+            .fmap(createWordElement)
+        const sentenceById = sentence._id
+            .fmap(ArethusaDoc.sentenceById)
+
+        return MaybeT.of(sentence) 
+            .bind(ArethusaDoc.parentArethusa)
+            .fmap(DXML.node)
+            .fmap(XML.deepcopy)
+            .bind(ArethusaDoc.fromNode)
+            .applyBind(sentenceById)
+            .fmap(DXML.node)
+            .bind(XML.appendElementToNodePretty(wordElement))
+            .bind(XML.ownerDocument)
+            .bind(XML.documentElement)
+            .bind(ArethusaDoc.fromNode) 
+    }
+
+    static appendWord = 
+        (word: ArethusaWord) => 
+        (sentence: ArethusaSentence) => 
+    {
         const wordNode = DXML
             .node(word)
             .cloneNode(true)
 
         return MaybeT.of(DXML.node(sentence))
             .bind(XML.appendChildToNode(wordNode))
+            .bind(XML.ownerDocument)
+            .bind(XML.documentElement)
+            .bind(ArethusaDoc.fromNode)
+    }
+
+    static appendArtificial = 
+        (artificial: ArethusaArtificial) => 
+        (sentence: ArethusaSentence) => 
+    {
+        const artificialNode = DXML
+            .node(artificial)
+            .cloneNode(true)
+
+        return MaybeT.of(DXML.node(sentence))
+            .bind(XML.appendChildToNode(artificialNode))
+            .bind(XML.ownerDocument)
+            .bind(XML.documentElement)
+            .bind(ArethusaDoc.fromNode)
+    }
+
+    static tokenById = 
+        (tokenId: string) => 
+        (sentence: ArethusaSentence): Maybe<ArethusaToken> => 
+    {
+        return MaybeT.of (
+            MaybeT.of (sentence)
+                .fmap(ArethusaSentence.tokens)
+                .unpackT([])
+                .find(ArethusaWord.matchId(tokenId))
+        )
+    }
+
+    static arethusaTokenIds = (s: ArethusaSentence) => {
+        return ArethusaSentence
+            .words(s)
+            .map(ArethusaToken.id)
+            .filter( (item: Maybe<string>) => item.isSomething ) 
+            .map( (item: Maybe<string>) => item.value as string )
+    }
+
+    static tokens = (s: ArethusaSentence): ArethusaToken[] => {
+        return MaybeT.of(s)
+            .fmap(DXML.node)
+            .fmap(XML.childNodes)
+            .fmap(ArethusaSentence.arethusaTokensFromNodes)
+            .unpackT([])
+    }
+
+    static arethusaTokensFromNodes = 
+        (nodes: Node[]): ArethusaToken[] => 
+    {
+        return nodes
+            .filter( (node:Node) => node.nodeName === "word" ) 
+            .map(ArethusaToken.fromXMLNode)
+    }
+
+    static prependArtificial = 
+        (artificial: ArethusaArtificial) => 
+        (sentence: ArethusaSentence) => 
+    {
+        const artificialNode = DXML
+            .node(artificial)
+            .cloneNode(true)
+
+        return MaybeT.of(DXML.node(sentence))
+            .fmap(XML.prependChildToNode(artificialNode))
             .bind(XML.ownerDocument)
             .bind(XML.documentElement)
             .bind(ArethusaDoc.fromNode)
@@ -55,7 +164,10 @@ class ArethusaSentence implements Word, Wordable, Formable  {
             .bind(ArethusaDoc.fromNode)
     }
 
-    static appendMaybeWords = (words: Array<Maybe<string>>) => (s: ArethusaSentence): Maybe<ArethusaDoc> => {
+    static appendMaybeWords = 
+        (words: Array<Maybe<string>>) => 
+        (s: ArethusaSentence): Maybe<ArethusaDoc> => 
+    {
         
         function _reduce (a: Maybe<ArethusaDoc>, item: Maybe<string>) {
             const getSent = ArethusaSentence
@@ -63,7 +175,7 @@ class ArethusaSentence implements Word, Wordable, Formable  {
                 .fmap(ArethusaDoc.sentenceById)
 
             const appendWord = item
-                .fmap(ArethusaWord.createFormDict)
+                .fmap(ArethusaWord.createAttrs)
                 .fmap(ArethusaSentence.appendWordToSentenceFromAttrs)
                                     
             return a
@@ -74,15 +186,17 @@ class ArethusaSentence implements Word, Wordable, Formable  {
         return words.reduce(_reduce, s.arethusa)
     }
 
-    static appendWords = (words: Array<string>) => (s: ArethusaSentence): Maybe<ArethusaDoc> => {
-        
+    static appendWords = 
+        (words: Array<string>) => 
+        (s: ArethusaSentence): Maybe<ArethusaDoc> => 
+    {    
         function _reduce (a: Maybe<ArethusaDoc>, item: string) {
             const getSent = ArethusaSentence
                 .id(s)
                 .fmap(ArethusaDoc.sentenceById)
 
             const appendWord = MaybeT.of(item)
-                .fmap(ArethusaWord.createFormDict)
+                .fmap(ArethusaWord.createAttrs)
                 .fmap(ArethusaSentence.appendWordToSentenceFromAttrs)
                                     
             return a
@@ -99,12 +213,29 @@ class ArethusaSentence implements Word, Wordable, Formable  {
             .bind(ArethusaDoc.fromNode)
     }
 
+    static arethusaTokenByTokenAndSentenceId = 
+        (tokenId: string) => 
+        (sentenceId: string) => 
+        (a: ArethusaDoc) => 
+    {
+        return MaybeT.of (ArethusaDoc
+            .sentenceById (sentenceId) (a)
+            .fmap(ArethusaSentence.tokens)
+            .unpackT([])
+            .find(ArethusaWord.matchId(tokenId))
+        )
+    }
+
     get doc(): Maybe<XMLDocument> {
         return MaybeT.of(this._node.ownerDocument)
     }
 
     get docCopy() {
         return this.doc.fmap(XML.deepcopy)
+    }
+
+    static firstToken(sentence: ArethusaSentence): Maybe<Formable> {
+        return Arr.head (sentence.tokensProp)
     }
 
     static firstWord(sentence: ArethusaSentence): Maybe<Formable> {
@@ -125,25 +256,35 @@ class ArethusaSentence implements Word, Wordable, Formable  {
             .fmap(ArethusaSentence.fromXMLNode)
     }
 
-    static lastWord(sentence: ArethusaSentence): Maybe<Formable> {
+    static lastToken = (sentence: ArethusaSentence): Maybe<Formable> => {
         return MaybeT.of(sentence)
-            .fmap(ArethusaSentence.words)
+            .fmap(ArethusaSentence.tokens)
             .bind(Arr.last)
     }
 
-    static lastWordId = (sentence: ArethusaSentence) => {
+    static lastTokenId = (sentence: ArethusaSentence) => {
         return MaybeT.of(sentence)
-            .fmap(ArethusaSentence.words)
-            .bind(Arr.last)
-            .bind(ArethusaWord.id)
+            .bind(ArethusaSentence.lastToken)
+            .bind(ArethusaToken.id)
     }
 
-    static XMLStrFromPlainTextStr = (a: ArethusaDoc) => (str: string): Maybe<Element> => {
+    /**
+     * Creates an XML string from a plain text string.
+     * @param a 
+     * @returns 
+     */
+
+    static XMLStrFromPlainTextStr = 
+        (a: ArethusaDoc) => 
+        (str: string): Maybe<Element> => 
+    {
         const sentenceElem = a
             .doc
             .fmapErr(
                 "No XML document.", 
-                XML.createElement("sentence")({id: ArethusaDoc.newNextSentenceId(a)})
+                XML.createElement
+                    ("sentence")
+                    ({id: ArethusaDoc.newNextSentenceId(a)})
             )
 
         const doc = MaybeT
@@ -151,7 +292,9 @@ class ArethusaSentence implements Word, Wordable, Formable  {
             .fmap(DXML.node)
             .bind(XML.ownerDocument)
 
-        const createWord = doc.fmap(flip(XML.createElement("word"))).unpack(null)
+        const createWord = doc
+            .fmap(flip(XML.createElement("word")))
+            .unpack(null)
 
         if (createWord === null) {
             console.error("create word function is null.")
@@ -162,7 +305,7 @@ class ArethusaSentence implements Word, Wordable, Formable  {
             .fmapErr("Error with string.", Str.split(/[\s\t\n]/g))
             .unpackT([])
             .map(Str.strip)
-            .map(ArethusaWord.createFormDict)
+            .map(ArethusaWord.createAttrs)
             .map(createWord)
 
         sentenceElem.fmap(XML.appendChildrenToNode(wordElems))
@@ -185,8 +328,78 @@ class ArethusaSentence implements Word, Wordable, Formable  {
             .bind(XML.nodeValue)
     }
 
+    static moveArethusaToken = 
+        (moveFunc: 
+            (nodeToInsert: Node | Element | Text) => 
+            (refNode: Node) => Maybe<ParentNode>
+        ) => 
+        (id: string) => 
+        (refNodeId: string) =>
+        (sentence: ArethusaSentence) => {
+
+        const tokenNode = ArethusaSentence
+            .tokenById (id) (sentence)
+            .fmap(DXML.node)
+        const refNode = ArethusaSentence
+            .tokenById (refNodeId) (sentence)
+            .fmap(DXML.node)
+
+        const wordNodeCopy = tokenNode.fmap(XML.deepcopy)
+
+        const insertNode = wordNodeCopy
+            .fmap(moveFunc)
+
+        const newSentenceNode = refNode
+            .applyBind(insertNode)
+
+        return newSentenceNode
+            .applyFmap(tokenNode.fmap(XML.removeChild))
+            .bind(XML.ownerDocument)
+            .bind(XML.documentElement)
+            .bind(ArethusaDoc.fromNode)
+    }
+
+    static moveArethusaTokenDown = 
+        (tokenId: string) => 
+        (sentence: ArethusaSentence) => 
+    {
+        const tokenNode = ArethusaSentence
+            .tokenById (tokenId) (sentence)
+            .fmap(DXML.node)
+
+        const previousSibNodeId = tokenNode
+            .bind(XML.nextSibling)
+            .bind(XML.attrVal("id"))
+
+        const moveNode = previousSibNodeId
+            .fmap(ArethusaSentence.moveArethusaToken(XML.insertAfter) (tokenId))
+
+        return MaybeT.of(sentence)
+            .applyBind(moveNode)
+    }
+
+    static moveArethusaTokenUp = 
+        (tokenId: string) => 
+        (sentence: ArethusaSentence) => 
+    {
+        const tokenNode = ArethusaSentence.tokenById (tokenId) (sentence)
+            .fmap(DXML.node)
+
+        const previousSibNodeId = tokenNode
+            .bind(XML.previousSibling)
+            .bind(XML.attrVal("id"))
+
+        const moveNode = previousSibNodeId
+            .fmap(ArethusaSentence.moveArethusaToken(XML.insertBefore) (tokenId))
+        return MaybeT.of(sentence).applyBind(moveNode)
+    }
+
+
     static moveWord = 
-        (moveFunc: (nodeToInsert: Node | Element | Text) => (refNode: Node) => Maybe<ParentNode>) => 
+        (moveFunc: 
+            (nodeToInsert: Node | Element | Text) => 
+            (refNode: Node) => Maybe<ParentNode>
+        ) => 
         (id: string) => 
         (refNodeId: string) =>
         (sentence: ArethusaSentence) => {
@@ -211,7 +424,10 @@ class ArethusaSentence implements Word, Wordable, Formable  {
             .bind(ArethusaDoc.fromNode)
     }
 
-    static moveWordDown = (wordId: string) => (sentence: ArethusaSentence) => {
+    static moveWordDown = 
+        (wordId: string) => 
+        (sentence: ArethusaSentence) => 
+    {
         const wordNode = ArethusaSentence.wordById (wordId) (sentence)
             .fmap(DXML.node)
 
@@ -219,11 +435,15 @@ class ArethusaSentence implements Word, Wordable, Formable  {
             .bind(XML.nextSibling)
             .bind(XML.attrVal("id"))
 
-        const moveNode = previousSibNodeId.fmap(ArethusaSentence.moveWord(XML.insertAfter) (wordId))
+        const moveNode = previousSibNodeId
+            .fmap(ArethusaSentence.moveWord(XML.insertAfter) (wordId))
         return MaybeT.of(sentence).applyBind(moveNode)
     }
 
-    static moveWordUp = (wordId: string) => (sentence: ArethusaSentence) => {
+    static moveWordUp = 
+        (wordId: string) => 
+        (sentence: ArethusaSentence) => 
+    {
         const wordNode = ArethusaSentence.wordById (wordId) (sentence)
             .fmap(DXML.node)
 
@@ -231,13 +451,17 @@ class ArethusaSentence implements Word, Wordable, Formable  {
             .bind(XML.previousSibling)
             .bind(XML.attrVal("id"))
 
-        const moveNode = previousSibNodeId.fmap(ArethusaSentence.moveWord(XML.insertBefore) (wordId))
+        const moveNode = previousSibNodeId
+            .fmap(ArethusaSentence.moveWord(XML.insertBefore) (wordId))
         return MaybeT.of(sentence).applyBind(moveNode)
     }
 
-    static nextWordIds = (startWordId: string) => (s: ArethusaSentence) => {
+    static nextTokenIds = 
+        (startTokenId: string) => 
+        (s: ArethusaSentence) => 
+    {
         return ArethusaSentence
-            .wordById(startWordId) (s)
+            .tokenById(startTokenId) (s)
             .fmap(DXML.node)
             .bind(XML.nextSiblingElements)
             .unpackT([])
@@ -247,20 +471,26 @@ class ArethusaSentence implements Word, Wordable, Formable  {
             .map( (item: Maybe<string>) => item.value as string )
     }
 
-    static removeWord = (word: ArethusaWord) => (sentence: ArethusaSentence) => {
+    static removeToken = 
+        (token: ArethusaToken) => 
+        (sentence: ArethusaSentence) => 
+    {
         // Not working
 
-        const wordNode = DXML.node(word)
+        const tokenNode = DXML.node(token)
         return MaybeT.of(DXML.node(sentence))
-            .fmap(XML.removeChild(wordNode))
+            .fmap(XML.removeChild(tokenNode))
             .bind(XML.ownerDocument)
             .bind(XML.documentElement)
             .bind(ArethusaDoc.fromNode)
     }
 
-    static removeWordById = (wordId: string) => (s: ArethusaSentence) => {
+    static removeTokenById = 
+        (tokenId: string) => 
+        (s: ArethusaSentence) => 
+    {
         const removeChild = ArethusaSentence
-            .wordById (wordId) (s)
+            .tokenById (tokenId) (s)
             .fmap(DXML.node)
             .fmap(XML.removeChild)
         
@@ -285,7 +515,11 @@ class ArethusaSentence implements Word, Wordable, Formable  {
             .fmap(XML.setAttr('document_id')(id))
             .fmap(ArethusaSentence.fromXMLNode)
     }
-    
+
+    get tokensProp(): ArethusaToken[] {
+        return ArethusaSentence.tokens(this)
+    }
+
     static toTreeSentState = (sentence: ArethusaSentence) => {
         const getTreeSentState = sentence._id
             .fmap(TreeState.ofTokens)
@@ -316,7 +550,11 @@ class ArethusaSentence implements Word, Wordable, Formable  {
             .map(ArethusaWord.toTreeToken)
     }
 
-    static wordByWordAndSentenceId = (wordId: string) => (sentenceId: string) => (a: ArethusaDoc) => {
+    static wordByWordAndSentenceId = 
+        (wordId: string) => 
+        (sentenceId: string) => 
+        (a: ArethusaDoc) => 
+    {
         return MaybeT.of (ArethusaDoc
             .sentenceById (sentenceId) (a)
             .fmap(ArethusaSentence.words)
@@ -325,8 +563,11 @@ class ArethusaSentence implements Word, Wordable, Formable  {
         )
     }
 
-    static wordById = (wordId: string) => (sentence: ArethusaSentence) => {
-        return $$ (MaybeT.of) (
+    static wordById = 
+        (wordId: string) => 
+        (sentence: ArethusaSentence): Maybe<ArethusaWord> => 
+    {
+        return MaybeT.of (
             MaybeT.of (sentence)
                 .fmap(ArethusaSentence.words)
                 .unpackT([])
@@ -342,7 +583,7 @@ class ArethusaSentence implements Word, Wordable, Formable  {
             .map( (item: Maybe<string>) => item.value as string )
     }
 
-    static words = (s: ArethusaSentence) => {
+    static words = (s: ArethusaSentence): ArethusaWord[] => {
         return MaybeT.of(s)
             .fmap(DXML.node)
             .fmap(XML.childNodes)
@@ -350,9 +591,10 @@ class ArethusaSentence implements Word, Wordable, Formable  {
             .unpackT([])
     }
 
-    static wordsFromNodes = (nodes: Node[]) => {
+    static wordsFromNodes = (nodes: Node[]): ArethusaWord[] => {
         return nodes
-            .filter( (node:Node) => node.nodeName === "word" ) 
+            .filter( (node: Node) => node.nodeName === "word" ) 
+            .filter( (node: Node) => XML.hasAttr('lemma')(node) === true )
             .map(ArethusaWord.fromXMLNode)
     }
 

@@ -1,4 +1,7 @@
 class Frontend {
+    static get addNewArtificialBtn() {
+        return Frontend.buttonById("AddNewArtificial");
+    }
     static get addNewWordBtn() {
         return Frontend.buttonById("AddNewWord");
     }
@@ -198,11 +201,15 @@ class Frontend {
         };
         const addNewSentenceFunc = (e) => {
             e.stopPropagation();
-            globalState.textStateIO.fmap(TextStateIO.appendNewSentenceToArethusa);
+            globalState
+                .textStateIO
+                .fmap(TextStateIO.appendNewSentenceToArethusa);
         };
         const splitSentenceFunc = (e) => {
             e.stopPropagation();
-            globalState.textStateIO.fmap(TextStateIO.splitSentenceAtCurrentWord);
+            globalState
+                .textStateIO
+                .fmap(TextStateIO.splitSentenceAtCurrentWord);
         };
         const insertSentenceFunc = (e) => {
             e.stopPropagation();
@@ -210,31 +217,51 @@ class Frontend {
         };
         const removeSentenceFunc = (e) => {
             e.stopPropagation();
-            globalState.textStateIO.fmap(TextStateIO.removeSentence);
+            globalState
+                .textStateIO
+                .fmap(TextStateIO.removeSentence);
         };
         const appendNewWordFunc = (e) => {
             e.stopPropagation();
-            globalState.textStateIO.fmap(TextStateIO.appendNewWordToSentence);
+            globalState
+                .textStateIO
+                .fmap(TextStateIO.appendNewWordToSentence);
+        };
+        const appendNewArtificialFunc = (e) => {
+            e.stopPropagation();
+            globalState
+                .textStateIO
+                .fmap(TextStateIO.appendNewArtificialToSentence);
         };
         const moveWordToNextSentenceFunc = (e) => {
             e.stopPropagation();
-            globalState.textStateIO.fmap(TextStateIO.moveWordToNextSentence);
+            globalState
+                .textStateIO
+                .fmap(TextStateIO.moveWordToNextSentence);
         };
         const moveWordToPrevSentenceFunc = (e) => {
             e.stopPropagation();
-            globalState.textStateIO.fmap(TextStateIO.moveWordToPrevSentence);
+            globalState
+                .textStateIO
+                .fmap(TextStateIO.moveWordToPrevSentence);
         };
         const removeWordFunc = (e) => {
             e.stopPropagation();
-            globalState.textStateIO.fmap(TextStateIO.removeArethusaWord);
+            globalState
+                .textStateIO
+                .fmap(TextStateIO.removeArethusaWord);
         };
         const moveWordUpFunc = (e) => {
             e.stopPropagation();
-            globalState.textStateIO.fmap(TextStateIO.moveWordUp);
+            globalState
+                .textStateIO
+                .fmap(TextStateIO.moveWordUp);
         };
         const moveWordDownFunc = (e) => {
             e.stopPropagation();
-            globalState.textStateIO.fmap(TextStateIO.moveWordDown);
+            globalState
+                .textStateIO
+                .fmap(TextStateIO.moveWordDown);
         };
         const processEpiDocInputFunc = (e) => {
             e.stopPropagation();
@@ -302,6 +329,9 @@ class Frontend {
         Frontend
             .addNewWordBtn
             .fmap(HTML.Elem.setOnClickFunc(appendNewWordFunc));
+        Frontend
+            .addNewArtificialBtn
+            .fmap(HTML.Elem.setOnClickFunc(appendNewArtificialFunc));
         Frontend
             .moveWordToNextSentenceBtn
             .fmap(HTML.Elem.setOnClickFunc(moveWordToNextSentenceFunc));

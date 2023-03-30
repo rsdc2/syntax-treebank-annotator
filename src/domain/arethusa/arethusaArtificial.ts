@@ -23,7 +23,7 @@ class ArethusaArtificial implements Formable {
             .bind(XML.nodeValue)
     }
 
-    static createFormDict = (form: string): IArtificial => {
+    static createAttrs = (form: string): IArtificial => {
         return {
             "form": form,
             "artificial": "elliptic",
@@ -34,7 +34,10 @@ class ArethusaArtificial implements Formable {
         }
     }
 
-    static matchId = (id: string) => (word: ArethusaArtificial) => {
+    static matchId = 
+        (id: string) => 
+        (word: ArethusaArtificial) => 
+    {
         return ArethusaArtificial.id(word).unpack("") === id
     }
 
@@ -42,7 +45,7 @@ class ArethusaArtificial implements Formable {
         return new ArethusaArtificial(node)
     }
 
-    static fromAttrs = (a: ArethusaDoc) => (attrs: IMorph) =>  {
+    static fromAttrs = (a: ArethusaDoc) => (attrs: IArethusaWord) =>  {
         return a.doc
             .fmap(XML.createElement("word")(attrs))   
             .fmap(ArethusaArtificial.fromXMLNode)

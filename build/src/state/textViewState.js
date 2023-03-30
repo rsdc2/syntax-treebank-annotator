@@ -6,7 +6,7 @@ var ViewType;
 })(ViewType || (ViewType = {}));
 class ViewState {
     constructor(wordId, sentenceId, arethusa) {
-        const getWordId = wordId.fmap(ArethusaDoc.sentenceIdByWordId);
+        const getWordId = wordId.fmap(ArethusaDoc.sentenceIdByTokenId);
         const sentenceIdFromWord = arethusa
             .applyBind(getWordId);
         this._sentenceId = wordId.isNothing ?

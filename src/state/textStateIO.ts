@@ -71,10 +71,44 @@ class TextStateIO {
         TextStateIO.appendNewWordToSentence(this)
     }
 
+    static appendNewArtificialToSentence = (s: TextStateIO) => {
+        const appendArtificial = s
+            .currentSentenceId
+            .fmap(
+                ArethusaDoc.appendArtificialToSentence 
+                    (ArethusaArtificial.createAttrs("0"))
+            )
+
+        const newArethusa = s
+            .outputArethusaP
+            .applyBind(appendArtificial)
+
+        const getSentence = s
+            .currentSentenceId
+            .fmap(ArethusaDoc.sentenceById)
+
+        const nextTokenId = newArethusa
+            .applyBind(getSentence)
+            .bind(ArethusaSentence.lastTokenId)
+
+        const newViewState = new ViewState 
+            (nextTokenId, s.currentSentenceId, newArethusa)
+    
+        s.pushOutputArethusa 
+            (false) 
+            (newViewState) 
+            (s.treeState) 
+            (newArethusa)
+    } 
+
+
     static appendNewWordToSentence = (s: TextStateIO) => {
         const appendWord = s
             .currentSentenceId
-            .fmap(ArethusaDoc.appendWordToSentence ({}))
+            .fmap(
+                ArethusaDoc.appendWordToSentence 
+                    (ArethusaWord.createAttrs("---"))
+            )
 
         const newArethusa = s
             .outputArethusaP
@@ -86,7 +120,7 @@ class TextStateIO {
 
         const nextWordId = newArethusa
             .applyBind(getSentence)
-            .bind(ArethusaSentence.lastWordId)
+            .bind(ArethusaSentence.lastTokenId)
 
         const newViewState = new ViewState (nextWordId, s.currentSentenceId, newArethusa)
     
@@ -680,7 +714,7 @@ class TextStateIO {
             .map( (s: ArethusaSentence) => {
                 const words = ArethusaSentence
                     .words(s)
-                    .map(ArethusaWord.form)
+                    .map(ArethusaToken.form)
                     .reduce(Arr.removeNothingReduce, [] as string[])
                     
                 return words.join(" ")

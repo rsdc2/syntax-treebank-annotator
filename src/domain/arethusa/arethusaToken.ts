@@ -15,7 +15,7 @@ class ArethusaToken implements Formable {
             .bind(XML.nodeValue)
     }
 
-    static createFormDict = (form: string): IArethusaToken => {
+    static createAttrs = (form: string): IArethusaToken => {
         return {
             "form": form,
             "relation": "",
@@ -34,7 +34,7 @@ class ArethusaToken implements Formable {
         return new ArethusaToken(node)
     }
 
-    static fromAttrs = (a: ArethusaDoc) => (attrs: IMorph) =>  {
+    static fromAttrs = (a: ArethusaDoc) => (attrs: IArethusaWord) =>  {
         return a.doc
             .fmap(XML.createElement("word")(attrs))   
             .fmap(ArethusaToken.fromXMLNode)

@@ -251,8 +251,10 @@ class TextStateIO {
             .fmap(BoundedNum.decrement)
             .fmap(BoundedNum.value);
     }
+    /**
+     * Representation of all the sentences in a string
+     */
     get sentencesRep() {
-        // sentences representation
         const sentences = this
             .outputArethusaP
             .fmap(ArethusaDoc.sentences)
@@ -261,7 +263,7 @@ class TextStateIO {
             .map((s) => {
             const words = ArethusaSentence
                 .words(s)
-                .map(ArethusaWord.form)
+                .map(ArethusaToken.form)
                 .reduce(Arr.removeNothingReduce, []);
             return words.join(" ");
         });
@@ -301,10 +303,26 @@ TextStateIO.appendNewState = (ext) => (state) => (tsio) => {
     tsio.show(ext);
     return 0;
 };
+TextStateIO.appendNewArtificialToSentence = (s) => {
+    const appendArtificial = s
+        .currentSentenceId
+        .fmap(ArethusaDoc.appendArtificialToSentence(ArethusaArtificial.createAttrs("0")));
+    const newArethusa = s
+        .outputArethusaP
+        .applyBind(appendArtificial);
+    const getSentence = s
+        .currentSentenceId
+        .fmap(ArethusaDoc.sentenceById);
+    const nextTokenId = newArethusa
+        .applyBind(getSentence)
+        .bind(ArethusaSentence.lastTokenId);
+    const newViewState = new ViewState(nextTokenId, s.currentSentenceId, newArethusa);
+    s.pushOutputArethusa(false)(newViewState)(s.treeState)(newArethusa);
+};
 TextStateIO.appendNewWordToSentence = (s) => {
     const appendWord = s
         .currentSentenceId
-        .fmap(ArethusaDoc.appendWordToSentence({}));
+        .fmap(ArethusaDoc.appendWordToSentence(ArethusaWord.createAttrs("---")));
     const newArethusa = s
         .outputArethusaP
         .applyBind(appendWord);
@@ -313,7 +331,7 @@ TextStateIO.appendNewWordToSentence = (s) => {
         .fmap(ArethusaDoc.sentenceById);
     const nextWordId = newArethusa
         .applyBind(getSentence)
-        .bind(ArethusaSentence.lastWordId);
+        .bind(ArethusaSentence.lastTokenId);
     const newViewState = new ViewState(nextWordId, s.currentSentenceId, newArethusa);
     s.pushOutputArethusa(false)(newViewState)(s.treeState)(newArethusa);
 };

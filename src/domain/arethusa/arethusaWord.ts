@@ -15,7 +15,7 @@ class ArethusaWord implements Formable {
             .bind(XML.nodeValue)
     }
 
-    static createFormDict = (form: string): IMorph => {
+    static createAttrs = (form: string): IArethusaWord => {
         return {
             "form": form,
             "lemma": "",
@@ -34,7 +34,7 @@ class ArethusaWord implements Formable {
         return new ArethusaWord(node)
     }
 
-    static fromAttrs = (a: ArethusaDoc) => (attrs: IMorph) =>  {
+    static fromAttrs = (a: ArethusaDoc) => (attrs: IArethusaWord) =>  {
         return a.doc
             .fmap(XML.createElement("word")(attrs))   
             .fmap(ArethusaWord.fromXMLNode)

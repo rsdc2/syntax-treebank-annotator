@@ -16,7 +16,7 @@ class ViewState {
         ) 
         {
 
-        const getWordId = wordId.fmap(ArethusaDoc.sentenceIdByWordId)
+        const getWordId = wordId.fmap(ArethusaDoc.sentenceIdByTokenId)
         const sentenceIdFromWord = arethusa
             .applyBind(getWordId)
 

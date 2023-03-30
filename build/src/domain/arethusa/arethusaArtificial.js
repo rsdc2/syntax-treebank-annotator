@@ -27,7 +27,7 @@ ArethusaArtificial.form = (w) => {
     return XML.attr("form")(w._node)
         .bind(XML.nodeValue);
 };
-ArethusaArtificial.createFormDict = (form) => {
+ArethusaArtificial.createAttrs = (form) => {
     return {
         "form": form,
         "artificial": "elliptic",

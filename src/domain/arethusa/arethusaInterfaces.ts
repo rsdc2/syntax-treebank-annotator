@@ -6,7 +6,7 @@ interface IArethusaToken {
     secdeps: string
 }
 
-interface IMorph extends IArethusaToken{
+interface IArethusaWord extends IArethusaToken{
     lemma: string,
     postag: string,
 }
