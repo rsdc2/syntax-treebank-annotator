@@ -186,7 +186,7 @@ ArethusaSentence.appendWords = (words) => (s) => {
     }
     return words.reduce(_reduce, s.arethusa);
 };
-ArethusaSentence.arethusaTokenByTokenAndSentenceId = (tokenId) => (sentenceId) => (a) => {
+ArethusaSentence.tokenByTokenAndSentenceId = (tokenId) => (sentenceId) => (a) => {
     return MaybeT.of(ArethusaDoc
         .sentenceById(sentenceId)(a)
         .fmap(ArethusaSentence.tokens)

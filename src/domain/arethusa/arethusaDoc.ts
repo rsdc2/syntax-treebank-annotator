@@ -445,7 +445,11 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
             .map( (item: Maybe<string>) => item.value as string )
     }
 
-    static _removeWordOrSentence = (id: string) => (a: ArethusaDoc) => (entity: ArethusaWord | ArethusaSentence) => {
+    static _removeTokenOrSentence = 
+        (id: string) => 
+        (a: ArethusaDoc) => 
+        (entity: ArethusaToken | ArethusaSentence) => 
+    {
         const entityNode = MaybeT.of(entity)
             .fmap(DXML.node)
 
@@ -466,13 +470,17 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
     static removeSentenceById = (id: string) => (a: ArethusaDoc) => {
         return ArethusaDoc
             .sentenceById (id) (a)
-            .bind(ArethusaDoc._removeWordOrSentence (id) (a))
+            .bind(ArethusaDoc._removeTokenOrSentence (id) (a))
     }
 
-    static removeWordByWordAndSentenceId = (wordId: string) => (sentenceId: string) => (a: ArethusaDoc) => {
+    static removeTokenByTokenAndSentenceId = 
+        (wordId: string) => 
+        (sentenceId: string) => 
+        (a: ArethusaDoc) => 
+    {
         return ArethusaSentence
-            .wordByWordAndSentenceId (wordId) (sentenceId) (a)
-            .bind(ArethusaDoc._removeWordOrSentence (wordId) (a))
+            .tokenByTokenAndSentenceId (wordId) (sentenceId) (a)
+            .bind(ArethusaDoc._removeTokenOrSentence (wordId) (a))
     }
 
     static reorderSentenceIds = (a: ArethusaDoc) => {

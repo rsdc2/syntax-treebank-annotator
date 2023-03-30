@@ -213,7 +213,7 @@ class ArethusaSentence implements Word, Wordable, Formable  {
             .bind(ArethusaDoc.fromNode)
     }
 
-    static arethusaTokenByTokenAndSentenceId = 
+    static tokenByTokenAndSentenceId = 
         (tokenId: string) => 
         (sentenceId: string) => 
         (a: ArethusaDoc) => 

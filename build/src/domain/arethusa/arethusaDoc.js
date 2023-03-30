@@ -328,7 +328,7 @@ ArethusaDoc.nextSentenceIds = (startSentenceId) => (a) => {
         .filter((item) => item.isSomething)
         .map((item) => item.value);
 };
-ArethusaDoc._removeWordOrSentence = (id) => (a) => (entity) => {
+ArethusaDoc._removeTokenOrSentence = (id) => (a) => (entity) => {
     const entityNode = MaybeT.of(entity)
         .fmap(DXML.node);
     const removeSentenceNode = entityNode
@@ -344,12 +344,12 @@ ArethusaDoc._removeWordOrSentence = (id) => (a) => (entity) => {
 ArethusaDoc.removeSentenceById = (id) => (a) => {
     return ArethusaDoc
         .sentenceById(id)(a)
-        .bind(ArethusaDoc._removeWordOrSentence(id)(a));
+        .bind(ArethusaDoc._removeTokenOrSentence(id)(a));
 };
-ArethusaDoc.removeWordByWordAndSentenceId = (wordId) => (sentenceId) => (a) => {
+ArethusaDoc.removeTokenByTokenAndSentenceId = (wordId) => (sentenceId) => (a) => {
     return ArethusaSentence
-        .wordByWordAndSentenceId(wordId)(sentenceId)(a)
-        .bind(ArethusaDoc._removeWordOrSentence(wordId)(a));
+        .tokenByTokenAndSentenceId(wordId)(sentenceId)(a)
+        .bind(ArethusaDoc._removeTokenOrSentence(wordId)(a));
 };
 ArethusaDoc.reorderSentenceIds = (a) => {
     const maybeSentences = MaybeT.of(a)

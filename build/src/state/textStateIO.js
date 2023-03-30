@@ -476,7 +476,7 @@ TextStateIO.removeArethusaWord = (s) => {
     const removeWord = s
         .currentSentenceId
         .applyFmap(s.currentWordId
-        .fmap(ArethusaDoc.removeWordByWordAndSentenceId));
+        .fmap(ArethusaDoc.removeTokenByTokenAndSentenceId));
     const newArethusa = s
         .outputArethusaP
         .applyBind(removeWord);

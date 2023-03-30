@@ -7,7 +7,7 @@ class Frontend {
         return Frontend.buttonById("AddNewWord")
     }
 
-    static get arethusaOutputDiv() {
+    static get arethusaOutputDiv(): Maybe<HTMLDivElement> {
         return ArethusaDiv.control
     }
 

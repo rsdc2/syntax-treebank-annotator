@@ -656,7 +656,7 @@ class TextStateIO {
             .currentSentenceId
             .applyFmap(
                 s.currentWordId
-                    .fmap(ArethusaDoc.removeWordByWordAndSentenceId)
+                    .fmap(ArethusaDoc.removeTokenByTokenAndSentenceId)
             )
         
         const newArethusa = s
