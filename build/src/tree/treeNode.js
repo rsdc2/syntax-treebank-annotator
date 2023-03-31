@@ -33,6 +33,7 @@ var TreeNode;
             distToRoot: -1,
             relation: AGLDTRel.NONE,
             type: NodeType.None,
+            artificialType: ArtificialType.None
         };
     };
     TreeNode.headTreeNodeId = (sentState) => (treeNode) => {
@@ -47,7 +48,7 @@ var TreeNode;
         //     (treeNodes) 
         //     (ClickState.none())
         function secDepLinkMapFunc(acc, iSlash) {
-            const slash = SecondaryDep.ofI(iSlash);
+            const slash = SecondaryDep.ofInterface(iSlash);
             const headTreeNode = TreeNode
                 .byTokenId(treeNodes, slash._headTokenId);
             const depTreeNode = TreeNode
@@ -130,7 +131,7 @@ var TreeNode;
             .secondaryDeps
             .findIndex((slash) => {
             return SecondaryDep
-                .ofI(slash)
+                .ofInterface(slash)
                 .slashIdFromTreeNodeIds(sentState)
                 .eq(slashId);
         });
@@ -147,7 +148,7 @@ var TreeNode;
     };
     TreeNode.slashBySlashId = (slashId) => (node) => {
         return MaybeT.of(node.secondaryDeps.find((islash) => {
-            SecondaryDep.ofI(islash).slashIdFromTokenIds === slashId;
+            SecondaryDep.ofInterface(islash).slashIdFromTokenIds === slashId;
         }));
     };
     TreeNode.slashes = (node) => {
@@ -167,7 +168,8 @@ var TreeNode;
             distToRoot: TreeEdge.countEdgesToRoot(token.id, tokens),
             type: token.type === TreeTokenType.Root ?
                 NodeType.Root :
-                NodeType.NonRoot
+                NodeType.NonRoot,
+            artificialType: TreeToken.artificialType(token)
         };
         return node;
     };
@@ -188,18 +190,22 @@ var TreeNode;
         _node.type = token.type === TreeTokenType.Root ?
             NodeType.Root :
             NodeType.NonRoot;
+        _node.artificialType = TreeToken.artificialType(token);
         return _node;
     };
     TreeNode.tokensToTreeNodes = (tokens) => {
         return tokens
             .map(TreeNode.tokenToTreeNode);
     };
-    TreeNode.toXMLStr = (node) => {
+    TreeNode.toArethusaWordXMLStr = (node) => {
+        if (node.artificialType == ArtificialType.Elliptic) {
+            return `<word id="${node.arethusaTokenId}" form="${node.name}" artificial="elliptic" insertion_id="" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}"/>`;
+        }
         return `<word id="${node.arethusaTokenId}" form="${node.name}" lemma="" postag="" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}"/>`;
     };
     TreeNode.toXMLNode = (node) => {
         return MaybeT.of(TreeNode
-            .toXMLStr(node))
+            .toArethusaWordXMLStr(node))
             .fmap(XML.fromXMLStr);
     };
     TreeNode.treeNodeId = (n) => {

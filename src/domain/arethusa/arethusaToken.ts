@@ -4,17 +4,7 @@ class ArethusaToken implements Formable {
     constructor(node: Node) {
         this._node = node
     }
-
-    static id = (w: ArethusaToken) => {
-        return XML.attr ("id") (w._node)
-            .bind(XML.nodeValue)
-    }
-
-    static form = (w: ArethusaToken) => {
-        return XML.attr ("form") (w._node)
-            .bind(XML.nodeValue)
-    }
-
+    
     static createAttrs = (form: string): IArethusaToken => {
         return {
             "form": form,
@@ -22,6 +12,25 @@ class ArethusaToken implements Formable {
             "head": "",
             "secdeps": ""
         }
+    }
+
+    static form = (w: ArethusaToken) => {
+        return XML.attr ("form") (w._node)
+            .bind(XML.nodeValue)
+    }
+
+    static id = (w: ArethusaToken) => {
+        return XML.attr ("id") (w._node)
+            .bind(XML.nodeValue)
+    }
+
+    static isArtificial = (w: ArethusaToken): boolean => {
+        const hasLemma = MaybeT.of(w)
+            .fmap(DXML.node)
+            .fmap(XML.hasAttr('lemma'))
+            .unpackT(false)
+
+        return !hasLemma
     }
 
     static matchId = (id: string) => (word: ArethusaToken) => {
@@ -48,15 +57,15 @@ class ArethusaToken implements Formable {
         return XML.attr ("head") (w._node)
             .bind(XML.nodeValue)
     }
-
-    static parentSentenceAddress = (wordId: string) => {
-        return `./treebank/sentence[child::word[@id="${wordId}"]]`
-    }
-
+    
     static parentSentence = (word: ArethusaToken) => {
         return MaybeT.of(DXML.node(word))
             .bind(XML.parent)
             .fmap(ArethusaSentence.fromXMLNode)
+    }
+    
+    static parentSentenceAddress = (wordId: string) => {
+        return `./treebank/sentence[child::word[@id="${wordId}"]]`
     }
 
     static parentSentenceId = (word: ArethusaToken) => {
@@ -103,21 +112,11 @@ class ArethusaToken implements Formable {
             return TreeTokenType.Root
         }
 
-        const hasLemma = MaybeT.of(w)
-            .fmap(DXML.node)
-            .fmap(XML.hasAttr('lemma'))
-            .unpackT(false)
-
-        if (hasLemma) {
-            return TreeTokenType.NonRoot
-        } 
-        else {
-            return TreeTokenType.Artificial
-        }
+        return TreeTokenType.NonRoot
     }
 
     static toTreeToken = (w: ArethusaToken): ITreeToken => {
-        if (ArethusaToken.treeTokenType(w) === TreeTokenType.Artificial) {
+        if (ArethusaToken.isArtificial(w)) {
             console.log("To artificial token")
             return ArethusaArtificial.toTreeToken(w)
         }

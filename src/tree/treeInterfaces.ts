@@ -29,6 +29,7 @@ interface ITreeArtificial extends ITreeToken {
 
 /**
  * Nodes in the tree
+ * Includes the ROOT
  */
 interface ITreeNode extends d3.SimulationNodeDatum {
     name: string,
@@ -39,6 +40,7 @@ interface ITreeNode extends d3.SimulationNodeDatum {
     distToRoot: number,
     relation: string
     type: NodeType,
+    artificialType: ArtificialType,
     radius?: number | undefined;
 }
 

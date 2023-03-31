@@ -9,7 +9,7 @@ var Constants;
         secondaryDeps: [],
         distToRoot: 0,
         type: NodeType.Root,
-        // token: null,
+        artificialType: ArtificialType.None
     };
     Constants.rootToken = {
         form: "[ROOT]",

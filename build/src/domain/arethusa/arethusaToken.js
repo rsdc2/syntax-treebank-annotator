@@ -12,14 +12,6 @@ class ArethusaToken {
         return "./treebank/sentence/word";
     }
 }
-ArethusaToken.id = (w) => {
-    return XML.attr("id")(w._node)
-        .bind(XML.nodeValue);
-};
-ArethusaToken.form = (w) => {
-    return XML.attr("form")(w._node)
-        .bind(XML.nodeValue);
-};
 ArethusaToken.createAttrs = (form) => {
     return {
         "form": form,
@@ -27,6 +19,21 @@ ArethusaToken.createAttrs = (form) => {
         "head": "",
         "secdeps": ""
     };
+};
+ArethusaToken.form = (w) => {
+    return XML.attr("form")(w._node)
+        .bind(XML.nodeValue);
+};
+ArethusaToken.id = (w) => {
+    return XML.attr("id")(w._node)
+        .bind(XML.nodeValue);
+};
+ArethusaToken.isArtificial = (w) => {
+    const hasLemma = MaybeT.of(w)
+        .fmap(DXML.node)
+        .fmap(XML.hasAttr('lemma'))
+        .unpackT(false);
+    return !hasLemma;
 };
 ArethusaToken.matchId = (id) => (word) => {
     return ArethusaToken
@@ -45,13 +52,13 @@ ArethusaToken.head = (w) => {
     return XML.attr("head")(w._node)
         .bind(XML.nodeValue);
 };
-ArethusaToken.parentSentenceAddress = (wordId) => {
-    return `./treebank/sentence[child::word[@id="${wordId}"]]`;
-};
 ArethusaToken.parentSentence = (word) => {
     return MaybeT.of(DXML.node(word))
         .bind(XML.parent)
         .fmap(ArethusaSentence.fromXMLNode);
+};
+ArethusaToken.parentSentenceAddress = (wordId) => {
+    return `./treebank/sentence[child::word[@id="${wordId}"]]`;
 };
 ArethusaToken.parentSentenceId = (word) => {
     return ArethusaToken
@@ -81,19 +88,10 @@ ArethusaToken.treeTokenType = (w) => {
     if (ArethusaToken.id(w).eq("0")) {
         return TreeTokenType.Root;
     }
-    const hasLemma = MaybeT.of(w)
-        .fmap(DXML.node)
-        .fmap(XML.hasAttr('lemma'))
-        .unpackT(false);
-    if (hasLemma) {
-        return TreeTokenType.NonRoot;
-    }
-    else {
-        return TreeTokenType.Artificial;
-    }
+    return TreeTokenType.NonRoot;
 };
 ArethusaToken.toTreeToken = (w) => {
-    if (ArethusaToken.treeTokenType(w) === TreeTokenType.Artificial) {
+    if (ArethusaToken.isArtificial(w)) {
         console.log("To artificial token");
         return ArethusaArtificial.toTreeToken(w);
     }

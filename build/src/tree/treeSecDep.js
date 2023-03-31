@@ -55,8 +55,8 @@ SecondaryDep.createIdFromTreeNodeIds = (sentState) => (slash) => {
 SecondaryDep.createEdgeLabelIdFromTokenIds = (slash) => {
     return TreeLinks.createEdgeLabelIdFromTokenIds(slash)("slash");
 };
-SecondaryDep.createEdgeLabelIdFromTreeNodeIds = (sentState) => (slash) => {
-    return TreeLinks.createEdgeLabelIdFromTreeNodeIds(sentState)(slash)("slash");
+SecondaryDep.createEdgeLabelIdFromTreeNodeIds = (sentState) => (secondaryDep) => {
+    return TreeLinks.createEdgeLabelIdFromTreeNodeIds(sentState)(secondaryDep)("slash");
 };
 SecondaryDep.createPathIdFromTokenIds = (slash) => {
     return TreeLinks.createPathIdFromTokenIds(slash)("slash");
@@ -94,12 +94,14 @@ SecondaryDep.ofStr = (depId) => (s) => {
 SecondaryDep.ofTokenIds = (headTokenId) => (depTokenId) => (relation) => {
     return new SecondaryDep(headTokenId, depTokenId, relation);
 };
-SecondaryDep.ofTreeNodeIds = (sentState) => (headTreeNodeId) => (depTreeNodeId) => (relation) => {
-    const headTokenId = sentState.treeNodeIdToTokenId(headTreeNodeId);
-    const depTokenId = sentState.treeNodeIdToTokenId(depTreeNodeId);
-    return MaybeT.of(relation).applyFmap(depTokenId.applyFmap(headTokenId.fmap(SecondaryDep.ofTokenIds)));
+SecondaryDep.ofTreeNodeIds = (treeState) => (headTreeNodeId) => (depTreeNodeId) => (relation) => {
+    const headTokenId = treeState.treeNodeIdToTokenId(headTreeNodeId);
+    const depTokenId = treeState.treeNodeIdToTokenId(depTreeNodeId);
+    return MaybeT.of(relation)
+        .applyFmap(depTokenId
+        .applyFmap(headTokenId.fmap(SecondaryDep.ofTokenIds)));
 };
-SecondaryDep.ofI = (islash) => {
+SecondaryDep.ofInterface = (islash) => {
     return new SecondaryDep(islash._headTokenId, islash._depTokenId, islash._relation);
 };
 SecondaryDep.relation = (slash) => {

@@ -14,7 +14,7 @@ class TreeState {
             return MaybeT.of(this
                 .slashes
                 .find((slash) => {
-                return SecondaryDep.ofI(slash).slashIdFromTokenIds === slashId;
+                return SecondaryDep.ofInterface(slash).slashIdFromTokenIds === slashId;
             }));
         };
         this.tokenIdToTreeNodeId = (tokenId) => {
@@ -59,7 +59,7 @@ class TreeState {
     get slashes() {
         return this.nodes
             .reduce((acc, node) => {
-            return Arr.concat(acc)(node.secondaryDeps.map(SecondaryDep.ofI));
+            return Arr.concat(acc)(node.secondaryDeps.map(SecondaryDep.ofInterface));
         }, []);
     }
     get tokens() {
@@ -96,7 +96,7 @@ TreeState.nodeBySlashIdFromTreeNodeIds = (slashId) => (sentState) => {
         .slashes
         .find((islash) => {
         return SecondaryDep
-            .ofI(islash)
+            .ofInterface(islash)
             .slashIdFromTreeNodeIds(sentState)
             .eq(slashId);
     }))
@@ -132,22 +132,22 @@ TreeState.ofTokensWithExistingNodes = (nodes) => (sentence_id) => (tokens) => {
         .fmap(Num.add(1))
         .unpackT(0), sentence_id, tokens, _nodes, ClickState.none());
 };
-TreeState.tokenIdToTreeNodeId = (tokenId) => (sentState) => {
-    return sentState
+TreeState.tokenIdToTreeNodeId = (tokenId) => (treeState) => {
+    return treeState
         .nodeByTokenId(Str.fromNum(tokenId))
         .fmap(TreeNode.treeNodeId);
 };
-TreeState.toXMLStr = (s) => {
+TreeState.toArethusaSentenceXMLStr = (s) => {
     const xmlWords = s
         .nodesNoRoot
-        .map(TreeNode.toXMLStr);
+        .map(TreeNode.toArethusaWordXMLStr);
     return `<sentence id="${s._sentence_id}">`
         .concat(...xmlWords)
         .concat(`</sentence>`);
 };
 TreeState.toArethusaXMLNode = (s) => {
     return MaybeT.of(XML
-        .fromXMLStr(TreeState.toXMLStr(s))
+        .fromXMLStr(TreeState.toArethusaSentenceXMLStr(s))
         .firstChild);
 };
 TreeState.treeNodeIdToTokenId = (treeNodeId) => (sentState) => {

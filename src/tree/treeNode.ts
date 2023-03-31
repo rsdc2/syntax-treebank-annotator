@@ -54,6 +54,7 @@ namespace TreeNode {
             distToRoot: -1,
             relation: AGLDTRel.NONE,
             type: NodeType.None,
+            artificialType: ArtificialType.None
         }
     }
 
@@ -74,7 +75,7 @@ namespace TreeNode {
         //     (ClickState.none())
 
         function secDepLinkMapFunc(acc: ITreeLink[], iSlash: ISecondaryDep) {
-            const slash = SecondaryDep.ofI(iSlash)
+            const slash = SecondaryDep.ofInterface(iSlash)
 
             const headTreeNode = TreeNode
                 .byTokenId(treeNodes, slash._headTokenId)
@@ -203,7 +204,7 @@ namespace TreeNode {
             .findIndex (
                 (slash) => {
                     return SecondaryDep
-                        .ofI(slash)
+                        .ofInterface(slash)
                         .slashIdFromTreeNodeIds(sentState)
                         .eq(slashId)
                 }
@@ -228,7 +229,7 @@ namespace TreeNode {
     export const slashBySlashId = (slashId: string) => (node: ITreeNode) => {
         return MaybeT.of(node.secondaryDeps.find(
             (islash: ISecondaryDep) => {
-                SecondaryDep.ofI(islash).slashIdFromTokenIds === slashId
+                SecondaryDep.ofInterface(islash).slashIdFromTokenIds === slashId
             }
         ))
     }
@@ -256,7 +257,8 @@ namespace TreeNode {
             distToRoot: TreeEdge.countEdgesToRoot(token.id, tokens),
             type: token.type === TreeTokenType.Root ? 
                 NodeType.Root : 
-                NodeType.NonRoot
+                NodeType.NonRoot,
+            artificialType: TreeToken.artificialType(token)
         }
     
         return node
@@ -290,7 +292,8 @@ namespace TreeNode {
         _node.distToRoot = TreeEdge.countEdgesToRoot(token.id, tokens)
         _node.type = token.type === TreeTokenType.Root ? 
             NodeType.Root : 
-            NodeType.NonRoot
+            NodeType.NonRoot;
+        _node.artificialType = TreeToken.artificialType(token)
 
         return _node
 
@@ -302,13 +305,17 @@ namespace TreeNode {
             .map(TreeNode.tokenToTreeNode)
     }
 
-    export const toXMLStr = (node: ITreeNode) => {
+    export const toArethusaWordXMLStr = (node: ITreeNode) => {
+        if (node.artificialType == ArtificialType.Elliptic) {
+            return `<word id="${node.arethusaTokenId}" form="${node.name}" artificial="elliptic" insertion_id="" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}"/>`
+        }
+
         return `<word id="${node.arethusaTokenId}" form="${node.name}" lemma="" postag="" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}"/>`
     }
 
     export const toXMLNode = (node: ITreeNode) => {
         return MaybeT.of(TreeNode
-            .toXMLStr(node))
+            .toArethusaWordXMLStr(node))
             .fmap(XML.fromXMLStr)
     }
 

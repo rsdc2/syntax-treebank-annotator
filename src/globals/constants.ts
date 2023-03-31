@@ -10,7 +10,7 @@ namespace Constants {
         secondaryDeps: [],
         distToRoot: 0, 
         type: NodeType.Root,
-        // token: null,
+        artificialType: ArtificialType.None
     }
 
     export const rootToken: ITreeWord = {

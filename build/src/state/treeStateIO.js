@@ -35,7 +35,8 @@ class TreeStateIO {
             if (newClickState.elementType === ElementType.EdgeLabel) {
                 // Don't do anything if clicking on the same label
                 if (this.currentTreeState.clickState.elementType === ElementType.EdgeLabel) {
-                    if (newClickState.lastClickedId.value === this.currentTreeState.clickState.lastClickedId.value) {
+                    if (newClickState.lastClickedId.value ===
+                        this.currentTreeState.clickState.lastClickedId.value) {
                         return;
                     }
                 }
@@ -226,7 +227,7 @@ TreeStateIO.changeSlashRel = (newRel) => (slashId) => (state) => {
         case (true):
             const newSlash = currentSlash
                 .fmap(SecondaryDep.changeRel(newRel))
-                .fmap(SecondaryDep.ofI);
+                .fmap(SecondaryDep.ofInterface);
             const getNode = state
                 .currentTreeState
                 .nodeByTreeNodeId;

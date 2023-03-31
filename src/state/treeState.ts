@@ -108,7 +108,7 @@ class TreeState implements ITreeState {
                 .find(
                     (islash: ISecondaryDep) => {
                         return SecondaryDep
-                            .ofI(islash)
+                            .ofInterface(islash)
                             .slashIdFromTreeNodeIds(sentState)
                             .eq(slashId)
                     }
@@ -124,7 +124,10 @@ class TreeState implements ITreeState {
         return TreeState.nodeBySlashIdFromTreeNodeIds(slashId)(this)
     }
 
-    static nodeRelation = (depIdx: string) => (sentState: TreeState) => {
+    static nodeRelation = 
+        (depIdx: string) => 
+        (sentState: TreeState): Maybe<string> => 
+    {
         return TreeState
             .nodeByTreeNodeId(depIdx)(sentState)
             .fmap(TreeNode.relation)
@@ -200,7 +203,7 @@ class TreeState implements ITreeState {
     get slashes ()  {
         return this.nodes
             .reduce ( (acc: SecondaryDep[], node:ITreeNode) => {
-                return Arr.concat(acc)(node.secondaryDeps.map(SecondaryDep.ofI))
+                return Arr.concat(acc)(node.secondaryDeps.map(SecondaryDep.ofInterface))
             }
             , [])
     }
@@ -210,7 +213,7 @@ class TreeState implements ITreeState {
             .slashes
             .find (
                 (slash: ISecondaryDep) => {
-                    return SecondaryDep.ofI(slash).slashIdFromTokenIds === slashId
+                    return SecondaryDep.ofInterface(slash).slashIdFromTokenIds === slashId
                 }
             ))
     }
@@ -223,8 +226,8 @@ class TreeState implements ITreeState {
         this._tokens = value
     }
 
-    static tokenIdToTreeNodeId = (tokenId: number) => (sentState: TreeState) => {
-        return sentState
+    static tokenIdToTreeNodeId = (tokenId: number) => (treeState: TreeState) => {
+        return treeState
             .nodeByTokenId(Str.fromNum(tokenId))
             .fmap(TreeNode.treeNodeId)
     }
@@ -235,10 +238,10 @@ class TreeState implements ITreeState {
             (this)
     }
 
-    static toXMLStr = (s: TreeState) => {
+    static toArethusaSentenceXMLStr = (s: TreeState) => {
         const xmlWords = s
             .nodesNoRoot
-            .map(TreeNode.toXMLStr)
+            .map(TreeNode.toArethusaWordXMLStr)
 
         return `<sentence id="${s._sentence_id}">`
             .concat(...xmlWords)
@@ -247,7 +250,7 @@ class TreeState implements ITreeState {
 
     static toArethusaXMLNode = (s: TreeState) => {
         return MaybeT.of(XML
-            .fromXMLStr(TreeState.toXMLStr(s))
+            .fromXMLStr(TreeState.toArethusaSentenceXMLStr(s))
             .firstChild)
     }
 

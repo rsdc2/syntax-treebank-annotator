@@ -33,17 +33,3 @@ var XMLLang;
     XMLLang["GRC"] = "grc";
     XMLLang["LAT"] = "lat";
 })(XMLLang || (XMLLang = {}));
-var NodeType;
-(function (NodeType) {
-    NodeType["Root"] = "root";
-    NodeType["Leaf"] = "leaf";
-    NodeType["Branch"] = "branch";
-    NodeType["NonRoot"] = "non-root";
-    NodeType["None"] = "none";
-})(NodeType || (NodeType = {}));
-var TreeTokenType;
-(function (TreeTokenType) {
-    TreeTokenType["Root"] = "root";
-    TreeTokenType["NonRoot"] = "non-root";
-    TreeTokenType["Artificial"] = "artificial";
-})(TreeTokenType || (TreeTokenType = {}));

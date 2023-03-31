@@ -387,7 +387,6 @@ ArethusaSentence.toTreeSentStateWithNodesFromExistingTree = (nodes) => (sentence
         .applyFmap(getTreeSentState);
 };
 ArethusaSentence.treeTokens = (sentence) => {
-    console.log('treeTokens');
     return MaybeT.of(sentence)
         .fmap(ArethusaSentence.tokens)
         .unpackT([])

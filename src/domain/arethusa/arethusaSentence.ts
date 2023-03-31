@@ -545,7 +545,6 @@ class ArethusaSentence implements Word, Wordable, Formable  {
     }
 
     static treeTokens = (sentence: ArethusaSentence) => {
-        console.log('treeTokens')
         return MaybeT.of(sentence)
             .fmap(ArethusaSentence.tokens)
             .unpackT([])
