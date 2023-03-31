@@ -158,7 +158,6 @@ class TextState {
         return sentenceIdsNoNothings
     }
 
-
     static plainText = (s: TextState) => {
         return s._inputPlainText
     }
