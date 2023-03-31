@@ -1,16 +1,22 @@
 class TextStateIO {
-    // _sentenceViewState: Maybe<SentenceViewState> = Nothing.of<SentenceViewState>()
     constructor(initialState) {
         this._textStates = [];
         this._currentStateIdx = Nothing.of();
         this.appendNewState = (ext) => (state) => {
+            var _a, _b;
             const s = MaybeT.of(state);
-            const newState = TextState.maybeOf(s.bind(TextState.viewStateDeep), s.bind(TextState.sentenceVSDeep), s.bind(TextState.treeStateDeep), s.bind(TextState.plainText), s.bind(TextState.inputArethusaDeep), s.bind(TextState.outputArethusaDeep), s.bind(TextState.epidocDeep));
-            if (!newState.fmap(TextState.hasNothing).unpackT(true)) {
-                newState.fmap(this.push);
+            const newState = TextState.of(s.bind(TextState.viewStateDeep), state._sentenceVS.fmap(SentenceViewState.deepcopy), s.bind(TextState.treeStateDeep), s.bind(TextState.plainText), s.bind(TextState.inputArethusaDeep), s.bind(TextState.outputArethusaDeep), s.bind(TextState.epidocDeep));
+            if (newState._sentenceVS.isNothing) {
+                if (((_a = this.currentState.value) === null || _a === void 0 ? void 0 : _a._sentenceVS) != null) {
+                    newState._sentenceVS = (_b = this.currentState.value) === null || _b === void 0 ? void 0 : _b._sentenceVS.fmap(SentenceViewState.deepcopy);
+                }
+            }
+            const maybeNS = MaybeT.of(newState);
+            if (!maybeNS.fmap(TextState.hasNothing).unpackT(true)) {
+                maybeNS.fmap(this.push);
                 this.currentStateIdx = this.lastStateIdx;
             }
-            TextStateIO.initSentenceViewState(this);
+            // TextStateIO.initSentenceViewState(this)
             this.show(ext);
         };
         this.changeArethusaSentence = (ext) => (newS) => {
@@ -75,7 +81,7 @@ class TextStateIO {
         };
         this.pushOutputArethusa = (ext) => (viewState) => (treeState) => (outputArethusa) => {
             this.appendNewState(ext)(TextState.of(MaybeT.of(viewState), this.currentState
-                .bind(TextState.sentenceVSDeep), treeState, this.currentState
+                .bind(TextState.sentenceVS), treeState, this.currentState
                 .bind(TextState.plainText), this.currentState
                 .bind(TextState.inputArethusaDeep), outputArethusa, this.currentState
                 .bind(TextState.epidocDeep)));
@@ -386,14 +392,6 @@ TextStateIO.changeArethusaSentence = (ext) => (s) => (newS) => {
 TextStateIO.changeView = (wordId) => (sentenceId) => (s) => {
     // Create new ViewState
     const newVS = new ViewState(wordId, sentenceId, s.outputArethusaP);
-    // // Check whether sentences have changed
-    // // If so, reset the viewbox
-    // const sentencesSame = s
-    //     .viewState
-    //     .fmap(ViewState.sentencesSame(newVS))
-    // if (!sentencesSame) {
-    //     Frontend.resetViewBox()
-    // }
     s.currentState.fmap(TextState.setViewState(newVS));
     s.show(false);
 };
@@ -553,8 +551,17 @@ TextStateIO.initSentenceViewState = (tsio) => {
     if (ts.bind(TextState.sentenceVS).isNothing) {
         if (sentenceIds.length > 0) {
             console.log("new sentence view state");
+            // if (tsio.currentStateIdx.unpackT(0) > 0) {
+            //     console.log("copying")
+            //     const x = ts.fmap(TextState
+            //         .setSentenceVS(
+            //             tsio.prevState.bind(TextState.sentenceVSDeep)
+            //         ))
+            // }
+            // else {
             ts.fmap(TextState
                 .setSentenceVS(MaybeT.of(new SentenceViewState(sentenceIds))));
+            // }
         }
     }
 };

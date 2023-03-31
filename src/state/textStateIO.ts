@@ -31,21 +31,29 @@ class TextStateIO {
 
         const s = MaybeT.of(state)
 
-        const newState = TextState.maybeOf(
+        const newState = TextState.of(
             s.bind(TextState.viewStateDeep),
-            s.bind(TextState.sentenceVSDeep),
+            state._sentenceVS.fmap(SentenceViewState.deepcopy),
             s.bind(TextState.treeStateDeep),
             s.bind(TextState.plainText),
             s.bind(TextState.inputArethusaDeep),
             s.bind(TextState.outputArethusaDeep),
             s.bind(TextState.epidocDeep)
         )
+
+        if (newState._sentenceVS.isNothing) {
+            if (this.currentState.value?._sentenceVS != null) {
+                newState._sentenceVS = this.currentState.value?._sentenceVS.fmap(SentenceViewState.deepcopy)
+            }   
+        }
+
+        const maybeNS = MaybeT.of(newState)
         
-        if (!newState.fmap(TextState.hasNothing).unpackT(true)) {
-            newState.fmap(this.push)
+        if (!maybeNS.fmap(TextState.hasNothing).unpackT(true)) {
+            maybeNS.fmap(this.push)
             this.currentStateIdx = this.lastStateIdx
         }
-        TextStateIO.initSentenceViewState(this)
+        // TextStateIO.initSentenceViewState(this)
 
         this.show(ext)
     }
@@ -176,7 +184,10 @@ class TextStateIO {
             .bind(DXML.nodeXMLStr)
     }
 
-    changeArethusaSentence = (ext: boolean) => (newS: ArethusaSentence) => {
+    changeArethusaSentence = 
+        (ext: boolean) => 
+        (newS: ArethusaSentence) => 
+    {
         TextStateIO.changeArethusaSentence (ext) (this) (newS) 
     }
 
@@ -201,7 +212,10 @@ class TextStateIO {
             (newArethusa)       
     }
 
-    changeView = (wordId: Maybe<string>) => (sentenceId: Maybe<string>) => {
+    changeView = 
+        (wordId: Maybe<string>) => 
+        (sentenceId: Maybe<string>) => 
+    {
         TextStateIO.changeView(wordId)(sentenceId)(this)
     }
 
@@ -221,16 +235,6 @@ class TextStateIO {
             sentenceId, 
             s.outputArethusaP
         )
-
-        // // Check whether sentences have changed
-        // // If so, reset the viewbox
-        // const sentencesSame = s
-        //     .viewState
-        //     .fmap(ViewState.sentencesSame(newVS))
-        
-        // if (!sentencesSame) {
-        //     Frontend.resetViewBox()
-        // }
 
         s.currentState.fmap(TextState.setViewState(newVS))
 
@@ -670,7 +674,7 @@ class TextStateIO {
             (TextState.of(
                 MaybeT.of(viewState),
                 this.currentState
-                    .bind(TextState.sentenceVSDeep),
+                    .bind(TextState.sentenceVS),
                 treeState,
                 this.currentState
                     .bind(TextState.plainText),
@@ -798,11 +802,20 @@ class TextStateIO {
         if (ts.bind(TextState.sentenceVS).isNothing) {
             if (sentenceIds.length > 0) {
                 console.log("new sentence view state")
-                ts.fmap(TextState
-                    .setSentenceVS(
-                        MaybeT.of(new SentenceViewState(sentenceIds))
-                    )   
-                )
+                // if (tsio.currentStateIdx.unpackT(0) > 0) {
+                //     console.log("copying")
+                //     const x = ts.fmap(TextState
+                //         .setSentenceVS(
+                //             tsio.prevState.bind(TextState.sentenceVSDeep)
+                //         ))
+                // }
+                // else {
+                    ts.fmap(TextState
+                        .setSentenceVS(
+                            MaybeT.of(new SentenceViewState(sentenceIds))
+                        )   
+                    )
+                // }
             }
         }
     }
