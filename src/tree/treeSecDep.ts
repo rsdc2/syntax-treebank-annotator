@@ -24,7 +24,10 @@ class SecondaryDep implements ISecondaryDep {
             (slash.depTokenId)
     } 
 
-    static createIdFromTreeNodeIds = (sentState: TreeState) => (slash: SecondaryDep) => {
+    static createIdFromTreeNodeIds = 
+        (sentState: TreeState) => 
+        (slash: SecondaryDep) => 
+    {
         const headTreeNodeId = SecondaryDep.headTreeNodeId(sentState)(slash)
         const depTreeNodeId = SecondaryDep.depTreeNodeId(sentState)(slash)
 
@@ -36,15 +39,24 @@ class SecondaryDep implements ISecondaryDep {
         return TreeLinks.createEdgeLabelIdFromTokenIds (slash) ("slash")
     }
 
-    static createEdgeLabelIdFromTreeNodeIds = (sentState: TreeState) => (slash: SecondaryDep) => {
-        return TreeLinks.createEdgeLabelIdFromTreeNodeIds (sentState) (slash) ("slash")
+    static createEdgeLabelIdFromTreeNodeIds = 
+        (sentState: TreeState) => 
+        (secondaryDep: SecondaryDep) => 
+    {
+        return TreeLinks.createEdgeLabelIdFromTreeNodeIds 
+            (sentState) 
+            (secondaryDep) 
+            ("slash")
     }
 
     static createPathIdFromTokenIds = (slash: SecondaryDep) => {
         return TreeLinks.createPathIdFromTokenIds (slash) ("slash")
     }
 
-    static createPathIdFromTreeNodeIds = (sentState: TreeState) => (slash: SecondaryDep) => {
+    static createPathIdFromTreeNodeIds = 
+        (sentState: TreeState) => 
+        (slash: SecondaryDep) => 
+    {
         return TreeLinks.createPathIdFromTreeNodeIds (sentState) (slash) ("slash")
     }
 
@@ -132,19 +144,24 @@ class SecondaryDep implements ISecondaryDep {
     }
 
     static ofTreeNodeIds =
-        (sentState: TreeState) => 
+        (treeState: TreeState) => 
         (headTreeNodeId: number) => 
         (depTreeNodeId: number) => 
-        (relation: string) => 
-    
-        {
-            const headTokenId = sentState.treeNodeIdToTokenId(headTreeNodeId)
-            const depTokenId = sentState.treeNodeIdToTokenId(depTreeNodeId)
+        (relation: string): Maybe<SecondaryDep> => 
+    {
+        const headTokenId = treeState.treeNodeIdToTokenId(headTreeNodeId)
+        const depTokenId = treeState.treeNodeIdToTokenId(depTreeNodeId)
 
-            return MaybeT.of(relation).applyFmap(depTokenId.applyFmap(headTokenId.fmap(SecondaryDep.ofTokenIds)))
+        return MaybeT.of(relation)
+            .applyFmap(
+                depTokenId
+                    .applyFmap(
+                        headTokenId.fmap(SecondaryDep.ofTokenIds)
+                    )
+                )
     }
 
-    static ofI = (islash: ISecondaryDep) => {
+    static ofInterface = (islash: ISecondaryDep) => {
         return new SecondaryDep(islash._headTokenId, islash._depTokenId, islash._relation)
     }
 
