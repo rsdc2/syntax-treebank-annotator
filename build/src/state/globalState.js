@@ -4,7 +4,7 @@ class GlobalState {
         this._keysPressedInputEpiDoc = 0;
         this._keysPressedInputText = 0;
         this.createTextStateIO = (arethusa, epidoc, plainText) => {
-            this.textStateIO = MaybeT.of(TextStateIO.of(arethusa.fmap(ViewState.of("1")("1")), Nothing.of(), plainText, arethusa, arethusa, epidoc));
+            this.textStateIO = MaybeT.of(TextStateIO.of(arethusa.fmap(ViewState.of("1")("1")), Nothing.of(), Nothing.of(), plainText, arethusa, arethusa, epidoc));
         };
         this.createTreeStateIO = () => {
             this.treeStateIO = this

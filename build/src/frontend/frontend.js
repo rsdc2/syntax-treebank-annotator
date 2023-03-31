@@ -380,7 +380,10 @@ Frontend.saveCurrentState = () => {
     const textState = TextState.of(globalState
         .textStateIO
         .bind(TextStateIO.currentState)
-        .bind(TextState.viewState), Nothing.of(), Frontend.plainText, Frontend.inputArethusa, globalState
+        .bind(TextState.viewState), globalState
+        .textStateIO
+        .bind(TextStateIO.currentState)
+        .bind(TextState.sentenceVSDeep), Nothing.of(), Frontend.plainText, Frontend.inputArethusa, globalState
         .textStateIO
         .bind(TextStateIO.currentState)
         .bind(TextState.outputArethusaDeep), Frontend.epidoc);
@@ -394,7 +397,7 @@ Frontend.processEpiDoc = (epidocStr) => {
     const arethusa = MaybeT
         .of(epidocStr)
         .bind(Conversion.epidocXMLToArethusa);
-    const textState = TextState.of(arethusa.fmap(ViewState.of("1")("1")), Nothing.of(), Nothing.of(), arethusa, arethusa, epidoc);
+    const textState = TextState.of(arethusa.fmap(ViewState.of("1")("1")), Nothing.of(), Nothing.of(), Nothing.of(), arethusa, arethusa, epidoc);
     globalState
         .textStateIO
         .fmapErr("No textStateIO", TextStateIO.appendNewState(false)(textState));
@@ -406,7 +409,7 @@ Frontend.processArethusa = (arethusaStr) => {
     const arethusa = MaybeT
         .of(arethusaStr)
         .bind(ArethusaDoc.fromXMLStr);
-    const textstate = TextState.of(arethusa.fmap(ViewState.of("1")("1")), Nothing.of(), Nothing.of(), arethusa, arethusa, Nothing.of());
+    const textstate = TextState.of(arethusa.fmap(ViewState.of("1")("1")), Nothing.of(), Nothing.of(), Nothing.of(), arethusa, arethusa, Nothing.of());
     globalState
         .textStateIO
         .fmapErr("No textStateIO", TextStateIO.appendNewState(false)(textstate));
@@ -418,7 +421,7 @@ Frontend.processText = (textStr) => {
     const arethusa = MaybeT
         .of(textStr)
         .bind(ArethusaDoc.fromPlainTextStr);
-    const textstate = TextState.of(arethusa.fmap(ViewState.of("1")("1")), Nothing.of(), MaybeT.of(textStr), arethusa, arethusa, Nothing.of());
+    const textstate = TextState.of(arethusa.fmap(ViewState.of("1")("1")), Nothing.of(), Nothing.of(), MaybeT.of(textStr), arethusa, arethusa, Nothing.of());
     globalState
         .textStateIO
         .fmapErr("No textStateIO", TextStateIO.appendNewState(false)(textstate));

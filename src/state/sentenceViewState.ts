@@ -45,6 +45,12 @@ class SentenceViewState {
         )
     }
 
+    static deepcopy = (svs: SentenceViewState) => {
+        const newSVS = new SentenceViewState([])
+        newSVS._viewstates = [...svs._viewstates]
+        return newSVS
+    }
+
     hasSentenceId(id: string) {
         return id in this.sentenceIds
     }
@@ -124,6 +130,7 @@ class SentenceViewState {
         )
 
         svs._viewstates = result
+        return svs
     }
 
     updateFromTSIO = (tsio:TextStateIO) => {

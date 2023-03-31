@@ -1,11 +1,11 @@
 class TextStateIO {
+    // _sentenceViewState: Maybe<SentenceViewState> = Nothing.of<SentenceViewState>()
     constructor(initialState) {
         this._textStates = [];
         this._currentStateIdx = Nothing.of();
-        this._sentenceViewState = Nothing.of();
         this.appendNewState = (ext) => (state) => {
             const s = MaybeT.of(state);
-            const newState = TextState.maybeOf(s.bind(TextState.viewStateDeep), s.bind(TextState.treeStateDeep), s.bind(TextState.plainText), s.bind(TextState.inputArethusaDeep), s.bind(TextState.outputArethusaDeep), s.bind(TextState.epidocDeep));
+            const newState = TextState.maybeOf(s.bind(TextState.viewStateDeep), s.bind(TextState.sentenceVSDeep), s.bind(TextState.treeStateDeep), s.bind(TextState.plainText), s.bind(TextState.inputArethusaDeep), s.bind(TextState.outputArethusaDeep), s.bind(TextState.epidocDeep));
             if (!newState.fmap(TextState.hasNothing).unpackT(true)) {
                 newState.fmap(this.push);
                 this.currentStateIdx = this.lastStateIdx;
@@ -74,7 +74,8 @@ class TextStateIO {
             TextStateIO.pushInputArethusa(arethusa)(this);
         };
         this.pushOutputArethusa = (ext) => (viewState) => (treeState) => (outputArethusa) => {
-            this.appendNewState(ext)(TextState.of(MaybeT.of(viewState), treeState, this.currentState
+            this.appendNewState(ext)(TextState.of(MaybeT.of(viewState), this.currentState
+                .bind(TextState.sentenceVSDeep), treeState, this.currentState
                 .bind(TextState.plainText), this.currentState
                 .bind(TextState.inputArethusaDeep), outputArethusa, this.currentState
                 .bind(TextState.epidocDeep)));
@@ -142,7 +143,7 @@ class TextStateIO {
                     .fmap(TextState.updateTreeState(treeState));
             }
             // Set the viewbox
-            this._sentenceViewState
+            this.sentenceViewState
                 .fmap(SentenceViewState.updateSVGViewBox(this.currentSentenceId.unpackT("")));
         };
         this.undo = () => {
@@ -274,6 +275,9 @@ class TextStateIO {
             .prevIdx
             .bind(f(this.states));
     }
+    get sentenceViewState() {
+        return TextStateIO.sentenceViewState(this);
+    }
     /**
      * Representation of all the sentences in a string
      */
@@ -315,7 +319,7 @@ TextStateIO.appendNewSentenceToArethusa = (s) => {
 };
 TextStateIO.appendNewState = (ext) => (state) => (tsio) => {
     const s = MaybeT.of(state);
-    const newState = TextState.maybeOf(s.bindErr("Error.", TextState.viewStateDeep), s.bindErr("Error.", TextState.treeStateDeep), s.bindErr("Error.", TextState.plainText), s.bindErr("Error.", TextState.inputArethusaDeep), s.bindErr("Error.", TextState.outputArethusaDeep), s.bindErr("Error.", TextState.epidocDeep));
+    const newState = TextState.maybeOf(s.bindErr("Error.", TextState.viewStateDeep), s.bindErr("Error.", TextState.sentenceVSDeep), s.bindErr("Error.", TextState.treeStateDeep), s.bindErr("Error.", TextState.plainText), s.bindErr("Error.", TextState.inputArethusaDeep), s.bindErr("Error.", TextState.outputArethusaDeep), s.bindErr("Error.", TextState.epidocDeep));
     newState.fmap(tsio.push);
     tsio.currentStateIdx = tsio.lastStateIdx;
     tsio.show(ext);
@@ -407,11 +411,11 @@ TextStateIO.currentSentence = (textStateIO) => {
 };
 TextStateIO.setCurrentSentenceViewBoxStr = (vb) => (tsio) => {
     const sentId = tsio.currentSentenceId.unpackT("1");
-    const setViewBox = SentenceViewState.setViewBoxBySentenceId(sentId)(vb);
-    const x = tsio
-        ._sentenceViewState
+    const setViewBox = SentenceViewState
+        .setViewBoxBySentenceId(sentId)(vb);
+    const x = tsio.currentState
+        .bind(TextState.sentenceVS)
         .bind(setViewBox);
-    console.log(x);
     console.log(globalState
         .textStateIO
         .bind(TextStateIO.sentenceViewState)
@@ -499,18 +503,21 @@ TextStateIO.moveWordToPrevSentence = (s) => {
         .applyBind(pushWordToPrevSentence);
     s.pushOutputArethusa(false)(new ViewState(s.currentTokenId, Nothing.of(), newArethusa))(s.treeState)(newArethusa);
 };
-TextStateIO.of = (viewState, treeState, inputPlainText, inputArethusa, outputArethusa, epidoc) => {
-    const s = TextState.of(viewState.fmap(ViewState.deepcopy), treeState.fmap(TreeState.deepcopy), inputPlainText, inputArethusa, outputArethusa, epidoc);
+TextStateIO.of = (viewState, sentenceVS, treeState, inputPlainText, inputArethusa, outputArethusa, epidoc) => {
+    const s = TextState.of(viewState.fmap(ViewState.deepcopy), sentenceVS.fmap(SentenceViewState.deepcopy), treeState.fmap(TreeState.deepcopy), inputPlainText, inputArethusa, outputArethusa, epidoc);
     return new TextStateIO(s);
 };
 TextStateIO.pushInputArethusa = (arethusa) => (s) => {
-    s.appendNewState(false)(TextState.of(s.viewState, s.treeState, s.currentState.bind(TextState.plainText), arethusa, arethusa, s.currentState.bind(TextState.epidocDeep)));
+    s.appendNewState(false)(TextState.of(s.viewState, s.currentState
+        .bind(TextState.sentenceVSDeep), s.treeState, s.currentState.bind(TextState.plainText), arethusa, arethusa, s.currentState.bind(TextState.epidocDeep)));
 };
 TextStateIO.pushEpiDoc = (epidoc) => (s) => {
-    s.appendNewState(false)(TextState.of(s.viewState, s.treeState, s.currentState.bind(TextState.plainText), s.currentState.bind(TextState.inputArethusaDeep), s.currentState.bind(TextState.outputArethusaDeep), epidoc));
+    s.appendNewState(false)(TextState.of(s.viewState, s.currentState
+        .bind(TextState.sentenceVSDeep), s.treeState, s.currentState.bind(TextState.plainText), s.currentState.bind(TextState.inputArethusaDeep), s.currentState.bind(TextState.outputArethusaDeep), epidoc));
 };
 TextStateIO.pushPlainText = (plainText) => (s) => {
-    s.appendNewState(false)(TextState.of(s.viewState, s.treeState, plainText, s.currentState.bind(TextState.inputArethusaDeep), s.currentState.bind(TextState.outputArethusaDeep), s.currentState.bind(TextState.epidocDeep)));
+    s.appendNewState(false)(TextState.of(s.viewState, s.currentState
+        .bind(TextState.sentenceVSDeep), s.treeState, plainText, s.currentState.bind(TextState.inputArethusaDeep), s.currentState.bind(TextState.outputArethusaDeep), s.currentState.bind(TextState.epidocDeep)));
 };
 TextStateIO.removeSentence = (s) => {
     const removeSentence = s
@@ -532,21 +539,29 @@ TextStateIO.removeArethusaToken = (s) => {
     s.pushOutputArethusa(false)(new ViewState(Nothing.of(), Nothing.of(), newArethusa))(s.treeState)(newArethusa);
 };
 TextStateIO.sentenceViewState = (tsio) => {
-    return tsio._sentenceViewState;
+    return tsio.currentState.bind(TextState.sentenceVS);
+};
+TextStateIO.setSentenceViewState = (tsio) => {
+    tsio.currentState;
 };
 TextStateIO.initSentenceViewState = (tsio) => {
-    const sentenceIds = TextStateIO.outputArethusaSentenceIds(tsio);
-    if (tsio._sentenceViewState.isNothing) {
+    const ts = TextStateIO.currentState(tsio);
+    const sentenceIds = ts
+        .fmap(TextState.outputArethusaSentenceIds)
+        .unpackT([]);
+    console.log("calling new sentence view state");
+    if (ts.bind(TextState.sentenceVS).isNothing) {
         if (sentenceIds.length > 0) {
             console.log("new sentence view state");
-            tsio._sentenceViewState = MaybeT
-                .of(new SentenceViewState(sentenceIds));
+            ts.fmap(TextState
+                .setSentenceVS(MaybeT.of(new SentenceViewState(sentenceIds))));
         }
     }
 };
 TextStateIO.updateSentenceViewState = (tsio) => {
     TextStateIO.initSentenceViewState(tsio);
-    tsio._sentenceViewState
+    TextStateIO.currentState(tsio)
+        .bind(TextState.sentenceVS)
         .fmap(SentenceViewState.updateFromTSIO(tsio));
 };
 TextStateIO.splitSentenceAtCurrentWord = (s) => {

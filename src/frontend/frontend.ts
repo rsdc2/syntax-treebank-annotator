@@ -144,6 +144,10 @@ class Frontend {
                 .textStateIO
                 .bind(TextStateIO.currentState)
                 .bind(TextState.viewState),
+            globalState
+                .textStateIO
+                .bind(TextStateIO.currentState)
+                .bind(TextState.sentenceVSDeep),
             Nothing.of(),
             Frontend.plainText,
             Frontend.inputArethusa,
@@ -175,6 +179,7 @@ class Frontend {
             arethusa.fmap(ViewState.of("1")("1")),
             Nothing.of(),
             Nothing.of(),
+            Nothing.of(),
             arethusa,
             arethusa,
             epidoc
@@ -202,6 +207,7 @@ class Frontend {
             arethusa.fmap(ViewState.of("1")("1")),
             Nothing.of(),
             Nothing.of(),
+            Nothing.of(),
             arethusa,
             arethusa,
             Nothing.of()
@@ -227,6 +233,7 @@ class Frontend {
 
         const textstate = TextState.of(
             arethusa.fmap(ViewState.of("1")("1")),
+            Nothing.of(),
             Nothing.of(),
             MaybeT.of(textStr),
             arethusa,

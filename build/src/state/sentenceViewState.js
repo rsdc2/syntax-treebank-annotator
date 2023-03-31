@@ -44,6 +44,11 @@ class SentenceViewState {
         return this._viewstates;
     }
 }
+SentenceViewState.deepcopy = (svs) => {
+    const newSVS = new SentenceViewState([]);
+    newSVS._viewstates = [...svs._viewstates];
+    return newSVS;
+};
 SentenceViewState.setViewBoxBySentenceId = (id) => (viewbox) => (svs) => {
     return SentenceViewState
         .sentenceViewboxBySentenceId(id)(svs)
@@ -85,6 +90,7 @@ SentenceViewState.updateFromTSIO = (tsio) => (svs) => {
         };
     });
     svs._viewstates = result;
+    return svs;
 };
 SentenceViewState.updateSVGViewBox = (sentId) => (svs) => {
     const vb = SentenceViewState

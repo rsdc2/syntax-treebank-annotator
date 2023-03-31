@@ -47,6 +47,7 @@ class GlobalState {
             TextStateIO.of(
                 arethusa.fmap(ViewState.of("1")("1")),
                 Nothing.of(),
+                Nothing.of(),
                 plainText,
                 arethusa,
                 arethusa,

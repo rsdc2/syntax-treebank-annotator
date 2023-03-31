@@ -1,8 +1,7 @@
 class TextStateIO {
     _textStates: TextState[] = []
     _currentStateIdx: Maybe<number> = Nothing.of<number>()
-    _sentenceViewState: Maybe<SentenceViewState> = Nothing.of<SentenceViewState>()
-
+    
     constructor (initialState: TextState) {
         this.appendNewState(false)(initialState)
     }
@@ -34,6 +33,7 @@ class TextStateIO {
 
         const newState = TextState.maybeOf(
             s.bind(TextState.viewStateDeep),
+            s.bind(TextState.sentenceVSDeep),
             s.bind(TextState.treeStateDeep),
             s.bind(TextState.plainText),
             s.bind(TextState.inputArethusaDeep),
@@ -57,6 +57,7 @@ class TextStateIO {
 
         const newState = TextState.maybeOf(
             s.bindErr("Error.", TextState.viewStateDeep),
+            s.bindErr("Error.", TextState.sentenceVSDeep),
             s.bindErr("Error.", TextState.treeStateDeep),
             s.bindErr("Error.", TextState.plainText),
             s.bindErr("Error.", TextState.inputArethusaDeep),
@@ -291,15 +292,15 @@ class TextStateIO {
         const sentId = tsio.currentSentenceId.unpackT("1")
         const setViewBox = SentenceViewState
             .setViewBoxBySentenceId(sentId)(vb)
-        const x = tsio
-            ._sentenceViewState
+        const x = tsio.currentState
+            .bind(TextState.sentenceVS)
             .bind(setViewBox)
         
         console.log(
             globalState
-            .textStateIO
-            .bind(TextStateIO.sentenceViewState)
-            .fmap(SentenceViewState.viewstates)
+                .textStateIO
+                .bind(TextStateIO.sentenceViewState)
+                .fmap(SentenceViewState.viewstates)
         )
         return x
     }
@@ -595,6 +596,7 @@ class TextStateIO {
 
     static of = (
         viewState: Maybe<ViewState>,
+        sentenceVS: Maybe<SentenceViewState>,
         treeState: Maybe<TreeState>,
         inputPlainText: Maybe<string>,
         inputArethusa: Maybe<ArethusaDoc>,
@@ -604,6 +606,7 @@ class TextStateIO {
     {
         const s = TextState.of(
             viewState.fmap(ViewState.deepcopy),
+            sentenceVS.fmap(SentenceViewState.deepcopy),
             treeState.fmap(TreeState.deepcopy),
             inputPlainText,
             inputArethusa,
@@ -645,6 +648,8 @@ class TextStateIO {
         (s: TextStateIO) => {
         s.appendNewState(false) (TextState.of(
             s.viewState,
+            s.currentState
+                .bind(TextState.sentenceVSDeep),
             s.treeState,
             s.currentState.bind(TextState.plainText),
             arethusa,
@@ -664,6 +669,8 @@ class TextStateIO {
             (ext) 
             (TextState.of(
                 MaybeT.of(viewState),
+                this.currentState
+                    .bind(TextState.sentenceVSDeep),
                 treeState,
                 this.currentState
                     .bind(TextState.plainText),
@@ -683,6 +690,8 @@ class TextStateIO {
         (s: TextStateIO) => {
             s.appendNewState(false) (TextState.of(
                 s.viewState,
+                s.currentState
+                    .bind(TextState.sentenceVSDeep),
                 s.treeState,
                 s.currentState.bind(TextState.plainText),
                 s.currentState.bind(TextState.inputArethusaDeep),
@@ -700,6 +709,8 @@ class TextStateIO {
         (s: TextStateIO) => {
             s.appendNewState(false) (TextState.of(
                 s.viewState,
+                s.currentState
+                    .bind(TextState.sentenceVSDeep),
                 s.treeState,
                 plainText,
                 s.currentState.bind(TextState.inputArethusaDeep),
@@ -763,25 +774,44 @@ class TextStateIO {
             (newArethusa)
     }
 
+    get sentenceViewState () {
+        return TextStateIO.sentenceViewState(this)
+    }
+
     static sentenceViewState = (tsio: TextStateIO) => {
-        return tsio._sentenceViewState
+        return tsio.currentState.bind(TextState.sentenceVS)
+    }
+
+    static setSentenceViewState = (tsio: TextStateIO) => {
+        tsio.currentState
     }
 
     static initSentenceViewState = (tsio: TextStateIO) => {
-        const sentenceIds = TextStateIO.outputArethusaSentenceIds(tsio)
+        const ts = TextStateIO.currentState(tsio)
 
-        if (tsio._sentenceViewState.isNothing) {
+        const sentenceIds = ts
+            .fmap(TextState.outputArethusaSentenceIds)
+            .unpackT([])
+
+        console.log("calling new sentence view state")
+
+        if (ts.bind(TextState.sentenceVS).isNothing) {
             if (sentenceIds.length > 0) {
                 console.log("new sentence view state")
-                tsio._sentenceViewState = MaybeT
-                    .of(new SentenceViewState(sentenceIds))
+                ts.fmap(TextState
+                    .setSentenceVS(
+                        MaybeT.of(new SentenceViewState(sentenceIds))
+                    )   
+                )
             }
         }
     }
 
     static updateSentenceViewState = (tsio: TextStateIO) => {
         TextStateIO.initSentenceViewState(tsio)
-        tsio._sentenceViewState
+
+        TextStateIO.currentState(tsio)
+            .bind(TextState.sentenceVS)
             .fmap(SentenceViewState.updateFromTSIO(tsio))
     }
 
@@ -894,10 +924,9 @@ class TextStateIO {
         }
 
         // Set the viewbox
-        this._sentenceViewState
+        this.sentenceViewState
             .fmap(SentenceViewState.updateSVGViewBox(this.currentSentenceId.unpackT("")))
     }    
-
 
     get states() {
         return this._textStates
