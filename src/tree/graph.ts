@@ -4,7 +4,7 @@
 
 namespace Graph {
 
-    let container, startTime, endTime
+    let container, start, end
     const alphaTarget = 0.5
     const simDurationMs = 1000; 
     const linkDistance = 60;
@@ -38,14 +38,14 @@ namespace Graph {
     }
     
     function resetClock() {
-        startTime = Date.now();
-        endTime = startTime + simDurationMs;
+        // for this solution for stopping clock, cf. 
+        // https://stackoverflow.com/questions/23334366/how-to-stop-force-directed-graph-simulation
+
+        start = Date.now();
+        end = start + simDurationMs;
     }
 
     function handleDrag(event, d: ITreeNode) {
-    
-        const draggedObj = d3
-            .select(this)
     
         function duringDrag(event, d: ITreeNode) {
             // Fix the circle until the drag has finished
@@ -419,7 +419,7 @@ namespace Graph {
     function tick(paths, links, circles, nodeLabels, edgeLabels) {
     
         function _tick() {
-            if (Date.now() < endTime) {
+            if (Date.now() < end) {
                 paths.attr("d", linkArc(links));
                 circles.attr("transform", transform);
                 nodeLabels.attr("transform", transform_);
