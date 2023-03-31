@@ -8,7 +8,8 @@ class TreeState {
             return TreeState.nodeByTreeNodeId(depIdx)(this);
         };
         this.nodeBySlashIdFromTreeNodeIds = (slashId) => {
-            return TreeState.nodeBySlashIdFromTreeNodeIds(slashId)(this);
+            return TreeState
+                .nodeBySlashIdFromTreeNodeIds(slashId)(this);
         };
         this.slashBySlashId = (slashId) => {
             return MaybeT.of(this

@@ -251,17 +251,17 @@ class Frontend {
                 .textStateIO
                 .fmap(TextStateIO.removeArethusaToken);
         };
-        const moveWordUpFunc = (e) => {
+        const moveTokenUpFunc = (e) => {
             e.stopPropagation();
             globalState
                 .textStateIO
-                .fmap(TextStateIO.moveWordUp);
+                .fmap(TextStateIO.moveTokenUp);
         };
-        const moveWordDownFunc = (e) => {
+        const moveTokenDownFunc = (e) => {
             e.stopPropagation();
             globalState
                 .textStateIO
-                .fmap(TextStateIO.moveWordDown);
+                .fmap(TextStateIO.moveTokenDown);
         };
         const processEpiDocInputFunc = (e) => {
             e.stopPropagation();
@@ -343,10 +343,10 @@ class Frontend {
             .fmap(HTML.Elem.setOnClickFunc(removeWordFunc));
         Frontend
             .moveUpBtn
-            .fmap(HTML.Elem.setOnClickFunc(moveWordUpFunc));
+            .fmap(HTML.Elem.setOnClickFunc(moveTokenUpFunc));
         Frontend
             .moveDownBtn
-            .fmap(HTML.Elem.setOnClickFunc(moveWordDownFunc));
+            .fmap(HTML.Elem.setOnClickFunc(moveTokenDownFunc));
     }
     static get splitSentenceBtn() {
         return HTML.q("button#SplitSentence");

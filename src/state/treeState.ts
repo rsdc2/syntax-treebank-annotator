@@ -121,7 +121,10 @@ class TreeState implements ITreeState {
     }
 
     nodeBySlashIdFromTreeNodeIds = (slashId: string) => {
-        return TreeState.nodeBySlashIdFromTreeNodeIds(slashId)(this)
+        return TreeState
+            .nodeBySlashIdFromTreeNodeIds
+                (slashId)
+                (this)
     }
 
     static nodeRelation = 
@@ -226,7 +229,10 @@ class TreeState implements ITreeState {
         this._tokens = value
     }
 
-    static tokenIdToTreeNodeId = (tokenId: number) => (treeState: TreeState) => {
+    static tokenIdToTreeNodeId = 
+        (tokenId: number) => 
+        (treeState: TreeState) => 
+    {
         return treeState
             .nodeByTokenId(Str.fromNum(tokenId))
             .fmap(TreeNode.treeNodeId)
@@ -254,7 +260,10 @@ class TreeState implements ITreeState {
             .firstChild)
     }
 
-    static treeNodeIdToTokenId = (treeNodeId: number) => (sentState: TreeState) => {
+    static treeNodeIdToTokenId = 
+        (treeNodeId: number) => 
+        (sentState: TreeState) => 
+    {
         return sentState
             .nodeByTreeNodeId(Str.fromNum(treeNodeId))
             .fmap(TreeNode.tokenId)

@@ -328,7 +328,7 @@ class ArethusaSentence implements Word, Wordable, Formable  {
             .bind(XML.nodeValue)
     }
 
-    static moveArethusaToken = 
+    static moveToken = 
         (moveFunc: 
             (nodeToInsert: Node | Element | Text) => 
             (refNode: Node) => Maybe<ParentNode>
@@ -359,7 +359,7 @@ class ArethusaSentence implements Word, Wordable, Formable  {
             .bind(ArethusaDoc.fromNode)
     }
 
-    static moveArethusaTokenDown = 
+    static moveTokenDown = 
         (tokenId: string) => 
         (sentence: ArethusaSentence) => 
     {
@@ -372,13 +372,13 @@ class ArethusaSentence implements Word, Wordable, Formable  {
             .bind(XML.attrVal("id"))
 
         const moveNode = previousSibNodeId
-            .fmap(ArethusaSentence.moveArethusaToken(XML.insertAfter) (tokenId))
+            .fmap(ArethusaSentence.moveToken(XML.insertAfter) (tokenId))
 
         return MaybeT.of(sentence)
             .applyBind(moveNode)
     }
 
-    static moveArethusaTokenUp = 
+    static moveTokenUp = 
         (tokenId: string) => 
         (sentence: ArethusaSentence) => 
     {
@@ -390,69 +390,7 @@ class ArethusaSentence implements Word, Wordable, Formable  {
             .bind(XML.attrVal("id"))
 
         const moveNode = previousSibNodeId
-            .fmap(ArethusaSentence.moveArethusaToken(XML.insertBefore) (tokenId))
-        return MaybeT.of(sentence).applyBind(moveNode)
-    }
-
-
-    static moveWord = 
-        (moveFunc: 
-            (nodeToInsert: Node | Element | Text) => 
-            (refNode: Node) => Maybe<ParentNode>
-        ) => 
-        (id: string) => 
-        (refNodeId: string) =>
-        (sentence: ArethusaSentence) => {
-
-        const wordNode = ArethusaSentence.wordById (id) (sentence)
-            .fmap(DXML.node)
-        const refNode = ArethusaSentence.wordById (refNodeId) (sentence)
-            .fmap(DXML.node)
-
-        const wordNodeCopy = wordNode.fmap(XML.deepcopy)
-
-        const insertNode = wordNodeCopy
-            .fmap(moveFunc)
-
-        const newSentenceNode = refNode
-            .applyBind(insertNode)
-
-        return newSentenceNode
-            .applyFmap(wordNode.fmap(XML.removeChild))
-            .bind(XML.ownerDocument)
-            .bind(XML.documentElement)
-            .bind(ArethusaDoc.fromNode)
-    }
-
-    static moveWordDown = 
-        (wordId: string) => 
-        (sentence: ArethusaSentence) => 
-    {
-        const wordNode = ArethusaSentence.wordById (wordId) (sentence)
-            .fmap(DXML.node)
-
-        const previousSibNodeId = wordNode
-            .bind(XML.nextSibling)
-            .bind(XML.attrVal("id"))
-
-        const moveNode = previousSibNodeId
-            .fmap(ArethusaSentence.moveWord(XML.insertAfter) (wordId))
-        return MaybeT.of(sentence).applyBind(moveNode)
-    }
-
-    static moveWordUp = 
-        (wordId: string) => 
-        (sentence: ArethusaSentence) => 
-    {
-        const wordNode = ArethusaSentence.wordById (wordId) (sentence)
-            .fmap(DXML.node)
-
-        const previousSibNodeId = wordNode
-            .bind(XML.previousSibling)
-            .bind(XML.attrVal("id"))
-
-        const moveNode = previousSibNodeId
-            .fmap(ArethusaSentence.moveWord(XML.insertBefore) (wordId))
+            .fmap(ArethusaSentence.moveToken(XML.insertBefore) (tokenId))
         return MaybeT.of(sentence).applyBind(moveNode)
     }
 

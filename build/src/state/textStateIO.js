@@ -43,14 +43,14 @@ class TextStateIO {
         this.insertSentence = () => {
             return TextStateIO.insertSentence(this);
         };
-        this.moveWordDown = () => {
-            TextStateIO.moveWordDown(this);
+        this.moveTokenDown = () => {
+            TextStateIO.moveTokenDown(this);
         };
         this.moveWordUp = () => {
-            TextStateIO.moveWordUp(this);
+            TextStateIO.moveTokenUp(this);
         };
-        this.moveWord = (moveFunc) => {
-            const moveWord = this
+        this.moveToken = (moveFunc) => {
+            const moveToken = this
                 .currentTokenId
                 .fmap(moveFunc);
             const getSentence = this
@@ -61,7 +61,7 @@ class TextStateIO {
                 .bind(TextState.outputArethusaDeep)
                 .applyBind(getSentence);
             const newArethusa = sentence
-                .applyBind(moveWord);
+                .applyBind(moveToken);
             this.pushOutputArethusa(false)(new ViewState(this.currentTokenId, this.currentSentenceId, newArethusa))(this.treeState)(newArethusa);
         };
         this.moveWordToNextSentence = () => {
@@ -426,11 +426,11 @@ TextStateIO.insertSentence = (s) => {
         .applyBind(s.currentSentenceId.fmap(ArethusaDoc.insertSentenceBefore));
     s.pushOutputArethusa(false)(new ViewState(s.currentTokenId, Nothing.of(), newArethusa))(s.treeState)(newArethusa);
 };
-TextStateIO.moveWordDown = (s) => {
-    s.moveWord(ArethusaSentence.moveWordDown);
+TextStateIO.moveTokenDown = (s) => {
+    s.moveToken(ArethusaSentence.moveTokenDown);
 };
-TextStateIO.moveWordUp = (s) => {
-    s.moveWord(ArethusaSentence.moveWordUp);
+TextStateIO.moveTokenUp = (s) => {
+    s.moveToken(ArethusaSentence.moveTokenUp);
 };
 TextStateIO.moveWordToNextSentence = (s) => {
     const pushWordToNextSentence = s

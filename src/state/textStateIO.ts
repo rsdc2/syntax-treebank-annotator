@@ -421,30 +421,30 @@ class TextStateIO {
         return MaybeT.comp (this.currentStateIdx) (Num.eq) (this.lastStateIdx) 
     }
 
-    moveWordDown = () => {
-        TextStateIO.moveWordDown(this)
+    moveTokenDown = () => {
+        TextStateIO.moveTokenDown(this)
     }
 
-    static moveWordDown = (s: TextStateIO) => {
-        s.moveWord (ArethusaSentence.moveWordDown)
+    static moveTokenDown = (s: TextStateIO) => {
+        s.moveToken (ArethusaSentence.moveTokenDown)
     }
 
     moveWordUp = () => {
-        TextStateIO.moveWordUp(this)
+        TextStateIO.moveTokenUp(this)
     }
 
-    static moveWordUp = (s: TextStateIO) => {
-        s.moveWord (ArethusaSentence.moveWordUp)
+    static moveTokenUp = (s: TextStateIO) => {
+        s.moveToken (ArethusaSentence.moveTokenUp)
     }
 
-    moveWord = 
+    moveToken = 
         (moveFunc: 
             (id: string) => 
             (sentence: ArethusaSentence) => 
             Maybe<ArethusaDoc>
         ) => 
     {
-        const moveWord = this
+        const moveToken = this
             .currentTokenId
             .fmap(moveFunc)
 
@@ -458,7 +458,7 @@ class TextStateIO {
             .applyBind(getSentence)
 
         const newArethusa = sentence
-            .applyBind(moveWord)
+            .applyBind(moveToken)
 
         this.pushOutputArethusa 
             (false) 

@@ -251,7 +251,7 @@ ArethusaSentence.id = (s) => {
     return XML.attr("id")(s._node)
         .bind(XML.nodeValue);
 };
-ArethusaSentence.moveArethusaToken = (moveFunc) => (id) => (refNodeId) => (sentence) => {
+ArethusaSentence.moveToken = (moveFunc) => (id) => (refNodeId) => (sentence) => {
     const tokenNode = ArethusaSentence
         .tokenById(id)(sentence)
         .fmap(DXML.node);
@@ -269,7 +269,7 @@ ArethusaSentence.moveArethusaToken = (moveFunc) => (id) => (refNodeId) => (sente
         .bind(XML.documentElement)
         .bind(ArethusaDoc.fromNode);
 };
-ArethusaSentence.moveArethusaTokenDown = (tokenId) => (sentence) => {
+ArethusaSentence.moveTokenDown = (tokenId) => (sentence) => {
     const tokenNode = ArethusaSentence
         .tokenById(tokenId)(sentence)
         .fmap(DXML.node);
@@ -277,56 +277,69 @@ ArethusaSentence.moveArethusaTokenDown = (tokenId) => (sentence) => {
         .bind(XML.nextSibling)
         .bind(XML.attrVal("id"));
     const moveNode = previousSibNodeId
-        .fmap(ArethusaSentence.moveArethusaToken(XML.insertAfter)(tokenId));
+        .fmap(ArethusaSentence.moveToken(XML.insertAfter)(tokenId));
     return MaybeT.of(sentence)
         .applyBind(moveNode);
 };
-ArethusaSentence.moveArethusaTokenUp = (tokenId) => (sentence) => {
+ArethusaSentence.moveTokenUp = (tokenId) => (sentence) => {
     const tokenNode = ArethusaSentence.tokenById(tokenId)(sentence)
         .fmap(DXML.node);
     const previousSibNodeId = tokenNode
         .bind(XML.previousSibling)
         .bind(XML.attrVal("id"));
     const moveNode = previousSibNodeId
-        .fmap(ArethusaSentence.moveArethusaToken(XML.insertBefore)(tokenId));
+        .fmap(ArethusaSentence.moveToken(XML.insertBefore)(tokenId));
     return MaybeT.of(sentence).applyBind(moveNode);
 };
-ArethusaSentence.moveWord = (moveFunc) => (id) => (refNodeId) => (sentence) => {
-    const wordNode = ArethusaSentence.wordById(id)(sentence)
-        .fmap(DXML.node);
-    const refNode = ArethusaSentence.wordById(refNodeId)(sentence)
-        .fmap(DXML.node);
-    const wordNodeCopy = wordNode.fmap(XML.deepcopy);
-    const insertNode = wordNodeCopy
-        .fmap(moveFunc);
-    const newSentenceNode = refNode
-        .applyBind(insertNode);
-    return newSentenceNode
-        .applyFmap(wordNode.fmap(XML.removeChild))
-        .bind(XML.ownerDocument)
-        .bind(XML.documentElement)
-        .bind(ArethusaDoc.fromNode);
-};
-ArethusaSentence.moveWordDown = (wordId) => (sentence) => {
-    const wordNode = ArethusaSentence.wordById(wordId)(sentence)
-        .fmap(DXML.node);
-    const previousSibNodeId = wordNode
-        .bind(XML.nextSibling)
-        .bind(XML.attrVal("id"));
-    const moveNode = previousSibNodeId
-        .fmap(ArethusaSentence.moveWord(XML.insertAfter)(wordId));
-    return MaybeT.of(sentence).applyBind(moveNode);
-};
-ArethusaSentence.moveWordUp = (wordId) => (sentence) => {
-    const wordNode = ArethusaSentence.wordById(wordId)(sentence)
-        .fmap(DXML.node);
-    const previousSibNodeId = wordNode
-        .bind(XML.previousSibling)
-        .bind(XML.attrVal("id"));
-    const moveNode = previousSibNodeId
-        .fmap(ArethusaSentence.moveWord(XML.insertBefore)(wordId));
-    return MaybeT.of(sentence).applyBind(moveNode);
-};
+// static moveWord = 
+//     (moveFunc: 
+//         (nodeToInsert: Node | Element | Text) => 
+//         (refNode: Node) => Maybe<ParentNode>
+//     ) => 
+//     (id: string) => 
+//     (refNodeId: string) =>
+//     (sentence: ArethusaSentence) => {
+//     const wordNode = ArethusaSentence.wordById (id) (sentence)
+//         .fmap(DXML.node)
+//     const refNode = ArethusaSentence.wordById (refNodeId) (sentence)
+//         .fmap(DXML.node)
+//     const wordNodeCopy = wordNode.fmap(XML.deepcopy)
+//     const insertNode = wordNodeCopy
+//         .fmap(moveFunc)
+//     const newSentenceNode = refNode
+//         .applyBind(insertNode)
+//     return newSentenceNode
+//         .applyFmap(wordNode.fmap(XML.removeChild))
+//         .bind(XML.ownerDocument)
+//         .bind(XML.documentElement)
+//         .bind(ArethusaDoc.fromNode)
+// }
+// static moveWordDown = 
+//     (wordId: string) => 
+//     (sentence: ArethusaSentence) => 
+// {
+//     const wordNode = ArethusaSentence.wordById (wordId) (sentence)
+//         .fmap(DXML.node)
+//     const previousSibNodeId = wordNode
+//         .bind(XML.nextSibling)
+//         .bind(XML.attrVal("id"))
+//     const moveNode = previousSibNodeId
+//         .fmap(ArethusaSentence.moveWord(XML.insertAfter) (wordId))
+//     return MaybeT.of(sentence).applyBind(moveNode)
+// }
+// static moveWordUp = 
+//     (wordId: string) => 
+//     (sentence: ArethusaSentence) => 
+// {
+//     const wordNode = ArethusaSentence.wordById (wordId) (sentence)
+//         .fmap(DXML.node)
+//     const previousSibNodeId = wordNode
+//         .bind(XML.previousSibling)
+//         .bind(XML.attrVal("id"))
+//     const moveNode = previousSibNodeId
+//         .fmap(ArethusaSentence.moveWord(XML.insertBefore) (wordId))
+//     return MaybeT.of(sentence).applyBind(moveNode)
+// }
 ArethusaSentence.nextTokenIds = (startTokenId) => (s) => {
     return ArethusaSentence
         .tokenById(startTokenId)(s)
