@@ -8,12 +8,12 @@ enum ClickType {
 
 class ClickState {
     _lastClickedTreeNodeId: Maybe<string> = Nothing.of<string>()
-    _elementType: ElementType
+    _elementType: TreeLabelType
     _clickType: ClickType
 
     constructor (
         lastClickedId: Maybe<string>,
-        elementType: ElementType,
+        elementType: TreeLabelType,
         clickType: ClickType
         ) {
         this._lastClickedTreeNodeId = lastClickedId
@@ -23,7 +23,7 @@ class ClickState {
 
     static of = 
         (lastLeftClickedTreeNodeId: Maybe<string>) =>
-        (elementType: ElementType) => 
+        (elementType: TreeLabelType) => 
         (clickType: ClickType) =>
         {
 
@@ -33,21 +33,21 @@ class ClickState {
     static none = () => {
         return ClickState.of
                 (Nothing.of()) 
-                (ElementType.Unknown)
+                (TreeLabelType.Unknown)
                 (ClickType.Unknown) 
     }
 
     get edgeLabelElement (): Maybe<HTMLDivElement> {
-        if (this._elementType === ElementType.EdgeLabel) {
+        if (this._elementType === TreeLabelType.EdgeLabel) {
             return Graph.edgeLabelById(this._lastClickedTreeNodeId)
         }
         return Nothing.of()
     }
 
     get labelElem (): Maybe<HTMLDivElement | SVGTextElement> {
-        if (this._elementType === ElementType.EdgeLabel) {
+        if (this._elementType === TreeLabelType.EdgeLabel) {
             return Graph.edgeLabelById(this._lastClickedTreeNodeId)
-        } else if (this._elementType === ElementType.NodeLabel) {
+        } else if (this._elementType === TreeLabelType.NodeLabel) {
             return Graph.nodeLabelById(this._lastClickedTreeNodeId)
         }
         return MaybeT.of<HTMLDivElement|SVGTextElement>(null)

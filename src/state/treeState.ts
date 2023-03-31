@@ -1,4 +1,6 @@
-
+/**
+ * Holds all information pertinent to a given tree representation.
+ */
 
 class TreeState implements ITreeState {
     _state_id: number
@@ -7,7 +9,7 @@ class TreeState implements ITreeState {
     _nodes: ITreeNode[]
     _clickState: ClickState = ClickState.of
         (Nothing.of())
-        (ElementType.Unknown)
+        (TreeLabelType.Unknown)
         (ClickType.Unknown)
 
     constructor(
@@ -153,14 +155,16 @@ class TreeState implements ITreeState {
         (sentenceId: string) =>
         (tokens: ITreeToken[]) =>
         (nodes: ITreeNode[]) =>
-        (clickState: ClickState) => {
+        (clickState: ClickState) => 
+    {
 
             return new TreeState(
                 stateId, 
                 sentenceId, 
                 tokens, 
                 nodes, 
-                clickState)
+                clickState
+            )
         }
 
     static ofTokens = 
@@ -175,31 +179,40 @@ class TreeState implements ITreeState {
                 .treeStateIO
                 .fmap(TreeStateIO.currentStateId)
                 .fmap(Num.add(1))
-                .unpackT(0), sentence_id, tokens, nodes, ClickState.none())
+                .unpackT(0), 
+            sentence_id, 
+            tokens, 
+            nodes, 
+            ClickState.none()
+        )
     }
 
     static ofTokensWithExistingNodes = 
         (nodes: ITreeNode[]) => 
         (sentence_id: string) =>
-        (tokens: ITreeToken[]) => {
-
-            const tokensWithRoot = Arr
-                .unshift(
-                    Obj.deepcopy(tokens), Constants.rootToken
-                )
-            const _nodes = tokensWithRoot
-                .map(
-                    TreeNode.tokenToTreeNodeFromExistingNode(nodes)
-                )
-            
-            return new TreeState(
-                globalState
-                    .treeStateIO
-                    .fmap(TreeStateIO.currentStateId)
-                    .fmap(Num.add(1))
-                    .unpackT(0)
-                , sentence_id, tokens, _nodes, ClickState.none())
-        }
+        (tokens: ITreeToken[]) => 
+    {
+        const tokensWithRoot = Arr
+            .unshift(
+                Obj.deepcopy(tokens), Constants.rootToken
+            )
+        const _nodes = tokensWithRoot
+            .map(
+                TreeNode.tokenToTreeNodeFromExistingNode(nodes)
+            )
+        
+        return new TreeState(
+            globalState
+                .treeStateIO
+                .fmap(TreeStateIO.currentStateId)
+                .fmap(Num.add(1))
+                .unpackT(0),
+            sentence_id, 
+            tokens, 
+            _nodes, 
+            ClickState.none()
+        )
+    }
 
     get slashes ()  {
         return this.nodes

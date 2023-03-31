@@ -1,10 +1,7 @@
+/**
+ * Responsible for IO to the tree representation.
+ */
 var _a;
-var ElementType;
-(function (ElementType) {
-    ElementType["NodeLabel"] = "nodeLabel";
-    ElementType["EdgeLabel"] = "edgeLabel";
-    ElementType["Unknown"] = "unknown";
-})(ElementType || (ElementType = {}));
 class TreeStateIO {
     addSentStateFromNodes(nodes, update) {
         const newSentState = new TreeState(this.currentSentStateIdx + 1, this.currentTreeState._sentence_id, [], nodes, this.currentTreeState.clickState);
@@ -32,9 +29,10 @@ class TreeStateIO {
     constructor(sentState) {
         this._currentSentStateIdx = 0;
         this.changeEdgeLabelClickState = (newClickState) => {
-            if (newClickState.elementType === ElementType.EdgeLabel) {
+            if (newClickState.elementType === TreeLabelType.EdgeLabel) {
                 // Don't do anything if clicking on the same label
-                if (this.currentTreeState.clickState.elementType === ElementType.EdgeLabel) {
+                if (this.currentTreeState.clickState.elementType ===
+                    TreeLabelType.EdgeLabel) {
                     if (newClickState.lastClickedId.value ===
                         this.currentTreeState.clickState.lastClickedId.value) {
                         return;
@@ -165,17 +163,17 @@ class TreeStateIO {
 _a = TreeStateIO;
 TreeStateIO.changeClickState = (newClickState) => (state) => {
     switch (newClickState.elementType) {
-        case (ElementType.EdgeLabel):
+        case (TreeLabelType.EdgeLabel):
             state.changeEdgeLabelClickState(newClickState);
             break;
-        case (ElementType.NodeLabel):
+        case (TreeLabelType.NodeLabel):
             state.clickState
                 .edgeLabelElement
                 .fmap(state.changeRelation);
             Graph.unclickAll();
             ClickState.clicked(newClickState);
             break;
-        case (ElementType.Unknown):
+        case (TreeLabelType.Unknown):
             state.currentTreeState
                 .clickState
                 .edgeLabelElement
@@ -245,6 +243,9 @@ TreeStateIO.changeSlashRel = (newRel) => (slashId) => (state) => {
             break;
     }
 };
+TreeStateIO.currentStateId = (state) => {
+    return state.currentTreeState._state_id;
+};
 TreeStateIO.currentSentStateIdx = (state) => {
     return state.currentSentStateIdx;
 };
@@ -265,6 +266,19 @@ TreeStateIO.lastClickType = (state) => {
         .currentTreeState
         .clickState
         ._clickType;
+};
+TreeStateIO.moveGraph = (moveFunc) => {
+    Graph
+        .svg()
+        .fmap(moveFunc);
+    const newViewBoxStr = Graph
+        .svg()
+        .bind(SVG.ViewBox.getViewBoxStr)
+        .unpackT("");
+    const x = globalState
+        .textStateIO
+        .bindErr("Error", TextStateIO
+        .setCurrentSentenceViewBoxStr(newViewBoxStr));
 };
 TreeStateIO.newSlashRel = (newRel) => (headTreeNodeId) => (depTreeNodeId) => (state) => {
     const slash = SecondaryDep.ofTreeNodeIds(state.currentTreeState)(headTreeNodeId)(depTreeNodeId)(newRel);
@@ -316,9 +330,6 @@ TreeStateIO.replaceSentStateFromNodes = (nodes, update, idx) => (state) => {
     const newSentState = new TreeState(state.currentSentStateIdx + 1, state.currentTreeState._sentence_id, [], nodes, state.currentTreeState.clickState);
     state.replace(newSentState, update, idx);
 };
-TreeStateIO.currentStateId = (state) => {
-    return state.currentTreeState._state_id;
-};
 TreeStateIO.undo = (state) => {
     Graph.unclickEdgeLabels();
     if (state.currentSentStateIdx <= 0) {
@@ -334,10 +345,10 @@ TreeStateIO.updateFrontendClickState = (state) => {
     if (state.lastClickedId.isNothing)
         return;
     switch (state.currentTreeState.clickState.elementType) {
-        case (ElementType.NodeLabel):
+        case (TreeLabelType.NodeLabel):
             _a.changeClickState(ClickState.none());
             break;
-        case (ElementType.EdgeLabel):
+        case (TreeLabelType.EdgeLabel):
             _a.changeClickState(ClickState.none());
             break;
     }

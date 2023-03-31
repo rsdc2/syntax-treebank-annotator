@@ -120,10 +120,8 @@ class ArethusaToken implements Formable {
 
     static toTreeToken = (w: ArethusaToken): ITreeToken => {
         if (ArethusaToken.isArtificial(w)) {
-            console.log("To artificial token")
             return ArethusaArtificial.toTreeToken(w)
         }
-        console.log("To word token")
         return ArethusaWord.toTreeToken(w)
     }
 

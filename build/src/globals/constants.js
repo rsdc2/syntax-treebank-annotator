@@ -25,6 +25,7 @@ var Constants;
         secondaryDeps: []
     };
     Constants.defaultRel = "rel";
+    Constants.defaultViewBox = "0 0 560 560";
     Constants.messages = {
         about: String.raw `<p>
                 The Treebank Annotator was written by Robert Crellin as part of the

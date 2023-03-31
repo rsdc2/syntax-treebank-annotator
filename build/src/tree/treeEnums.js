@@ -16,3 +16,9 @@ var ArtificialType;
     ArtificialType["Elliptic"] = "elliptic";
     ArtificialType["None"] = "none";
 })(ArtificialType || (ArtificialType = {}));
+var TreeLabelType;
+(function (TreeLabelType) {
+    TreeLabelType["NodeLabel"] = "nodeLabel";
+    TreeLabelType["EdgeLabel"] = "edgeLabel";
+    TreeLabelType["Unknown"] = "unknown";
+})(TreeLabelType || (TreeLabelType = {}));

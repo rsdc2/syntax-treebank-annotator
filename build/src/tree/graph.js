@@ -4,7 +4,7 @@ var Graph;
 (function (Graph) {
     let container, startTime, endTime;
     const alphaTarget = 0.5;
-    const simulationDurationInMs = 1000;
+    const simDurationMs = 1000;
     const linkDistance = 60;
     const linkStrength = 0.3;
     const xStrength = 0.25;
@@ -29,12 +29,12 @@ var Graph;
     }
     Graph.clearGraph = clearGraph;
     Graph.clickCircle = (tokenId) => {
-        const clickState = ClickState.of(MaybeT.of(tokenId))(ElementType.NodeLabel)(ClickType.Left);
+        const clickState = ClickState.of(MaybeT.of(tokenId))(TreeLabelType.NodeLabel)(ClickType.Left);
         globalState.treeStateIO.fmap(TreeStateIO.changeClickState(clickState));
     };
     function resetClock() {
         startTime = Date.now();
-        endTime = startTime + simulationDurationInMs;
+        endTime = startTime + simDurationMs;
     }
     function handleDrag(event, d) {
         const draggedObj = d3
@@ -225,7 +225,7 @@ var Graph;
             // Clear tree click state
             globalState
                 .treeStateIO
-                .fmap(TreeStateIO.changeClickState(ClickState.of(Nothing.of())(ElementType.Unknown)(ClickType.Unknown)));
+                .fmap(TreeStateIO.changeClickState(ClickState.of(Nothing.of())(TreeLabelType.Unknown)(ClickType.Unknown)));
             unclickAll();
             // Clear output Arethusa click state
             const currentSentenceId = globalState
@@ -258,11 +258,6 @@ var Graph;
         createSimulation(state);
     }
     Graph.graph = graph;
-    Graph.moveGraph = (moveFunc) => {
-        Graph
-            .svg()
-            .fmap(moveFunc);
-    };
     function nodeLabelById(id) {
         const generateSelector = (s) => "text.node-label[treenode-id='" + s + "']";
         return id
@@ -429,6 +424,10 @@ var Graph;
             createSimulation_(ts);
             return;
         }
+        if (globalState.textStateIO.fmap(TextStateIO.currentSentence).isNothing) {
+            Graph.clearGraph();
+            return;
+        }
         const nodes = ts.nodes;
         const links = TreeNode.links(nodes);
         globalState.simulation.nodes(nodes);
@@ -444,7 +443,9 @@ var Graph;
         ts.clickState
             .labelElem
             .fmap(HTML.Elem.Class.add("clicked"));
-        globalState.simulation.on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
+        globalState
+            .simulation
+            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
         resetClock();
         globalState.simulation
             .alphaTarget(alphaTarget)
@@ -485,5 +486,9 @@ var Graph;
     Graph.createSimulation_ = createSimulation_;
     Graph.svg = () => {
         return MaybeT.of(document.querySelector("div.tree-container svg"));
+    };
+    Graph.viewbox = () => {
+        return Graph.svg()
+            .bind(SVG.ViewBox.getViewBoxStr);
     };
 })(Graph || (Graph = {}));

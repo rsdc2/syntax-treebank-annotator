@@ -11,7 +11,7 @@ var UserInput;
             // Change the clicked node on the tree
             globalState
                 .treeStateIO
-                .fmap(TreeStateIO.changeClickState(ClickState.of(treeNodeId)(ElementType.NodeLabel)(ClickType.Left)));
+                .fmap(TreeStateIO.changeClickState(ClickState.of(treeNodeId)(TreeLabelType.NodeLabel)(ClickType.Left)));
             // Change the selected word on the output Arethusa
             const getWordId = treeNodeId
                 .fmap(Str.toNum)
@@ -56,7 +56,7 @@ var UserInput;
             // Change selected node on the tree
             globalState
                 .treeStateIO
-                .fmap(TreeStateIO.changeClickState(ClickState.of(treeNodeId)(ElementType.NodeLabel)(ClickType.Right)));
+                .fmap(TreeStateIO.changeClickState(ClickState.of(treeNodeId)(TreeLabelType.NodeLabel)(ClickType.Right)));
             // Change the selected word on the output Arethusa
             const getWordId = treeNodeId
                 .fmap(Str.toNum)
@@ -93,7 +93,7 @@ var UserInput;
         e.stopPropagation();
         globalState
             .treeStateIO
-            .fmap(TreeStateIO.changeClickState(ClickState.of(HTML.Elem.getAttr("id")(this))(ElementType.EdgeLabel)(ClickType.Left)));
+            .fmap(TreeStateIO.changeClickState(ClickState.of(HTML.Elem.getAttr("id")(this))(TreeLabelType.EdgeLabel)(ClickType.Left)));
     }
     UserInput.leftClickEdgeLabel = leftClickEdgeLabel;
     function keyDownEdgeLabel(e) {

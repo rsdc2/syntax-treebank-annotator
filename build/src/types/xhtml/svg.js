@@ -42,15 +42,15 @@ var SVG;
         };
         ViewBox.getViewBoxValFromSVGElem = (index) => (svgElem) => {
             return MaybeT.of(svgElem)
-                .bind(getViewBoxStr)
+                .bind(ViewBox.getViewBoxStr)
                 .fmap(Str.split(" "))
                 .bind(Arr.byIdx(index))
                 .fmap(Str.toNum);
         };
-        const getViewBoxStr = (svg) => {
+        ViewBox.getViewBoxStr = (svg) => {
             return HTML.Elem.getAttr("viewBox")(svg);
         };
-        const setViewBoxVal = (val) => (svg) => {
+        ViewBox.setViewBoxVal = (val) => (svg) => {
             MaybeT.of(svg)
                 .fmap(HTML.Elem.setAttr("viewBox")(val));
         };
@@ -64,9 +64,9 @@ var SVG;
         };
         const changeViewBoxVal = (func) => (limit) => (index) => (svg) => {
             const _setViewBoxVal = MaybeT.of(svg)
-                .bind(getViewBoxStr)
+                .bind(ViewBox.getViewBoxStr)
                 .bind(func(limit)(index))
-                .fmap(setViewBoxVal);
+                .fmap(ViewBox.setViewBoxVal);
             MaybeT.of(svg)
                 .applyFmap(_setViewBoxVal);
         };

@@ -29,6 +29,8 @@ namespace Constants {
 
     export const defaultRel = "rel"
 
+    export const defaultViewBox = "0 0 560 560"
+
     export const messages = {
         about: String.raw
             `<p>

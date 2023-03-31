@@ -96,9 +96,7 @@ ArethusaToken.treeTokenType = (w) => {
 };
 ArethusaToken.toTreeToken = (w) => {
     if (ArethusaToken.isArtificial(w)) {
-        console.log("To artificial token");
         return ArethusaArtificial.toTreeToken(w);
     }
-    console.log("To word token");
     return ArethusaWord.toTreeToken(w);
 };

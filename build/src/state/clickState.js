@@ -13,16 +13,16 @@ class ClickState {
         this._clickType = clickType;
     }
     get edgeLabelElement() {
-        if (this._elementType === ElementType.EdgeLabel) {
+        if (this._elementType === TreeLabelType.EdgeLabel) {
             return Graph.edgeLabelById(this._lastClickedTreeNodeId);
         }
         return Nothing.of();
     }
     get labelElem() {
-        if (this._elementType === ElementType.EdgeLabel) {
+        if (this._elementType === TreeLabelType.EdgeLabel) {
             return Graph.edgeLabelById(this._lastClickedTreeNodeId);
         }
-        else if (this._elementType === ElementType.NodeLabel) {
+        else if (this._elementType === TreeLabelType.NodeLabel) {
             return Graph.nodeLabelById(this._lastClickedTreeNodeId);
         }
         return MaybeT.of(null);
@@ -61,7 +61,7 @@ ClickState.of = (lastLeftClickedTreeNodeId) => (elementType) => (clickType) => {
     return new ClickState(lastLeftClickedTreeNodeId, elementType, clickType);
 };
 ClickState.none = () => {
-    return ClickState.of(Nothing.of())(ElementType.Unknown)(ClickType.Unknown);
+    return ClickState.of(Nothing.of())(TreeLabelType.Unknown)(ClickType.Unknown);
 };
 ClickState.unclicked = (clickState) => {
     clickState

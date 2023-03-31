@@ -286,7 +286,6 @@ namespace TreeNode {
             tokens: ITreeToken[]
         ): ITreeNode => 
     {
-
         const _node = TreeNode
             .nodeByTokenId
                 (Str.fromNum(token.id))

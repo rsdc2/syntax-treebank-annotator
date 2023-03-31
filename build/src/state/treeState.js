@@ -1,6 +1,9 @@
+/**
+ * Holds all information pertinent to a given tree representation.
+ */
 class TreeState {
     constructor(state_id, sentence_id, tokens, nodes, clickState) {
-        this._clickState = ClickState.of(Nothing.of())(ElementType.Unknown)(ClickType.Unknown);
+        this._clickState = ClickState.of(Nothing.of())(TreeLabelType.Unknown)(ClickType.Unknown);
         this.nodeByTokenId = (depIdx) => {
             return TreeState.nodeByTokenId(depIdx)(this);
         };

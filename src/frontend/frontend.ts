@@ -329,7 +329,11 @@ class Frontend {
             .fmap(FileHandling.download(docId))
     }
 
-    static showMessage = (message:string) => {
+    static resetViewBox = () => {
+        Graph.svg().fmap(SVG.ViewBox.setViewBoxVal(Constants.defaultViewBox))
+    }
+
+    static showMessage = (message: string) => {
         HTML.q("div.message")
             .bindErr("No message element", HTML.setInnerHTML(message))
             .fmap(HTML.Elem.unsetHidden)

@@ -34,6 +34,9 @@ class ViewState {
     get isWord() {
         return this.currentWordId.value !== Nothing.of().value;
     }
+    get sentenceId() {
+        return this._sentenceId;
+    }
     get viewType() {
         if (this.isWord) {
             return ViewType.Word;
@@ -62,8 +65,14 @@ ViewState.currentTokenId = (state) => {
 ViewState.deepcopy = (s) => {
     return new ViewState(s._tokenId, s._sentenceId, s._arethusa.bind(ArethusaDoc.deepcopy));
 };
+ViewState.sentencesSame = (s1) => (s2) => {
+    return s1.sentenceId.unpackT("") == s2.sentenceId.unpackT("");
+};
 ViewState.of = (wordId) => (sentenceId) => (arethusa) => {
     return new ViewState(MaybeT.of(wordId), MaybeT.of(sentenceId), MaybeT.of(arethusa));
+};
+ViewState.sentenceId = (vs) => {
+    return vs.sentenceId;
 };
 ViewState.setCurrentSentenceId = (value) => (s) => {
     s._sentenceId = value;

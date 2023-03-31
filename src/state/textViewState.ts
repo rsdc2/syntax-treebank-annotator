@@ -54,7 +54,15 @@ class ViewState {
     }
 
     static deepcopy = (s: ViewState) => {
-        return new ViewState (s._tokenId, s._sentenceId, s._arethusa.bind(ArethusaDoc.deepcopy))
+        return new ViewState (
+            s._tokenId, 
+            s._sentenceId, 
+            s._arethusa.bind(ArethusaDoc.deepcopy)
+        )
+    }
+
+    static sentencesSame = (s1: ViewState) => (s2: ViewState) => {
+        return s1.sentenceId.unpackT("") == s2.sentenceId.unpackT("")
     }
 
     get isSentence () {
@@ -68,6 +76,14 @@ class ViewState {
 
     static of = (wordId: string) => (sentenceId: string) => (arethusa: ArethusaDoc) => {
         return new ViewState(MaybeT.of(wordId), MaybeT.of(sentenceId), MaybeT.of(arethusa))
+    }
+
+    get sentenceId() {
+        return this._sentenceId
+    }
+
+    static sentenceId = (vs: ViewState) => {
+        return vs.sentenceId
     }
 
     static setCurrentSentenceId = (value: Maybe<string>) => (s: ViewState) => {

@@ -6,7 +6,7 @@ namespace Graph {
 
     let container, startTime, endTime
     const alphaTarget = 0.5
-    const simulationDurationInMs = 1000; 
+    const simDurationMs = 1000; 
     const linkDistance = 60;
     const linkStrength = 0.3;
     const xStrength = 0.25;
@@ -33,13 +33,13 @@ namespace Graph {
     }
 
     export const clickCircle = (tokenId: string) =>  {
-        const clickState = ClickState.of(MaybeT.of(tokenId))(ElementType.NodeLabel)(ClickType.Left)
+        const clickState = ClickState.of(MaybeT.of(tokenId))(TreeLabelType.NodeLabel)(ClickType.Left)
         globalState.treeStateIO.fmap(TreeStateIO.changeClickState(clickState))
     }
     
     function resetClock() {
         startTime = Date.now();
-        endTime = startTime + simulationDurationInMs;
+        endTime = startTime + simDurationMs;
     }
 
     function handleDrag(event, d: ITreeNode) {
@@ -277,7 +277,7 @@ namespace Graph {
                         TreeStateIO.changeClickState(
                             ClickState.of
                                 (Nothing.of()) 
-                                (ElementType.Unknown)
+                                (TreeLabelType.Unknown)
                                 (ClickType.Unknown)
                         )
                     )
@@ -320,18 +320,10 @@ namespace Graph {
         container.append("g")
             .attr("class", "edgelabel");
     
-
         drawPathMarkers();
         resetClock();
         createSimulation(state);
-    
     }
-
-    export const moveGraph = (moveFunc) => {
-        Graph
-            .svg()
-            .fmap(moveFunc)
-    }   
 
     export function nodeLabelById (id: Maybe<string>) {
         const generateSelector = (s: string) => 
@@ -547,6 +539,11 @@ namespace Graph {
             return
         }
 
+        if (globalState.textStateIO.fmap(TextStateIO.currentSentence).isNothing) {
+            Graph.clearGraph()
+            return
+        }
+
         const nodes = ts.nodes
         const links = TreeNode.links(nodes)
 
@@ -566,7 +563,18 @@ namespace Graph {
             .labelElem
             .fmap(HTML.Elem.Class.add("clicked"))
 
-        globalState.simulation.on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
+        globalState
+            .simulation
+            .on(
+                'tick', 
+                tick(
+                    paths, 
+                    links, 
+                    circles, 
+                    nodeLabels, 
+                    edgeLabels
+                )
+            );
 
         resetClock()
         globalState.simulation
@@ -622,6 +630,11 @@ namespace Graph {
         return MaybeT.of(
             document.querySelector("div.tree-container svg") as SVGElement
         )
+    }
+
+    export const viewbox = () => {
+        return svg()
+            .bind(SVG.ViewBox.getViewBoxStr)
     }
 }
 

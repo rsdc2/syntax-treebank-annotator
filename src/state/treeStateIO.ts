@@ -1,16 +1,16 @@
 
-enum ElementType {
-    NodeLabel = "nodeLabel",
-    EdgeLabel = "edgeLabel",
-    Unknown = "unknown"
-}
-
+/**
+ * Responsible for IO to the tree representation.
+ */
 
 class TreeStateIO {
     private _treeState: TreeState
     private _currentSentStateIdx: number = 0
 
-    addSentStateFromNodes(nodes: ITreeNode[], update: boolean): void {
+    addSentStateFromNodes(
+        nodes: ITreeNode[], 
+        update: boolean): void 
+    {
         const newSentState = new TreeState (
             this.currentSentStateIdx + 1,
             this.currentTreeState._sentence_id,
@@ -34,11 +34,11 @@ class TreeStateIO {
 
         switch (newClickState.elementType) {
 
-            case (ElementType.EdgeLabel):
+            case (TreeLabelType.EdgeLabel):
                 state.changeEdgeLabelClickState(newClickState)
                 break
 
-            case (ElementType.NodeLabel):
+            case (TreeLabelType.NodeLabel):
                 state.clickState
                     .edgeLabelElement
                     .fmap(state.changeRelation)
@@ -47,7 +47,7 @@ class TreeStateIO {
                 ClickState.clicked(newClickState)
                 break
 
-            case (ElementType.Unknown):
+            case (TreeLabelType.Unknown):
                 state.currentTreeState
                     .clickState
                     .edgeLabelElement
@@ -63,10 +63,12 @@ class TreeStateIO {
 
     changeEdgeLabelClickState = (newClickState: ClickState) => {
 
-        if (newClickState.elementType === ElementType.EdgeLabel) {
+        if (newClickState.elementType === TreeLabelType.EdgeLabel) {
 
             // Don't do anything if clicking on the same label
-            if ( this.currentTreeState.clickState.elementType === ElementType.EdgeLabel ) {
+            if ( this.currentTreeState.clickState.elementType === 
+                    TreeLabelType.EdgeLabel ) 
+            {
                 if (newClickState.lastClickedId.value === 
                         this.currentTreeState.clickState.lastClickedId.value) {
                     return
@@ -273,6 +275,10 @@ class TreeStateIO {
         this.currentTreeState.clickState = value
     }
 
+    static currentStateId = (state: TreeStateIO) => {
+        return state.currentTreeState._state_id
+    }
+
     get currentSentStateIdx(): number {
         return this._currentSentStateIdx
     };
@@ -348,6 +354,23 @@ class TreeStateIO {
     get lastSentStateIdx() {
         return 0
     }
+
+    static moveGraph = (moveFunc) => {
+        Graph
+            .svg()
+            .fmap(moveFunc)
+
+        const newViewBoxStr = Graph
+            .svg()
+            .bind(SVG.ViewBox.getViewBoxStr)
+            .unpackT("")
+
+        const x = globalState
+            .textStateIO
+            .bindErr("Error", TextStateIO
+                .setCurrentSentenceViewBoxStr(newViewBoxStr)
+            )
+    }   
 
     static newSlashRel =
         (newRel: string) =>
@@ -458,7 +481,11 @@ class TreeStateIO {
         }
     }
 
-    replaceSentStateFromNodes(nodes: ITreeNode[], update: boolean, idx: number): void {
+    replaceSentStateFromNodes(
+        nodes: ITreeNode[], 
+        update: boolean, 
+        idx: number): void 
+    {
         const newSentState = new TreeState (
             this.currentSentStateIdx + 1,
             this.currentTreeState._sentence_id,
@@ -469,7 +496,11 @@ class TreeStateIO {
         this.replace(newSentState, update, idx)
     }
 
-    static replaceSentStateFromNodes= (nodes: ITreeNode[], update: boolean, idx: number) => (state: TreeStateIO): void  => {
+    static replaceSentStateFromNodes= (
+        nodes: ITreeNode[], 
+        update: boolean, 
+        idx: number) => (state: TreeStateIO): void  => 
+    {
         const newSentState = new TreeState (
             state.currentSentStateIdx + 1,
             state.currentTreeState._sentence_id,
@@ -480,13 +511,14 @@ class TreeStateIO {
         state.replace(newSentState, update, idx)
     }
 
+
+
+
+
     get slashes() {
         return this.currentTreeState.slashes
     }
 
-    static currentStateId = (state: TreeStateIO) => {
-        return state.currentTreeState._state_id
-    }
 
     undo = () => {
         TreeStateIO.undo(this)
@@ -512,16 +544,14 @@ class TreeStateIO {
         if (state.lastClickedId.isNothing) return
 
         switch (state.currentTreeState.clickState.elementType) {
-            case (ElementType.NodeLabel):
+            case (TreeLabelType.NodeLabel):
                 this.changeClickState( ClickState.none() )
                 break
             
-            case (ElementType.EdgeLabel):
+            case (TreeLabelType.EdgeLabel):
                 this.changeClickState( ClickState.none() )
-                break
-                
+                break       
         }
-
     }
 
     get xmlNode () {

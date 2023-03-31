@@ -280,7 +280,7 @@
             <li>
               <button
                 id="MoveGraphUp"
-                onclick="Graph.moveGraph(SVG.ViewBox.incrMinY)"
+                onclick="TreeStateIO.moveGraph(SVG.ViewBox.incrMinY)"
               >
                 Up
               </button>
@@ -288,7 +288,7 @@
             <li>
               <button
                 id="MoveGraphDown"
-                onclick="Graph.moveGraph(SVG.ViewBox.decrMinY)"
+                onclick="TreeStateIO.moveGraph(SVG.ViewBox.decrMinY)"
               >
                 Down
               </button>
@@ -296,7 +296,7 @@
             <li>
               <button
                 id="MoveGraphLeft"
-                onclick="Graph.moveGraph(SVG.ViewBox.incrMinX)"
+                onclick="TreeStateIO.moveGraph(SVG.ViewBox.incrMinX)"
               >
                 Left
               </button>
@@ -304,20 +304,20 @@
             <li>
               <button
                 id="MoveGraphRight"
-                onclick="Graph.moveGraph(SVG.ViewBox.decrMinX)"
+                onclick="TreeStateIO.moveGraph(SVG.ViewBox.decrMinX)"
               >
                 Right
               </button>
             </li>
             <li>
-              <button id="ZoomIn" onclick="Graph.moveGraph(SVG.ViewBox.zoomIn)">
+              <button id="ZoomIn" onclick="TreeStateIO.moveGraph(SVG.ViewBox.zoomIn)">
                 Zoom In
               </button>
             </li>
             <li>
               <button
                 id="ZoomOut"
-                onclick="Graph.moveGraph(SVG.ViewBox.zoomOut)"
+                onclick="TreeStateIO.moveGraph(SVG.ViewBox.zoomOut)"
               >
                 Zoom Out
               </button>
@@ -365,6 +365,7 @@
   <script src="build/src/tree/userInput.js"></script>
   <script src="build/src/state/clickState.js"></script>
   <script src="build/src/state/treeStateIO.js"></script>
+  <script src="build/src/state/sentenceViewState.js"></script>
   <script src="build/src/state/treeState.js"></script>
   <script src="build/src/state/globalState.js"></script>
 

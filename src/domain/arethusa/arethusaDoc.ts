@@ -349,8 +349,6 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
             .inputArethusaXML
             .unpack("")
 
-        // console.log("inputArethusaXML", inputArethusaXML)
-
         if (inputArethusaXML.includes("parsererror")) {
             Frontend
                 .arethusaInputTextArea

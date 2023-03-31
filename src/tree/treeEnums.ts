@@ -15,3 +15,9 @@ enum ArtificialType {
     Elliptic = "elliptic",
     None = 'none'
 }
+
+enum TreeLabelType {
+    NodeLabel = "nodeLabel",
+    EdgeLabel = "edgeLabel",
+    Unknown = "unknown"
+}

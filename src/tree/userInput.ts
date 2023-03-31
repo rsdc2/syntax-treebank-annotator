@@ -16,7 +16,7 @@ namespace UserInput {
                     TreeStateIO.changeClickState(
                         ClickState.of
                             (treeNodeId) 
-                            (ElementType.NodeLabel)
+                            (TreeLabelType.NodeLabel)
                             (ClickType.Left)
                     )
             )
@@ -87,7 +87,7 @@ namespace UserInput {
                 .fmap(TreeStateIO.changeClickState(
                     ClickState.of
                         (treeNodeId) 
-                        (ElementType.NodeLabel)
+                        (TreeLabelType.NodeLabel)
                         (ClickType.Right)
                 )
             )
@@ -142,7 +142,7 @@ namespace UserInput {
                 TreeStateIO.changeClickState(
                     ClickState.of 
                         (HTML.Elem.getAttr("id")(this))
-                        (ElementType.EdgeLabel)
+                        (TreeLabelType.EdgeLabel)
                         (ClickType.Left)
                 )
             )

@@ -45,7 +45,10 @@ namespace SVG {
                 .bind(Arr.byIdx(index))
         }
 
-        export const getViewBoxValFromSVGElem = (index: number) => (svgElem: SVGElement | SVGGraphicsElement) => {
+        export const getViewBoxValFromSVGElem = 
+            (index: number) => 
+            (svgElem: SVGElement | SVGGraphicsElement) => 
+        {
             return MaybeT.of(svgElem)
                 .bind(getViewBoxStr)
                 .fmap(Str.split(" "))
@@ -53,16 +56,20 @@ namespace SVG {
                 .fmap(Str.toNum)
         }
 
-        const getViewBoxStr = (svg: SVGElement) => {
+        export const getViewBoxStr = (svg: SVGElement) => {
             return HTML.Elem.getAttr("viewBox")(svg)
         }
         
-        const setViewBoxVal = (val: string) => (svg: SVGElement) => {
+        export const setViewBoxVal = (val: string) => (svg: SVGElement) => {
             MaybeT.of(svg)
                 .fmap(HTML.Elem.setAttr("viewBox")(val))
         }
 
-        const calcNewViewBoxStr = (val: string) => (index: number) => (s: string) => {
+        const calcNewViewBoxStr = 
+            (val: string) => 
+            (index: number) => 
+            (s: string) => 
+        {
             const f = flip_1_to_3(Arr.replaceByIdx)
             return MaybeT.of(s)
                 .fmap(Str.split(" "))
@@ -120,7 +127,11 @@ namespace SVG {
                 .fmap(f(index)(viewBoxStr))
         }
 
-        const incrViewBoxVal = (limit: number | null) => (index: number) => (viewBoxStr: string) => {
+        const incrViewBoxVal = 
+            (limit: number | null) => 
+            (index: number) => 
+            (viewBoxStr: string) => 
+        {
             const f = flip_1_to_3(calcNewViewBoxStr)
             return getViewBoxVal(index)(viewBoxStr)
                 .fmap(Str.add(50))

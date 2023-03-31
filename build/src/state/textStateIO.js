@@ -1,21 +1,8 @@
 class TextStateIO {
-    appendNewSentenceToArethusa() {
-        TextStateIO.appendNewSentenceToArethusa(this);
-    }
-    appendNewWordToSentence() {
-        TextStateIO.appendNewWordToSentence(this);
-    }
-    get outputArethusaP() {
-        return TextStateIO.outputArethusa(this);
-    }
-    get outputArethusaXML() {
-        return this
-            .outputArethusaP
-            .bind(DXML.nodeXMLStr);
-    }
     constructor(initialState) {
         this._textStates = [];
         this._currentStateIdx = Nothing.of();
+        this._sentenceViewState = Nothing.of();
         this.appendNewState = (ext) => (state) => {
             const s = MaybeT.of(state);
             const newState = TextState.maybeOf(s.bind(TextState.viewStateDeep), s.bind(TextState.treeStateDeep), s.bind(TextState.plainText), s.bind(TextState.inputArethusaDeep), s.bind(TextState.outputArethusaDeep), s.bind(TextState.epidocDeep));
@@ -23,6 +10,7 @@ class TextStateIO {
                 newState.fmap(this.push);
                 this.currentStateIdx = this.lastStateIdx;
             }
+            TextStateIO.initSentenceViewState(this);
             this.show(ext);
         };
         this.changeArethusaSentence = (ext) => (newS) => {
@@ -76,12 +64,6 @@ class TextStateIO {
                 .nextIdx
                 .bind(f(this.states));
         };
-        this.prevState = () => {
-            const f = flip(Arr.byIdx);
-            return this
-                .prevIdx
-                .bind(f(this.states));
-        };
         this.push = (s) => {
             if (!this.isLastState)
                 this.removePostStates();
@@ -118,18 +100,21 @@ class TextStateIO {
         this.removeArethusaToken = () => {
             TextStateIO.removeArethusaToken(this);
         };
+        this.updateSentenceViewState = () => {
+            TextStateIO
+                .updateSentenceViewState(this);
+        };
         this.splitSentenceAtCurrentWord = () => {
             return TextStateIO.splitSentenceAtCurrentWord(this);
-        };
-        this.undo = () => {
-            TextStateIO.undo(this);
         };
         this.show = (ext) => {
             EpiDoc.pushToFrontend(this);
             ArethusaDoc.pushToFrontend(this);
             Frontend.pushPlainTextToFrontend(this);
+            this.updateSentenceViewState();
+            // Set the sentences text
             SentencesDiv.setText(this.sentencesRep);
-            // Update tree state
+            // Update the tree
             const treeStateFunc = MaybeT.of(globalState.simulation).isNothing ?
                 ArethusaSentence.toTreeSentState :
                 ArethusaSentence.toTreeSentStateWithNodesFromExistingTree(globalState.simulation.nodes());
@@ -141,10 +126,13 @@ class TextStateIO {
                 .currentTokenId
                 .fmap(Str.toNum)
                 .fmap(TreeState.tokenIdToTreeNodeId);
-            const treeNodeId = treeState.applyBind(getTreeNodeId)
+            const treeNodeId = treeState
+                .applyBind(getTreeNodeId)
                 .fmap(Str.fromNum);
-            const clickState = ClickState.of(treeNodeId)(ElementType.NodeLabel)(ClickType.Left);
+            const clickState = ClickState
+                .of(treeNodeId)(TreeLabelType.NodeLabel)(ClickType.Left);
             treeState.fmap(TreeState.setClickState(clickState));
+            // Change the tree
             if (!ext) {
                 globalState
                     .treeStateIO
@@ -153,8 +141,31 @@ class TextStateIO {
                 this.currentState
                     .fmap(TextState.updateTreeState(treeState));
             }
+            // Set the viewbox
+            this._sentenceViewState
+                .fmap(SentenceViewState.updateSVGViewBox(this.currentSentenceId.unpackT("")));
+        };
+        this.undo = () => {
+            TextStateIO.undo(this);
         };
         this.appendNewState(false)(initialState);
+    }
+    appendNewSentenceToArethusa() {
+        TextStateIO.appendNewSentenceToArethusa(this);
+    }
+    appendNewWordToSentence() {
+        TextStateIO.appendNewWordToSentence(this);
+    }
+    get outputArethusaP() {
+        return TextStateIO.outputArethusa(this);
+    }
+    get outputArethusaSentenceIds() {
+        return TextStateIO.outputArethusaSentenceIds(this);
+    }
+    get outputArethusaXML() {
+        return this
+            .outputArethusaP
+            .bind(DXML.nodeXMLStr);
     }
     get currentState() {
         return TextStateIO.currentState(this);
@@ -177,6 +188,9 @@ class TextStateIO {
         return this
             .viewState
             .bind(ViewState.currentSentenceId);
+    }
+    static currentSentenceId(tsio) {
+        return tsio.currentSentenceId;
     }
     get currentWord() {
         return TextStateIO.currentWord(this);
@@ -236,6 +250,9 @@ class TextStateIO {
     get isLastState() {
         return MaybeT.comp(this.currentStateIdx)(Num.eq)(this.lastStateIdx);
     }
+    get lastStateIdx() {
+        return MaybeT.ofNonNeg(Arr.len(this.states) - 1);
+    }
     get nextIdx() {
         return $$(MaybeT.of)(this
             .currentStateIdx
@@ -250,6 +267,12 @@ class TextStateIO {
             .applyFmap(this.lastStateIdx.fmap(BoundedNum.of(0)))
             .fmap(BoundedNum.decrement)
             .fmap(BoundedNum.value);
+    }
+    get prevState() {
+        const f = flip(Arr.byIdx);
+        return this
+            .prevIdx
+            .bind(f(this.states));
     }
     /**
      * Representation of all the sentences in a string
@@ -270,9 +293,6 @@ class TextStateIO {
         return sentenceStrs
             .join(". ")
             .concat(".");
-    }
-    get lastStateIdx() {
-        return MaybeT.ofNonNeg(Arr.len(this.states) - 1);
     }
     get states() {
         return this._textStates;
@@ -338,16 +358,39 @@ TextStateIO.outputArethusa = (s) => {
         .currentState
         .bind(TextState.outputArethusaDeep);
 };
+TextStateIO.outputArethusaSentenceIds = (tsio) => {
+    const sentenceIds = tsio
+        .outputArethusaP
+        .fmap(ArethusaDoc.sentences)
+        .unpackT([])
+        .map(ArethusaSentence.id);
+    const sentenceIdsNoNothings = Arr
+        .removeNothings(sentenceIds);
+    return sentenceIdsNoNothings;
+};
 TextStateIO.changeArethusaSentence = (ext) => (s) => (newS) => {
     const newArethusa = s
         .outputArethusaP
         .bind(flip(ArethusaDoc.replaceSentence)(newS));
     s.pushOutputArethusa(ext)(new ViewState(Nothing.of(), s.viewState.bind(ViewState.currentSentenceId), s.outputArethusaP))(s.treeState)(newArethusa);
 };
+/**
+ * Fires, e.g. when the ArethusaDiv is clicked.
+ * @param wordId
+ * @returns
+ */
 TextStateIO.changeView = (wordId) => (sentenceId) => (s) => {
-    const newVS = MaybeT.of(new ViewState(wordId, sentenceId, s.outputArethusaP));
-    s.currentState
-        .applyFmap(newVS.fmap(TextState.setViewState));
+    // Create new ViewState
+    const newVS = new ViewState(wordId, sentenceId, s.outputArethusaP);
+    // // Check whether sentences have changed
+    // // If so, reset the viewbox
+    // const sentencesSame = s
+    //     .viewState
+    //     .fmap(ViewState.sentencesSame(newVS))
+    // if (!sentencesSame) {
+    //     Frontend.resetViewBox()
+    // }
+    s.currentState.fmap(TextState.setViewState(newVS));
     s.show(false);
 };
 TextStateIO.currentState = (s) => {
@@ -360,12 +403,20 @@ TextStateIO.currentSentence = (textStateIO) => {
     const sent = textStateIO
         .outputArethusaP
         .applyBind(getSent);
-    if (sent.isNothing) {
-        return textStateIO
-            .outputArethusaP
-            .bind(ArethusaDoc.lastSentence);
-    }
     return sent;
+};
+TextStateIO.setCurrentSentenceViewBoxStr = (vb) => (tsio) => {
+    const sentId = tsio.currentSentenceId.unpackT("1");
+    const setViewBox = SentenceViewState.setViewBoxBySentenceId(sentId)(vb);
+    const x = tsio
+        ._sentenceViewState
+        .bind(setViewBox);
+    console.log(x);
+    console.log(globalState
+        .textStateIO
+        .bind(TextStateIO.sentenceViewState)
+        .fmap(SentenceViewState.viewstates));
+    return x;
 };
 TextStateIO.currentWord = (s) => {
     const getWord = s
@@ -479,6 +530,24 @@ TextStateIO.removeArethusaToken = (s) => {
         .outputArethusaP
         .applyBind(removeWord);
     s.pushOutputArethusa(false)(new ViewState(Nothing.of(), Nothing.of(), newArethusa))(s.treeState)(newArethusa);
+};
+TextStateIO.sentenceViewState = (tsio) => {
+    return tsio._sentenceViewState;
+};
+TextStateIO.initSentenceViewState = (tsio) => {
+    const sentenceIds = TextStateIO.outputArethusaSentenceIds(tsio);
+    if (tsio._sentenceViewState.isNothing) {
+        if (sentenceIds.length > 0) {
+            console.log("new sentence view state");
+            tsio._sentenceViewState = MaybeT
+                .of(new SentenceViewState(sentenceIds));
+        }
+    }
+};
+TextStateIO.updateSentenceViewState = (tsio) => {
+    TextStateIO.initSentenceViewState(tsio);
+    tsio._sentenceViewState
+        .fmap(SentenceViewState.updateFromTSIO(tsio));
 };
 TextStateIO.splitSentenceAtCurrentWord = (s) => {
     const splitAtWord = s

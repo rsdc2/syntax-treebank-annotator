@@ -7,7 +7,8 @@ class GlobalState {
             this.textStateIO = MaybeT.of(TextStateIO.of(arethusa.fmap(ViewState.of("1")("1")), Nothing.of(), plainText, arethusa, arethusa, epidoc));
         };
         this.createTreeStateIO = () => {
-            this.treeStateIO = this.textStateIO
+            this.treeStateIO = this
+                .textStateIO
                 .bindErr("No text state.", TextStateIO.currentSentence)
                 .bindErr("No current sentence", ArethusaSentence.toTreeSentState)
                 .fmapErr("No tree sentence state.", TreeStateIO.of);

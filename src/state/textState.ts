@@ -116,13 +116,13 @@ class TextState {
     ) => {
 
         return new TextState(
-                viewState,
-                treeState,
-                inputPlainText,
-                inputArethusa,
-                outputArethusa, 
-                epidoc
-            )
+            viewState,
+            treeState,
+            inputPlainText,
+            inputArethusa,
+            outputArethusa, 
+            epidoc
+        )
     }
 
     static plainText = (s: TextState) => {

@@ -6,10 +6,12 @@ class GlobalState {
     _keysPressedInputText: number = 0
     _simulation: d3.Simulation<ITreeNode, undefined>
 
+
     constructor() {
         this._textStateIO = Nothing.of<TextStateIO>()
         this._treeStateIO = Nothing.of<TreeStateIO>()
     }
+
 
     get simulation() {
         return this._simulation
@@ -51,10 +53,12 @@ class GlobalState {
                 epidoc
             )
         )
+
     }
 
     createTreeStateIO = () => {
-        this.treeStateIO = this.textStateIO
+        this.treeStateIO = this
+            .textStateIO
             .bindErr("No text state.", TextStateIO.currentSentence)
             .bindErr("No current sentence", ArethusaSentence.toTreeSentState)
             .fmapErr("No tree sentence state.", TreeStateIO.of)

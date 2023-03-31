@@ -451,6 +451,9 @@ Frontend.downloadArethusa = () => {
         .fmap(ArethusaDoc.toXMLStr)
         .fmap(FileHandling.download(docId));
 };
+Frontend.resetViewBox = () => {
+    Graph.svg().fmap(SVG.ViewBox.setViewBoxVal(Constants.defaultViewBox));
+};
 Frontend.showMessage = (message) => {
     HTML.q("div.message")
         .bindErr("No message element", HTML.setInnerHTML(message))
