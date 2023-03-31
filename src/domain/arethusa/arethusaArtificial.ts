@@ -122,7 +122,7 @@ class ArethusaArtificial implements Formable {
                 .fmap(Str.toNum)
                 .unpackT(-1),
             artificial: "elliptical",
-            insertion_id: "",
+            insertionId: "",
             relation: ArethusaArtificial
                 .relation(w),
             secondaryDeps: ArethusaArtificial

@@ -7,9 +7,12 @@ namespace Constants {
         treeNodeId: 0,
         headTokenId: -1,
         relation: AGLDTRel.NONE,
+        lemma: "",
+        postag: "",
         secondaryDeps: [],
         distToRoot: 0, 
         type: NodeType.Root,
+        insertionId: "",
         artificialType: ArtificialType.None
     }
 

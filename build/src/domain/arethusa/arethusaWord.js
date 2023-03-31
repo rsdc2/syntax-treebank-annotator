@@ -99,10 +99,10 @@ ArethusaWord.toTreeToken = (w) => {
             .unpackT(-1),
         lemma: ArethusaWord
             .lemma(w)
-            .unpackT("[None]"),
+            .unpackT(""),
         postag: ArethusaWord
             .postag(w)
-            .unpackT("[None]"),
+            .unpackT(""),
         relation: ArethusaWord
             .relation(w),
         secondaryDeps: ArethusaWord

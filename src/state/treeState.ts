@@ -1,11 +1,4 @@
 
-interface ITreeState {
-    _state_id: number,
-    _sentence_id: string,
-    _tokens: ITreeToken[],
-    _nodes: ITreeNode[]
-    _clickState: ClickState
-}
 
 class TreeState implements ITreeState {
     _state_id: number
@@ -75,12 +68,17 @@ class TreeState implements ITreeState {
         this._state_id = value
     }
 
-    static nodeByTokenId = (tokenId: string) => (sentState: TreeState) => {
-
+    static nodeByTokenId = 
+        (tokenId: string) => 
+        (sentState: TreeState) => 
+    {
         return TreeNode.nodeByTokenId(tokenId) (sentState.nodes)
     }
 
-    static nodeByTreeNodeId = (treeNodeId: string) => (sentState: TreeState) => {
+    static nodeByTreeNodeId = 
+        (treeNodeId: string) => 
+        (sentState: TreeState) => 
+    {
         return MaybeT.of(
             sentState
                 .nodes
@@ -206,7 +204,12 @@ class TreeState implements ITreeState {
     get slashes ()  {
         return this.nodes
             .reduce ( (acc: SecondaryDep[], node:ITreeNode) => {
-                return Arr.concat(acc)(node.secondaryDeps.map(SecondaryDep.ofInterface))
+                return Arr.concat
+                    (acc)
+                    (node   
+                        .secondaryDeps
+                        .map(SecondaryDep.ofInterface)
+                    )
             }
             , [])
     }
@@ -216,7 +219,9 @@ class TreeState implements ITreeState {
             .slashes
             .find (
                 (slash: ISecondaryDep) => {
-                    return SecondaryDep.ofInterface(slash).slashIdFromTokenIds === slashId
+                    return SecondaryDep
+                        .ofInterface(slash)
+                        .slashIdFromTokenIds === slashId
                 }
             ))
     }

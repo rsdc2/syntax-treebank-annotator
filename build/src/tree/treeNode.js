@@ -32,6 +32,9 @@ var TreeNode;
             secondaryDeps: [],
             distToRoot: -1,
             relation: AGLDTRel.NONE,
+            lemma: "",
+            postag: "",
+            insertionId: "",
             type: NodeType.None,
             artificialType: ArtificialType.None
         };
@@ -157,6 +160,13 @@ var TreeNode;
     TreeNode.slashesToStr = (node) => {
         return node.secondaryDeps.map(SecondaryDep.toStr).join(";");
     };
+    /**
+     * Converts a TreeToken to a TreeNode
+     * @param token
+     * @param counter
+     * @param tokens
+     * @returns
+     */
     TreeNode.tokenToTreeNode = (token, counter, tokens) => {
         const node = {
             name: token.form,
@@ -164,8 +174,11 @@ var TreeNode;
             treeNodeId: counter,
             headTokenId: token.headId,
             relation: token.relation,
+            lemma: TreeToken.lemma(token),
+            postag: TreeToken.postag(token),
             secondaryDeps: token.secondaryDeps,
             distToRoot: TreeEdge.countEdgesToRoot(token.id, tokens),
+            insertionId: TreeToken.insertionId(token),
             type: token.type === TreeTokenType.Root ?
                 NodeType.Root :
                 NodeType.NonRoot,
@@ -199,9 +212,9 @@ var TreeNode;
     };
     TreeNode.toArethusaWordXMLStr = (node) => {
         if (node.artificialType == ArtificialType.Elliptic) {
-            return `<word id="${node.arethusaTokenId}" form="${node.name}" artificial="elliptic" insertion_id="" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}"/>`;
+            return `<word id="${node.arethusaTokenId}" form="${node.name}" artificial="${node.artificialType}" insertion_id="${node.insertionId}" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}"/>`;
         }
-        return `<word id="${node.arethusaTokenId}" form="${node.name}" lemma="" postag="" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}"/>`;
+        return `<word id="${node.arethusaTokenId}" form="${node.name}" lemma="${node.lemma}" postag="${node.postag}" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}"/>`;
     };
     TreeNode.toXMLNode = (node) => {
         return MaybeT.of(TreeNode

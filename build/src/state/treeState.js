@@ -15,7 +15,9 @@ class TreeState {
             return MaybeT.of(this
                 .slashes
                 .find((slash) => {
-                return SecondaryDep.ofInterface(slash).slashIdFromTokenIds === slashId;
+                return SecondaryDep
+                    .ofInterface(slash)
+                    .slashIdFromTokenIds === slashId;
             }));
         };
         this.tokenIdToTreeNodeId = (tokenId) => {
@@ -60,7 +62,9 @@ class TreeState {
     get slashes() {
         return this.nodes
             .reduce((acc, node) => {
-            return Arr.concat(acc)(node.secondaryDeps.map(SecondaryDep.ofInterface));
+            return Arr.concat(acc)(node
+                .secondaryDeps
+                .map(SecondaryDep.ofInterface));
         }, []);
     }
     get tokens() {

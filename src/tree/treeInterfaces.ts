@@ -7,25 +7,29 @@ interface ISecondaryDep {
 /**
  * Has direct relationship to tokens in Arethusa XML
  */
-
-interface ITreeToken {
+interface ITreeWord {
     form: string,
     headId: number,
     id: number,
     relation: string,
     type: TreeTokenType,
     secondaryDeps: ISecondaryDep[]
-}
-
-interface ITreeWord extends ITreeToken {
     lemma: string,
     postag: string,
 }
 
-interface ITreeArtificial extends ITreeToken {
-    insertion_id: string,
+interface ITreeArtificial {
+    form: string,
+    headId: number,
+    id: number,
+    relation: string,
+    type: TreeTokenType,
+    secondaryDeps: ISecondaryDep[]
+    insertionId: string,
     artificial: string
 }
+
+type ITreeToken = ITreeWord | ITreeArtificial
 
 /**
  * Nodes in the tree
@@ -38,8 +42,11 @@ interface ITreeNode extends d3.SimulationNodeDatum {
     headTokenId: number,
     secondaryDeps: ISecondaryDep[],   // a secondary dep is stored on the dependent node
     distToRoot: number,
-    relation: string
+    relation: string,
+    lemma: string,
+    postag: string,
     type: NodeType,
+    insertionId: string,
     artificialType: ArtificialType,
     radius?: number | undefined;
 }
@@ -55,6 +62,14 @@ interface ITreeLink {
     depTreeNodeId: number
 }
 
+interface ITreeState {
+    _state_id: number,
+    _sentence_id: string,
+    _tokens: ITreeToken[],
+    _nodes: ITreeNode[]
+    _clickState: ClickState
+}
+
 interface ITreebank {
     direction: TextDir,
     format: FileFormat,
@@ -64,3 +79,4 @@ interface ITreebank {
     annotator: string,
     sentences: ITreeState[]
 }
+
