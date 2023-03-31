@@ -58,10 +58,8 @@ class TextStateIO {
             s.bindErr("Error.", TextState.epidocDeep)
         )
         
-        // if (!newState.fmap(TextState.hasNothing).unpackT(true)) {
-            newState.fmap(tsio.push)
-            tsio.currentStateIdx = tsio.lastStateIdx
-        // }
+        newState.fmap(tsio.push)
+        tsio.currentStateIdx = tsio.lastStateIdx
         
         tsio.show(ext)   
         return 0
@@ -122,7 +120,11 @@ class TextStateIO {
             .applyBind(getSentence)
             .bind(ArethusaSentence.lastTokenId)
 
-        const newViewState = new ViewState (nextWordId, s.currentSentenceId, newArethusa)
+        const newViewState = new ViewState (
+            nextWordId, 
+            s.currentSentenceId, 
+            newArethusa
+        )
     
         s.pushOutputArethusa 
             (false) 
@@ -382,7 +384,6 @@ class TextStateIO {
         }
     }
 
-
     get inputArethusaP () {
         return TextStateIO.inputArethusa(this)
     }
@@ -418,7 +419,10 @@ class TextStateIO {
     }
 
     get isLastState () {
-        return MaybeT.comp (this.currentStateIdx) (Num.eq) (this.lastStateIdx) 
+        return MaybeT.comp 
+            (this.currentStateIdx) 
+            (Num.eq) 
+            (this.lastStateIdx) 
     }
 
     moveTokenDown = () => {
@@ -472,13 +476,13 @@ class TextStateIO {
     }
 
     moveWordToNextSentence = () => {
-        TextStateIO.moveWordToNextSentence(this)
+        TextStateIO.moveTokenToNextSentence(this)
     }
 
-    static moveWordToNextSentence = (s: TextStateIO) => {
+    static moveTokenToNextSentence = (s: TextStateIO) => {
         const pushWordToNextSentence = s
             .currentTokenId
-            .fmap(ArethusaDoc.moveWordToNextSentence)
+            .fmap(ArethusaDoc.moveTokenToNextSentence)
     
         const newArethusa = s
             .outputArethusaP
@@ -498,7 +502,7 @@ class TextStateIO {
     static moveWordToPrevSentence = (s: TextStateIO) => {
         const pushWordToPrevSentence = s
             .currentTokenId
-            .fmap(ArethusaDoc.moveWordToPrevSentence)
+            .fmap(ArethusaDoc.moveTokenToPrevSentence)
 
         const newArethusa = s
             .outputArethusaP

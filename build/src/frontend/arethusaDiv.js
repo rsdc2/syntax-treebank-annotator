@@ -23,7 +23,7 @@ ArethusaDiv.click = () => {
         .selectionEndIdx;
     globalState
         .textStateIO
-        .fmap(TextStateIO.changeView(AthDivCurs.currentWordId)(AthDivCurs.currentSentenceId));
+        .fmap(TextStateIO.changeView(AthDivCurs.currentTokenId)(AthDivCurs.currentSentenceId));
     // Set the cursor position
     // console.log("click")
     AthDivCurs

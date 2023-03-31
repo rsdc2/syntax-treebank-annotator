@@ -482,7 +482,7 @@ class Frontend {
             e.stopPropagation()
             globalState
                 .textStateIO
-                .fmap(TextStateIO.moveWordToNextSentence)
+                .fmap(TextStateIO.moveTokenToNextSentence)
         }
 
         const moveWordToPrevSentenceFunc = (e: Event) => {

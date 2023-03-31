@@ -72,13 +72,13 @@ class AthDivCurs {
                 .bind(XML.attrVal("id"));
         }
         else if (AthDivCurs.currentXMLNodeName.eq("word")) {
-            const getSentenceByWordId = AthDivCurs
-                .currentWordId
+            const getSentenceByTokenId = AthDivCurs
+                .currentTokenId
                 .fmap(ArethusaDoc.sentenceByTokenId);
             return globalState
                 .textStateIO
                 .bind(TextStateIO.outputArethusa)
-                .applyBind(getSentenceByWordId)
+                .applyBind(getSentenceByTokenId)
                 .bind(ArethusaSentence.id);
         }
         else {
@@ -90,7 +90,7 @@ class AthDivCurs {
             .currentXMLTagType
             .unpackT(XMLCursorTagPosition.unknown);
     }
-    static get currentWordId() {
+    static get currentTokenId() {
         if (AthDivCurs.currentXMLNodeName.eq("word")) {
             return AthDivCurs
                 .currentXMLNode
@@ -224,8 +224,12 @@ class AthDivCurs {
             .unpack(0);
     }
 }
+/**
+ * Gets current cursor position from AthDivCurs.preText / postText
+ * @param leftTagFragName
+ * @returns
+ */
 AthDivCurs.checkCursorXMLTagPosition = (leftTagFragName) => (rightTagFragName) => {
-    // Gets current cursor position from AthDivCurs.preText / postText
     const leftTagFragPos = AthDivCurs
         .nearestXMLTagFragBoundary(End.Start)(Dir.Left)(XMLTagFragRegExps[leftTagFragName]);
     const rightTagFragPos = AthDivCurs
@@ -262,7 +266,6 @@ AthDivCurs.nearestXMLTagFragBoundary = (matchEnd) => (dir) => (regexp) => {
         .fmap(getIndexFunc);
 };
 AthDivCurs.setCursorPosFromAthDivOffset = (divOffset) => {
-    // console.log("Set cursor position.")
     const anchorInfo = AthDivCurs.textNodeOfIdx(divOffset);
     const createCursorPos = CursorPos.of(divOffset - anchorInfo.startIdx);
     const cursorPos = anchorInfo.maybeText.fmap(createCursorPos);

@@ -3,6 +3,9 @@ class ArethusaToken {
         this._node = node;
     }
     static of(node) {
+        if (XML.hasAttr('artificial')) {
+            return ArethusaArtificial.of(node);
+        }
         return new ArethusaToken(node);
     }
     get text() {
@@ -29,11 +32,9 @@ ArethusaToken.id = (w) => {
         .bind(XML.nodeValue);
 };
 ArethusaToken.isArtificial = (w) => {
-    const hasLemma = MaybeT.of(w)
-        .fmap(DXML.node)
-        .fmap(XML.hasAttr('lemma'))
+    return MaybeT.of(w)
+        .fmap(DXML.isArtificial)
         .unpackT(false);
-    return !hasLemma;
 };
 ArethusaToken.matchId = (id) => (word) => {
     return ArethusaToken
@@ -46,6 +47,9 @@ ArethusaToken.fromAttrs = (a) => (attrs) => {
         .fmap(ArethusaToken.fromXMLNode);
 };
 ArethusaToken.fromXMLNode = (node) => {
+    if (XML.hasAttr('artificial')) {
+        return ArethusaArtificial.of(node);
+    }
     return new ArethusaToken(node);
 };
 ArethusaToken.head = (w) => {

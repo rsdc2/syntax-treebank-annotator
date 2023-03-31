@@ -2,6 +2,11 @@
 
 namespace DXML {
 
+    export const isArtificial = (n: Nodeable) => {
+        const node = DXML.node(n)
+        return XML.hasAttr('artificial')(node)
+    }
+
     export function multiwordsFromArray(component: MultiwordT): (a: XMLNode[]) => Wordable[] {
         return map(component.of)
     }

@@ -88,10 +88,8 @@ class AthDivCurs {
                     (AthDivCursTagLastIdx)
                     (openingTagFirstIdx)
             }
-
             default: return MaybeT.of("")
         }
-
     }
 
     static get currentSentenceId() {
@@ -101,14 +99,14 @@ class AthDivCurs {
                 .bind(XML.attrVal("id"))
 
         } else if (AthDivCurs.currentXMLNodeName.eq("word")) {
-            const getSentenceByWordId = AthDivCurs
-                .currentWordId
+            const getSentenceByTokenId = AthDivCurs
+                .currentTokenId
                 .fmap(ArethusaDoc.sentenceByTokenId)
 
             return globalState
                 .textStateIO
                 .bind(TextStateIO.outputArethusa)
-                .applyBind(getSentenceByWordId)
+                .applyBind(getSentenceByTokenId)
                 .bind(ArethusaSentence.id)
 
         } else {
@@ -122,7 +120,7 @@ class AthDivCurs {
             .unpackT(XMLCursorTagPosition.unknown)
     }
 
-    static get currentWordId() {
+    static get currentTokenId() {
         if (AthDivCurs.currentXMLNodeName.eq("word")) {
             return AthDivCurs
                 .currentXMLNode
@@ -132,9 +130,16 @@ class AthDivCurs {
         }
     }
 
-    static checkCursorXMLTagPosition = (leftTagFragName: string) => (rightTagFragName: string) => {
-        // Gets current cursor position from AthDivCurs.preText / postText
+    /**
+     * Gets current cursor position from AthDivCurs.preText / postText
+     * @param leftTagFragName 
+     * @returns 
+     */
 
+    static checkCursorXMLTagPosition = 
+        (leftTagFragName: string) => 
+        (rightTagFragName: string) => 
+    {
         const leftTagFragPos = AthDivCurs
             .nearestXMLTagFragBoundary
             (End.Start)
@@ -352,7 +357,6 @@ class AthDivCurs {
     }
 
     static setCursorPosFromAthDivOffset = (divOffset: number) => {
-        // console.log("Set cursor position.")
         const anchorInfo = AthDivCurs.textNodeOfIdx(divOffset)
         const createCursorPos = CursorPos.of(divOffset - anchorInfo.startIdx)
         const cursorPos = anchorInfo.maybeText.fmap(createCursorPos)
@@ -404,8 +408,6 @@ class AthDivCurs {
 
         return divTextLength.bind(Div.textFromRange(div)(postCursorPos))
     }
-
-
 
     static XMLTagFragBoundaries = (end: End) => (dir: Dir) => (tagFragNames: string[]) => {
         return tagFragNames.map(

@@ -25,12 +25,9 @@ class ArethusaToken implements Formable {
     }
 
     static isArtificial = (w: ArethusaToken): boolean => {
-        const hasLemma = MaybeT.of(w)
-            .fmap(DXML.node)
-            .fmap(XML.hasAttr('lemma'))
+        return MaybeT.of(w)
+            .fmap(DXML.isArtificial)
             .unpackT(false)
-
-        return !hasLemma
     }
 
     static matchId = (id: string) => (word: ArethusaToken) => {
@@ -40,6 +37,9 @@ class ArethusaToken implements Formable {
     }
 
     static of(node: XMLNode): ArethusaToken {
+        if (XML.hasAttr('artificial')) {
+            return ArethusaArtificial.of(node)
+        }
         return new ArethusaToken(node)
     }
 
@@ -50,6 +50,9 @@ class ArethusaToken implements Formable {
     }
 
     static fromXMLNode = (node: Node) => {
+        if (XML.hasAttr('artificial')) {
+            return ArethusaArtificial.of(node)
+        }
         return new ArethusaToken(node)
     }
 

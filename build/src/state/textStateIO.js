@@ -65,7 +65,7 @@ class TextStateIO {
             this.pushOutputArethusa(false)(new ViewState(this.currentTokenId, this.currentSentenceId, newArethusa))(this.treeState)(newArethusa);
         };
         this.moveWordToNextSentence = () => {
-            TextStateIO.moveWordToNextSentence(this);
+            TextStateIO.moveTokenToNextSentence(this);
         };
         this.moveWordToPrevSentence = () => {
             TextStateIO.moveWordToPrevSentence(this);
@@ -296,10 +296,8 @@ TextStateIO.appendNewSentenceToArethusa = (s) => {
 TextStateIO.appendNewState = (ext) => (state) => (tsio) => {
     const s = MaybeT.of(state);
     const newState = TextState.maybeOf(s.bindErr("Error.", TextState.viewStateDeep), s.bindErr("Error.", TextState.treeStateDeep), s.bindErr("Error.", TextState.plainText), s.bindErr("Error.", TextState.inputArethusaDeep), s.bindErr("Error.", TextState.outputArethusaDeep), s.bindErr("Error.", TextState.epidocDeep));
-    // if (!newState.fmap(TextState.hasNothing).unpackT(true)) {
     newState.fmap(tsio.push);
     tsio.currentStateIdx = tsio.lastStateIdx;
-    // }
     tsio.show(ext);
     return 0;
 };
@@ -432,10 +430,10 @@ TextStateIO.moveTokenDown = (s) => {
 TextStateIO.moveTokenUp = (s) => {
     s.moveToken(ArethusaSentence.moveTokenUp);
 };
-TextStateIO.moveWordToNextSentence = (s) => {
+TextStateIO.moveTokenToNextSentence = (s) => {
     const pushWordToNextSentence = s
         .currentTokenId
-        .fmap(ArethusaDoc.moveWordToNextSentence);
+        .fmap(ArethusaDoc.moveTokenToNextSentence);
     const newArethusa = s
         .outputArethusaP
         .applyBind(pushWordToNextSentence);
@@ -444,7 +442,7 @@ TextStateIO.moveWordToNextSentence = (s) => {
 TextStateIO.moveWordToPrevSentence = (s) => {
     const pushWordToPrevSentence = s
         .currentTokenId
-        .fmap(ArethusaDoc.moveWordToPrevSentence);
+        .fmap(ArethusaDoc.moveTokenToPrevSentence);
     const newArethusa = s
         .outputArethusaP
         .applyBind(pushWordToPrevSentence);

@@ -71,16 +71,16 @@ class ArethusaSentence implements Word, Wordable, Formable  {
             .bind(ArethusaDoc.fromNode) 
     }
 
-    static appendWord = 
-        (word: ArethusaWord) => 
+    static appendToken = 
+        (token: ArethusaToken) => 
         (sentence: ArethusaSentence) => 
     {
-        const wordNode = DXML
-            .node(word)
+        const tokenNode = DXML
+            .node(token)
             .cloneNode(true)
 
         return MaybeT.of(DXML.node(sentence))
-            .bind(XML.appendChildToNode(wordNode))
+            .bind(XML.appendChildToNode(tokenNode))
             .bind(XML.ownerDocument)
             .bind(XML.documentElement)
             .bind(ArethusaDoc.fromNode)
@@ -115,7 +115,7 @@ class ArethusaSentence implements Word, Wordable, Formable  {
 
     static arethusaTokenIds = (s: ArethusaSentence) => {
         return ArethusaSentence
-            .words(s)
+            .tokens(s)
             .map(ArethusaToken.id)
             .filter( (item: Maybe<string>) => item.isSomething ) 
             .map( (item: Maybe<string>) => item.value as string )
@@ -152,17 +152,27 @@ class ArethusaSentence implements Word, Wordable, Formable  {
             .bind(ArethusaDoc.fromNode)
     }
 
-    static prependWord = (word: ArethusaWord) => (sentence: ArethusaSentence) => {
-        const wordNode = DXML
-            .node(word)
+    static prependToken = 
+        (token: ArethusaToken) => 
+        (sentence: ArethusaSentence) => 
+    {
+        const tokenNode = DXML
+            .node(token)
             .cloneNode(true)
 
         return MaybeT.of(DXML.node(sentence))
-            .fmap(XML.prependChildToNode(wordNode))
+            .fmap(XML.prependChildToNode(tokenNode))
             .bind(XML.ownerDocument)
             .bind(XML.documentElement)
             .bind(ArethusaDoc.fromNode)
     }
+
+    /**
+     * Only used in conversion from EpiDoc, 
+     * so no need to deal with Artificial Tokens
+     * @param words 
+     * @returns 
+     */
 
     static appendMaybeWords = 
         (words: Array<Maybe<string>>) => 

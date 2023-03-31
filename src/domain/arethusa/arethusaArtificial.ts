@@ -41,7 +41,7 @@ class ArethusaArtificial implements Formable {
         return ArethusaArtificial.id(word).unpack("") === id
     }
 
-    static of(node: XMLNode): ArethusaArtificial {
+    static of(node: Node): ArethusaArtificial {
         return new ArethusaArtificial(node)
     }
 

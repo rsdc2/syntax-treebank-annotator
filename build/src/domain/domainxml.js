@@ -1,6 +1,10 @@
 // Methods shared between Arethusa and EpiDoc
 var DXML;
 (function (DXML) {
+    DXML.isArtificial = (n) => {
+        const node = DXML.node(n);
+        return XML.hasAttr('artificial')(node);
+    };
     function multiwordsFromArray(component) {
         return map(component.of);
     }

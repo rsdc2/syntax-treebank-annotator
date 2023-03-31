@@ -8,7 +8,7 @@ class ArethusaDiv {
             .textStateIO
             .fmap(
                 TextStateIO.changeView
-                    (AthDivCurs.currentWordId) 
+                    (AthDivCurs.currentTokenId) 
                     (AthDivCurs.currentSentenceId)
             )
         

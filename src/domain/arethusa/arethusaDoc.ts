@@ -9,13 +9,11 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
         (attrs: IArtificial) => 
         (a: ArethusaDoc) => 
     {
-
         return ArethusaDoc
             .lastSentence(a)
             .bind(
                 ArethusaSentence.appendArtificialToSentenceFromAttrs(attrs)
             )      
-
     }
 
     static appendArtificialToSentence = 
@@ -207,7 +205,7 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
         return arethusaXMLNodeWithChildren
             .bind(ArethusaDoc.fromNode)
             .bind(ArethusaDoc.reorderSentenceIds)
-            .bind(ArethusaDoc.reorderWordIds)
+            .bind(ArethusaDoc.reorderTokenIds)
     }
 
     static fromXMLStr = (arethusaXML: string) => {
@@ -217,7 +215,10 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
             .bind(ArethusaDoc.fromNode)
     }
 
-    static incrementSentenceIdsFrom = (startSentenceId: string) => (a: ArethusaDoc) => {
+    static incrementSentenceIdsFrom = 
+        (startSentenceId: string) => 
+        (a: ArethusaDoc) => 
+    {
         const reduceIncrement = (a: Maybe<ArethusaDoc>, id: string) => {
             const s = a.bind(ArethusaDoc.sentenceById(id))
             return s
@@ -259,8 +260,14 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
         return newArethusa.bind(ArethusaDoc.reorderSentenceIds)    
     }
 
-    static insertSentenceAfter = (refSentenceId: string) => (a: ArethusaDoc): Maybe<ArethusaDoc> => {
-        return ArethusaDoc.insertSentence(XML.insertAfter)(refSentenceId)(a)
+    static insertSentenceAfter = 
+        (refSentenceId: string) => 
+        (a: ArethusaDoc): Maybe<ArethusaDoc> => 
+    {
+        return ArethusaDoc.insertSentence
+            (XML.insertAfter)
+            (refSentenceId)
+            (a)
     }
 
     static insertSentenceBefore = 
@@ -372,53 +379,68 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
         }
     }
 
-    static pushWordToSentence = 
-        (addFunc: (word: ArethusaWord) => (sentence: ArethusaSentence) => Maybe<ArethusaDoc>) => 
-        (wordId: string) => 
+    static pushTokenToSentence = 
+        (addFunc: 
+            (word: ArethusaWord) => 
+            (sentence: ArethusaSentence) => 
+            Maybe<ArethusaDoc>
+        ) => 
+        (tokenId: string) => 
         (newSentenceId: string) =>
         (a: ArethusaDoc) => {
 
-        const currentWord = ArethusaDoc
-            .wordById(wordId)(a)
+        const currentToken = ArethusaDoc
+            .tokenById(tokenId)(a)
 
-        const getThisSentence = currentWord
+        const getThisSentence = currentToken
             .bind(ArethusaWord.parentSentenceId)
             .fmap(ArethusaDoc.sentenceById)     
 
-        const addWord = currentWord.fmap(addFunc)
+        const addToken = currentToken.fmap(addFunc)
 
         const newSentence = MaybeT.of(a)
             .bind(ArethusaDoc.ensureSentence (newSentenceId))
             .bind(ArethusaDoc.sentenceById (newSentenceId))
             
         const newArethusa = newSentence
-            .applyBind(addWord)
+            .applyBind(addToken)
 
         const thisSentence = newArethusa
             .bind(ArethusaDoc.deepcopy)
             .applyBind(getThisSentence)   
                         
         const newArethusa2 = thisSentence
-            .bind(ArethusaSentence.removeTokenById(wordId))
+            .bind(ArethusaSentence.removeTokenById(tokenId))
         
         return newArethusa2
     }
 
-    static moveWordToNextSentence = (wordId: string) => (a: ArethusaDoc) => {
+    static moveTokenToNextSentence = 
+        (tokenId: string) => 
+        (a: ArethusaDoc) => 
+    {
         const thisSentenceId = MaybeT.of(a)
-            .bind(ArethusaDoc.wordById(wordId))
+            .bind(ArethusaDoc.tokenById(tokenId))
             .bind(ArethusaWord.parentSentenceId)
 
         const nextSentenceId = thisSentenceId
             .fmap(Str.increment)
 
         const prependWordToNextSentence = nextSentenceId
-            .fmap(ArethusaDoc.pushWordToSentence (ArethusaSentence.prependWord) (wordId))
+            .fmap(
+                ArethusaDoc.pushTokenToSentence 
+                    (ArethusaSentence.prependToken) 
+                    (tokenId)
+                )
 
-        return MaybeT.of(a).applyBind(prependWordToNextSentence)
+        return MaybeT.of(a)
+            .applyBind(prependWordToNextSentence)
     }
 
-    static moveWordToPrevSentence = (wordId: string) => (a: ArethusaDoc) => {
+    static moveTokenToPrevSentence = 
+        (wordId: string) => 
+        (a: ArethusaDoc) => 
+    {
         const thisSentenceId = MaybeT.of(a)
             .bind(ArethusaDoc.wordById(wordId))
             .bind(ArethusaWord.parentSentenceId)
@@ -427,13 +449,19 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
             .fmap(Str.decrement)
 
         const appendWordToPrevSentence = prevSentenceId
-            .fmap(ArethusaDoc.pushWordToSentence (ArethusaSentence.appendWord) (wordId))
+            .fmap(ArethusaDoc.pushTokenToSentence 
+                    (ArethusaSentence.appendToken) 
+                    (wordId)
+            )
 
         return MaybeT.of(a)
             .applyBind(appendWordToPrevSentence)
     }
 
-    static nextSentenceIds = (startSentenceId: string) => (a: ArethusaDoc): string[] => {
+    static nextSentenceIds = 
+        (startSentenceId: string) => 
+        (a: ArethusaDoc): string[] => 
+    {
         return ArethusaDoc
             .sentenceById (startSentenceId) (a)
             .fmap(DXML.node)
@@ -498,15 +526,18 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
         return ArethusaDoc.fromSentences(sentences)
     }
 
-    static reorderWordIds = (a: ArethusaDoc): Maybe<ArethusaDoc> => {
+    static reorderTokenIds = (a: ArethusaDoc): Maybe<ArethusaDoc> => {
         const maybeWords = MaybeT.of(a)
             .bindErr("No Arethusa.", ArethusaDoc.deepcopy)
-            .fmapErr("No words in Arethusa.", ArethusaDoc.words)
+            .fmapErr("No words in Arethusa.", ArethusaDoc.tokens)
             .unpackT([])
             .map( (w: ArethusaWord, idx: number) => 
                 MaybeT.ofThrow("Could not create Maybe<Word>.", DXML.node(w))
-                    .fmapErr("Could not make word node.", XML.setId(Str.fromNum(idx + 1)))
-                    .fmapErr("Could not set ID.", ArethusaWord.fromXMLNode)
+                    .fmapErr(
+                        "Could not make word node.", 
+                        XML.setId(Str.fromNum(idx + 1))
+                    )
+                    .fmapErr("Could not set ID.", ArethusaToken.fromXMLNode)
             )
 
         const words = Arr.removeNothings(maybeWords)
@@ -605,12 +636,14 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
             .bind(ArethusaDoc.fromNode)
     }
 
-    static splitSentenceAt = (startTokenId: string) => (a: ArethusaDoc) => {
-
+    static splitSentenceAt = 
+        (startTokenId: string) => 
+        (a: ArethusaDoc) => 
+    {
         const moveReduce = (_a: Maybe<ArethusaDoc>, wordId: string) => {
             const newArethusa = _a.bind(ArethusaDoc.deepcopy)
             return newArethusa
-                .bind(ArethusaDoc.moveWordToNextSentence(wordId))
+                .bind(ArethusaDoc.moveTokenToNextSentence(wordId))
         } 
 
         const nextTokenIds = ArethusaDoc
@@ -618,20 +651,12 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
             .fmap(ArethusaSentence.nextTokenIds (startTokenId))
             .unpackT([])
 
-        const currentSentenceId = ArethusaDoc
-            .sentenceIdByTokenId(startTokenId)(a)
-        
-        // const startForIncrement = currentSentenceId
-        //     .fmap(Str.increment)
-        //     .fmap(Str.increment)
-
         const insertSentence = MaybeT.of(a)
             .bind(ArethusaDoc.sentenceIdByTokenId(startTokenId))
             .fmap(ArethusaDoc.insertSentenceAfter)
 
         const arethusaWithNewSentenceAndIds = MaybeT.of(a)
             .applyBind(insertSentence)
-            // .applyBind(startForIncrement.fmap(Arethusa.incrementSentenceIdsFrom))
 
         return Arr
             .reverse([startTokenId].concat(nextTokenIds))
@@ -642,8 +667,10 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
         return MaybeT.of(this.node.textContent)
     }
 
-    static toXMLStr(a: ArethusaDoc) {
-        return XML.toStr(a.node)
+    static tokenById = (id: string) => (a: ArethusaDoc) => {
+        return XML.xpathMaybe(ArethusaToken.xpathAddress + `[@id='${id}']`)(a.doc)
+            .bind(Arr.head)
+            .fmap(ArethusaToken.fromXMLNode)
     }
 
     static tokens = (a: ArethusaDoc): ArethusaToken[] => {
@@ -653,6 +680,10 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
             .flatMap(XML.childNodes)
             .filter( (node: Node) => node.nodeName === "word" )
             .map(ArethusaWord.fromXMLNode)
+    }
+
+    static toXMLStr(a: ArethusaDoc) {
+        return XML.toStr(a.node)
     }
 
     static words = (a: ArethusaDoc): ArethusaWord[] => {
