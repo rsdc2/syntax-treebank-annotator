@@ -180,7 +180,6 @@ class TreeStateIO {
                 const depIdx = HTML.Elem.getAttr 
                     ("dep-id") 
                     (elem)
-                
 
                 const currentRel = depIdx
                     .bind(this.currentTreeState.nodeByTreeNodeId)

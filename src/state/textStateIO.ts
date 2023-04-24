@@ -41,9 +41,15 @@ class TextStateIO {
             s.bind(TextState.epidocDeep)
         )
 
+        console.log('appendNewState', newState.outputArethusa.value?.node)
+
         if (newState._sentenceVS.isNothing) {
             if (this.currentState.value?._sentenceVS != null) {
-                newState._sentenceVS = this.currentState.value?._sentenceVS.fmap(SentenceViewState.deepcopy)
+                newState._sentenceVS = this
+                    .currentState
+                    .value
+                    ?._sentenceVS
+                    .fmap(SentenceViewState.deepcopy)
             }   
         }
 
@@ -51,9 +57,9 @@ class TextStateIO {
         
         if (!maybeNS.fmap(TextState.hasNothing).unpackT(true)) {
             maybeNS.fmap(this.push)
+            console.log('Has TS')
             this.currentStateIdx = this.lastStateIdx
         }
-        // TextStateIO.initSentenceViewState(this)
 
         this.show(ext)
     }
@@ -199,6 +205,9 @@ class TextStateIO {
         const newArethusa = s
             .outputArethusaP
             .bind(flip(ArethusaDoc.replaceSentence)(newS))
+
+        console.log('changeArethusaSentence', s.outputArethusaP.value?.node)
+        console.log('newArethusa', newArethusa.value?.node)
 
         s.pushOutputArethusa
             (ext)

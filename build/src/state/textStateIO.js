@@ -3,20 +3,23 @@ class TextStateIO {
         this._textStates = [];
         this._currentStateIdx = Nothing.of();
         this.appendNewState = (ext) => (state) => {
-            var _a, _b;
+            var _a, _b, _c;
             const s = MaybeT.of(state);
             const newState = TextState.of(s.bind(TextState.viewStateDeep), state._sentenceVS.fmap(SentenceViewState.deepcopy), s.bind(TextState.treeStateDeep), s.bind(TextState.plainText), s.bind(TextState.inputArethusaDeep), s.bind(TextState.outputArethusaDeep), s.bind(TextState.epidocDeep));
+            console.log('appendNewState', (_a = newState.outputArethusa.value) === null || _a === void 0 ? void 0 : _a.node);
             if (newState._sentenceVS.isNothing) {
-                if (((_a = this.currentState.value) === null || _a === void 0 ? void 0 : _a._sentenceVS) != null) {
-                    newState._sentenceVS = (_b = this.currentState.value) === null || _b === void 0 ? void 0 : _b._sentenceVS.fmap(SentenceViewState.deepcopy);
+                if (((_b = this.currentState.value) === null || _b === void 0 ? void 0 : _b._sentenceVS) != null) {
+                    newState._sentenceVS = (_c = this
+                        .currentState
+                        .value) === null || _c === void 0 ? void 0 : _c._sentenceVS.fmap(SentenceViewState.deepcopy);
                 }
             }
             const maybeNS = MaybeT.of(newState);
             if (!maybeNS.fmap(TextState.hasNothing).unpackT(true)) {
                 maybeNS.fmap(this.push);
+                console.log('Has TS');
                 this.currentStateIdx = this.lastStateIdx;
             }
-            // TextStateIO.initSentenceViewState(this)
             this.show(ext);
         };
         this.changeArethusaSentence = (ext) => (newS) => {
@@ -379,9 +382,12 @@ TextStateIO.outputArethusaSentenceIds = (tsio) => {
     return sentenceIdsNoNothings;
 };
 TextStateIO.changeArethusaSentence = (ext) => (s) => (newS) => {
+    var _a, _b;
     const newArethusa = s
         .outputArethusaP
         .bind(flip(ArethusaDoc.replaceSentence)(newS));
+    console.log('changeArethusaSentence', (_a = s.outputArethusaP.value) === null || _a === void 0 ? void 0 : _a.node);
+    console.log('newArethusa', (_b = newArethusa.value) === null || _b === void 0 ? void 0 : _b.node);
     s.pushOutputArethusa(ext)(new ViewState(Nothing.of(), s.viewState.bind(ViewState.currentSentenceId), s.outputArethusaP))(s.treeState)(newArethusa);
 };
 /**

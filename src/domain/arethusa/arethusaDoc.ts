@@ -1,7 +1,7 @@
 class ArethusaDoc implements ArethusaSentenceable, Wordable {
-    _node: XMLNode
+    _node: Node
 
-    constructor(node: XMLNode) {
+    constructor(node: Node) {
         this._node = node
     }
 
@@ -31,6 +31,25 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
             .appendSentenceWithId 
                 (ArethusaDoc.newNextSentenceId(a)) 
                 (a)
+    }
+
+    static appendSentences = (sentences: ArethusaSentence[]) => (a: ArethusaDoc) => {
+        let doc = ArethusaDoc.deepcopy(a)
+
+        sentences.forEach(
+            (s: ArethusaSentence) => {
+                const sentenceXML = DXML.node(s)
+
+                doc = doc
+                    .fmap(DXML.node)
+                    .bind(XML.firstChild)
+                    .bind(XML.appendChildToNode(sentenceXML))
+                    .bind(ArethusaDoc.fromNode)
+                    
+            }
+        )
+
+        return doc
     }
 
     static appendSentenceWithId = 
@@ -106,7 +125,7 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
             .bind(ArethusaDoc.fromNode)
     }
 
-    get doc(): Maybe<XMLDocument | XMLNode> {
+    get doc(): Maybe<XMLDocument | Node> {
         if (XML.isDocument(this.node)) {
             return MaybeT.of(this.node)
         }
@@ -155,7 +174,7 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
         return Arr.head (a.sentences)
     }
 
-    static fromNode = (node: XMLNode) => {
+    static fromNode = (node: Node) => {
         return MaybeT.of(new ArethusaDoc(node))
     }
 
@@ -324,7 +343,7 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
         return nextId.unpack("1")
     }
 
-    get node(): XMLNode {
+    get node(): Node {
         return this._node
     }
 
@@ -499,6 +518,25 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
             .bind(ArethusaDoc._removeTokenOrSentence (id) (a))
     }
 
+    static removeSentences = (a: ArethusaDoc) => {
+        // Returns a deep copy of the input Arethusa Doc with the sentences removed
+
+        let doc = ArethusaDoc.deepcopy(a)
+        const ids = doc
+            .fmap(ArethusaDoc.sentences)
+            .unpackT([])
+            .map(ArethusaSentence.id)
+        
+        const newIds = Arr.removeNothings(ids)
+        
+        newIds.forEach( (id) => {
+                doc = doc.bind(ArethusaDoc.removeSentenceById(id))
+            }
+        )
+
+        return doc
+    }
+
     static removeTokenByTokenAndSentenceId = 
         (wordId: string) => 
         (sentenceId: string) => 
@@ -546,24 +584,30 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
             .bindErr("No document element.", ArethusaDoc.fromNode)
     }
 
-    static replaceSentence = (a: ArethusaDoc) => (newS: ArethusaSentence) => {
+    static replaceSentence = (a: ArethusaDoc) => (newSentence: ArethusaSentence) => {
 
-        const newSXML = DXML.node(newS)
+        // Get the XML node of the new sentence (i.e. replacement sentence)
+        const newSentenceXML = DXML.node(newSentence)
 
+        // Get the XML nodes of the sentences
         const sentenceNodes = ArethusaDoc
             .deepcopy(a)
             .fmap(ArethusaDoc.sentences)
             .unpackT([])
             .map(DXML.node)
 
+        // Replace the sentence
         const newSentences = ArethusaSentence
-            .id(newS)
+            .id(newSentence)
             .fmap(flip(ArethusaDoc.sentenceNodeIdxById)(a))
-            .fmap(Arr.replaceByIdx(sentenceNodes)(newSXML))
+            .fmap(Arr.replaceByIdx(sentenceNodes)(newSentenceXML))
             .unpackT([])
             .map(ArethusaSentence.fromXMLNode)
 
-        return ArethusaDoc.fromSentences(newSentences)
+        const newdoc = ArethusaDoc.removeSentences(a)
+        return newdoc.bind(ArethusaDoc.appendSentences(newSentences))
+        // Create a new Arethusa Document based on the new sentences
+        // return ArethusaDoc.fromSentences(newSentences)
 
     }
 

@@ -73,6 +73,18 @@ ArethusaDoc.appendSentence = (a) => {
     return ArethusaDoc
         .appendSentenceWithId(ArethusaDoc.newNextSentenceId(a))(a);
 };
+ArethusaDoc.appendSentences = (sentences) => (a) => {
+    let doc = ArethusaDoc.deepcopy(a);
+    sentences.forEach((s) => {
+        const sentenceXML = DXML.node(s);
+        doc = doc
+            .fmap(DXML.node)
+            .bind(XML.firstChild)
+            .bind(XML.appendChildToNode(sentenceXML))
+            .bind(ArethusaDoc.fromNode);
+    });
+    return doc;
+};
 ArethusaDoc.appendSentenceWithId = (sentenceId) => (a) => {
     const id = { "id": sentenceId };
     const sentenceElement = a
@@ -346,6 +358,19 @@ ArethusaDoc.removeSentenceById = (id) => (a) => {
         .sentenceById(id)(a)
         .bind(ArethusaDoc._removeTokenOrSentence(id)(a));
 };
+ArethusaDoc.removeSentences = (a) => {
+    // Returns a deep copy of the input Arethusa Doc with the sentences removed
+    let doc = ArethusaDoc.deepcopy(a);
+    const ids = doc
+        .fmap(ArethusaDoc.sentences)
+        .unpackT([])
+        .map(ArethusaSentence.id);
+    const newIds = Arr.removeNothings(ids);
+    newIds.forEach((id) => {
+        doc = doc.bind(ArethusaDoc.removeSentenceById(id));
+    });
+    return doc;
+};
 ArethusaDoc.removeTokenByTokenAndSentenceId = (wordId) => (sentenceId) => (a) => {
     return ArethusaSentence
         .tokenByTokenAndSentenceId(wordId)(sentenceId)(a)
@@ -377,20 +402,26 @@ ArethusaDoc.reorderTokenIds = (a) => {
         .bindErr("No owner document", XML.documentElement)
         .bindErr("No document element.", ArethusaDoc.fromNode);
 };
-ArethusaDoc.replaceSentence = (a) => (newS) => {
-    const newSXML = DXML.node(newS);
+ArethusaDoc.replaceSentence = (a) => (newSentence) => {
+    // Get the XML node of the new sentence (i.e. replacement sentence)
+    const newSentenceXML = DXML.node(newSentence);
+    // Get the XML nodes of the sentences
     const sentenceNodes = ArethusaDoc
         .deepcopy(a)
         .fmap(ArethusaDoc.sentences)
         .unpackT([])
         .map(DXML.node);
+    // Replace the sentence
     const newSentences = ArethusaSentence
-        .id(newS)
+        .id(newSentence)
         .fmap(flip(ArethusaDoc.sentenceNodeIdxById)(a))
-        .fmap(Arr.replaceByIdx(sentenceNodes)(newSXML))
+        .fmap(Arr.replaceByIdx(sentenceNodes)(newSentenceXML))
         .unpackT([])
         .map(ArethusaSentence.fromXMLNode);
-    return ArethusaDoc.fromSentences(newSentences);
+    const newdoc = ArethusaDoc.removeSentences(a);
+    return newdoc.bind(ArethusaDoc.appendSentences(newSentences));
+    // Create a new Arethusa Document based on the new sentences
+    // return ArethusaDoc.fromSentences(newSentences)
 };
 ArethusaDoc.sentences = (a) => {
     const getSentences = XML.xpath(ArethusaSentence.xpathAddress);
