@@ -74,6 +74,8 @@ ArethusaSentence.appendWordToSentenceFromAttrs = (attrs) => (sentence) => {
             .fmap(ArethusaDoc.nextTokenId)
             .unpackT("")
     };
+    // Remove newlines from form
+    attrs.form = attrs.form.replace(/[\n\t\s]+/g, "");
     const createWordElement = XML
         .createElement("word")({ ...nextId, ...attrs });
     const wordElement = sentence

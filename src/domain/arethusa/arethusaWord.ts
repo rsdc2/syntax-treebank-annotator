@@ -10,9 +10,10 @@ class ArethusaWord implements Formable {
             .bind(XML.nodeValue)
     }
 
-    static form = (w: ArethusaWord) => {
+    static form = (w: ArethusaWord): Maybe<string> => {
         return XML.attr ("form") (w._node)
             .bind(XML.nodeValue)
+            .fmap(Str.replace(/\n/g)(""))
     }
 
     static createAttrs = (form: string): IArethusaWord => {

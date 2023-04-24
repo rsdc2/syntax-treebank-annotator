@@ -50,6 +50,10 @@ class ArethusaSentence implements Word, Wordable, Formable  {
                 .fmap(ArethusaDoc.nextTokenId)
                 .unpackT("")
         }
+
+        // Remove newlines from form
+        attrs.form = attrs.form.replace(/[\n\t\s]+/g, "")
+
         const createWordElement = XML
             .createElement("word")({...nextId, ...attrs})
         const wordElement = sentence

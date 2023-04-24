@@ -24,12 +24,14 @@ Conversion.epidocXMLToArethusaXML = (epidocXML) => {
         .unpackT([])
         .flatMap(WordableT.words)
         .map(FormableT.form);
+    // Create Arethusa from EpiDoc tokens
     const arethusa = ArethusaDoc
         .fromXMLStr(arethusaTemplate)
         .bind(ArethusaDoc.setDocId(docId))
         .bind(ArethusaDoc.appendSentence)
         .bind(ArethusaDoc.lastSentence)
         .bind(ArethusaSentence.appendMaybeWords(words));
+    // Prettify Arethusa XML
     const arethusaXML = arethusa
         .fmap(DXML.node)
         .fmap(XMLFormatter.deprettifyFromRoot(true))

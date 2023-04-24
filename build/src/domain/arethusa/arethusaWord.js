@@ -18,7 +18,8 @@ ArethusaWord.id = (w) => {
 };
 ArethusaWord.form = (w) => {
     return XML.attr("form")(w._node)
-        .bind(XML.nodeValue);
+        .bind(XML.nodeValue)
+        .fmap(Str.replace(/\n/g)(""));
 };
 ArethusaWord.createAttrs = (form) => {
     return {
