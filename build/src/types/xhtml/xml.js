@@ -3,9 +3,9 @@ class FormableT {
         return f.text;
     }
 }
-class WordableT {
-    static words(wordable) {
-        return wordable.tokens;
+class TokenableT {
+    static tokens(tokenable) {
+        return tokenable.tokens;
     }
 }
 class Word {
@@ -360,6 +360,16 @@ XML.followingTextNodesWithAncestorByAncestorId = (ancestorName) => (attrName) =>
     return XML.xpathMaybeC(`following::text()[ancestor::${ancestorName}[@${attrName}="${attrVal}"]]`)(MaybeT.of(node))
         .unpackT([]);
 };
+XML.followingTextNodesWithAncestorByAncestorName = (ancestorName) => (node) => {
+    return XML.xpathMaybeC(`following::text()[ancestor::${ancestorName}]`)(MaybeT.of(node))
+        .unpackT([]);
+};
+XML.hasAncestor = (tagName) => (node) => {
+    const ancestors = XML
+        .xpath(`ancestor::t:${tagName}`)(node)
+        .unpackT([]);
+    return ancestors.length > 0;
+};
 XML.insertBefore = (nodeToInsert) => (refNode) => {
     function __insertBefore(parentNode) {
         const _nodeToInsert = XML.deepcopy(nodeToInsert);
@@ -408,6 +418,10 @@ XML.previousTextNodes = (node) => {
 };
 XML.previousTextNodesWithAncestorByAncestorId = (ancestorName) => (attrName) => (attrVal) => (node) => {
     return XML.xpathMaybeC(`preceding::text()[ancestor::${ancestorName}[@${attrName}="${attrVal}"]]`)(MaybeT.of(node))
+        .unpackT([]);
+};
+XML.precedingTextNodesWithAncestorByAncestorName = (ancestorName) => (node) => {
+    return XML.xpathMaybeC(`preceding::text()[ancestor::${ancestorName}]`)(MaybeT.of(node))
         .unpackT([]);
 };
 XML.buildRegExp = (genericTagRegExp) => (tagName) => {

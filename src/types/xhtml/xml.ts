@@ -26,9 +26,15 @@ class TokenableT {
         return tokenable.tokens
     }
 
-
+    // /**
+    //  * Returns all tokens minus any supplied elements
+    //  * @param tokenable 
+    //  */
+    // static tokensNoSupplied(tokenable: Tokenable): Formable[] {
+    //     const node = tokenable._node
+        
+    // }   
 }
-
 
 class Word implements Nodeable, Formable {
     _node: Node
@@ -344,9 +350,22 @@ class XML {
             .unpackT([]) as Text[]
     }
 
+
+    static followingTextNodesWithAncestorByAncestorName = (ancestorName: string) => (node: Node) =>  {
+        return XML.xpathMaybeC(`following::text()[ancestor::${ancestorName}]`) (MaybeT.of(node))
+            .unpackT([]) as Text[]
+    }
+
     static fromXMLStr(xml: string): XMLDocument {
         return new DOMParser()
             .parseFromString(xml, "text/xml")
+    }
+
+    static hasAncestor = (tagName: string) => (node: Node) => {
+        const ancestors = XML
+            .xpath(`ancestor::t:${tagName}`)(node)
+            .unpackT([])
+        return ancestors.length > 0
     }
 
     static hasAttr(attr: string) {
@@ -524,6 +543,15 @@ class XML {
         (node: Node) =>  {
             
         return XML.xpathMaybeC(`preceding::text()[ancestor::${ancestorName}[@${attrName}="${attrVal}"]]`) (MaybeT.of(node))
+            .unpackT([]) as Text[]
+    }
+
+
+    static precedingTextNodesWithAncestorByAncestorName = 
+        (ancestorName: string) => 
+        (node: Node) =>  {
+            
+        return XML.xpathMaybeC(`preceding::text()[ancestor::${ancestorName}]`) (MaybeT.of(node))
             .unpackT([]) as Text[]
     }
 

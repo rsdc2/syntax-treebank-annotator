@@ -22,9 +22,14 @@ Conversion.epidocXMLToArethusaXML = (epidocXML) => {
     const words = epidoc
         .fmap(EpiDoc.getEditions)
         .unpackT([])
-        .flatMap(WordableT.words)
-        .map(TEITokenFuncs.removeInterpunctTags);
-    // .map(FormableT.form)
+        .flatMap(TokenableT.tokens)
+        .map(TEITokenFuncs.textNodesWithoutAncestorsByTagName(["g"]))
+        .map((tokenTextNodes) => {
+        return tokenTextNodes.map((textNode) => TEITokenFuncs
+            .textWithSuppliedInBrackets(textNode))
+            .join("")
+            .replace("][", "");
+    });
     // Create Arethusa from EpiDoc tokens
     const arethusa = ArethusaDoc
         .fromXMLStr(arethusaTemplate)

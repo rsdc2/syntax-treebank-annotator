@@ -30,8 +30,13 @@ class Conversion {
             .fmap(EpiDoc.getEditions)
             .unpackT([])
             .flatMap(TokenableT.tokens)
-            .map(TEITokenFuncs.textWithoutInterpuncts)
-            // .map(FormableT.form)
+            .map(TEITokenFuncs.textNodesWithoutAncestorsByTagName(["g"]))
+            .map( (tokenTextNodes: Text[]) => {
+                return tokenTextNodes.map( (textNode: Text) => TEITokenFuncs
+                    .textWithSuppliedInBrackets(textNode))
+                    .join("")
+                    .replace("][", "")
+            } )
     
         // Create Arethusa from EpiDoc tokens
         const arethusa = ArethusaDoc
