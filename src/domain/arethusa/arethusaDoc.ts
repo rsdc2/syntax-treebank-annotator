@@ -547,7 +547,8 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
             .bind(ArethusaDoc._removeTokenOrSentence (wordId) (a))
     }
 
-    static reorderSentenceIds = (a: ArethusaDoc) => {
+    static reorderSentenceIds = (a: ArethusaDoc): Maybe<ArethusaDoc> => {
+
         const maybeSentences = MaybeT.of(a)
             .bind(ArethusaDoc.deepcopy)
             .fmap(ArethusaDoc.sentences)
@@ -557,9 +558,13 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
                     .fmap(XML.setId(Str.fromNum(idx + 1)))
                     .fmap(ArethusaSentence.fromXMLNode)
             )
-        
+    
         const sentences = Arr.removeNothings(maybeSentences)
-        return ArethusaDoc.fromSentences(sentences)
+        
+        return ArethusaDoc
+            .deepcopy(a)
+            .bind(ArethusaDoc.removeSentences)
+            .bind(ArethusaDoc.appendSentences(sentences))
     }
 
     static reorderTokenIds = (a: ArethusaDoc): Maybe<ArethusaDoc> => {
