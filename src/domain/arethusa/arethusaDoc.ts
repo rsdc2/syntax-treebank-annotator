@@ -42,7 +42,8 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
 
                 doc = doc
                     .fmap(DXML.node)
-                    .bind(XML.firstChild)
+                    .bind(XML.xpath("//treebank"))
+                    .bind(Arr.head)
                     .bind(XML.appendChildToNode(sentenceXML))
                     .bind(ArethusaDoc.fromNode)
                     
@@ -560,11 +561,11 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
             )
     
         const sentences = Arr.removeNothings(maybeSentences)
-        
+
         return ArethusaDoc
             .deepcopy(a)
-            .bind(ArethusaDoc.removeSentences)
-            .bind(ArethusaDoc.appendSentences(sentences))
+            .bindErr("No Arethusa", ArethusaDoc.removeSentences)
+            .bindErr("No Arethusa with no sentences.", ArethusaDoc.appendSentences(sentences))
     }
 
     static reorderTokenIds = (a: ArethusaDoc): Maybe<ArethusaDoc> => {
@@ -611,9 +612,6 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
 
         const newdoc = ArethusaDoc.removeSentences(a)
         return newdoc.bind(ArethusaDoc.appendSentences(newSentences))
-        // Create a new Arethusa Document based on the new sentences
-        // return ArethusaDoc.fromSentences(newSentences)
-
     }
 
     static sentences = (a: ArethusaDoc) => {

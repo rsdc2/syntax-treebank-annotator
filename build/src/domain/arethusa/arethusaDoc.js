@@ -79,7 +79,8 @@ ArethusaDoc.appendSentences = (sentences) => (a) => {
         const sentenceXML = DXML.node(s);
         doc = doc
             .fmap(DXML.node)
-            .bind(XML.firstChild)
+            .bind(XML.xpath("//treebank"))
+            .bind(Arr.head)
             .bind(XML.appendChildToNode(sentenceXML))
             .bind(ArethusaDoc.fromNode);
     });
@@ -385,7 +386,10 @@ ArethusaDoc.reorderSentenceIds = (a) => {
         .fmap(XML.setId(Str.fromNum(idx + 1)))
         .fmap(ArethusaSentence.fromXMLNode));
     const sentences = Arr.removeNothings(maybeSentences);
-    return ArethusaDoc.fromSentences(sentences);
+    return ArethusaDoc
+        .deepcopy(a)
+        .bindErr("No Arethusa", ArethusaDoc.removeSentences)
+        .bindErr("No Arethusa with no sentences.", ArethusaDoc.appendSentences(sentences));
 };
 ArethusaDoc.reorderTokenIds = (a) => {
     const maybeWords = MaybeT.of(a)
@@ -420,8 +424,6 @@ ArethusaDoc.replaceSentence = (a) => (newSentence) => {
         .map(ArethusaSentence.fromXMLNode);
     const newdoc = ArethusaDoc.removeSentences(a);
     return newdoc.bind(ArethusaDoc.appendSentences(newSentences));
-    // Create a new Arethusa Document based on the new sentences
-    // return ArethusaDoc.fromSentences(newSentences)
 };
 ArethusaDoc.sentences = (a) => {
     const getSentences = XML.xpath(ArethusaSentence.xpathAddress);
