@@ -1,10 +1,10 @@
 interface TEIEditionable {
-    editions: Wordable[]
+    editions: Tokenable[]
 }
 
 type TEIFormNodeMeta = typeof TEIToken | typeof TEIName
 
-class EpiDoc implements TEIEditionable, Wordable {
+class EpiDoc implements TEIEditionable, Tokenable {
     _node: XMLNode
 
     constructor(epidocXML: string) {

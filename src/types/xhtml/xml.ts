@@ -11,7 +11,7 @@ interface Formable extends Nodeable {
     text: Maybe<string>
 }
 
-interface Wordable extends Formable {
+interface Tokenable extends Formable {
     tokens: Formable[]
 }
 
@@ -21,9 +21,9 @@ class FormableT {
     }
 }
 
-class WordableT {
-    static words(wordable: Wordable): Formable[] {
-        return wordable.tokens
+class TokenableT {
+    static tokens(tokenable: Tokenable): Formable[] {
+        return tokenable.tokens
     }
 
 
@@ -52,14 +52,14 @@ class Word implements Nodeable, Formable {
 
 type WordType = typeof Word
 
-class Multiword implements Nodeable, Formable, Wordable {
+class Multiword implements Nodeable, Formable, Tokenable {
     _node: XMLNode
 
     constructor(node: XMLNode) {
         this._node = node
     }
 
-    static of(node: XMLNode): Wordable {
+    static of(node: XMLNode): Tokenable {
         return new Multiword(node)
     }
 

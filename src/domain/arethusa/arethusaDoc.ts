@@ -1,4 +1,4 @@
-class ArethusaDoc implements ArethusaSentenceable, Wordable {
+class ArethusaDoc implements ArethusaSentenceable, Tokenable {
     _node: Node
 
     constructor(node: Node) {
@@ -171,7 +171,7 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
         return ArethusaDoc.appendSentence(a)
     }
 
-    static firstSentence(a: ArethusaDoc): Maybe<Wordable> {
+    static firstSentence(a: ArethusaDoc): Maybe<Tokenable> {
         return Arr.head (a.sentences)
     }
 
@@ -297,7 +297,7 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
         return ArethusaDoc.insertSentence(XML.insertBefore)(refSentenceId)(a)
     }
 
-    static lastSentence(a: ArethusaDoc): Maybe<Wordable> {
+    static lastSentence(a: ArethusaDoc): Maybe<Tokenable> {
         return Arr.last (a.sentences)
     }
     

@@ -1,5 +1,5 @@
 
-class ArethusaSentence implements Word, Wordable, Formable  {
+class ArethusaSentence implements Word, Tokenable, Formable  {
     _node: Node
 
     constructor(node: Node) {

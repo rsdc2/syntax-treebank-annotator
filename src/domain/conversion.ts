@@ -29,7 +29,7 @@ class Conversion {
         const words = epidoc
             .fmap(EpiDoc.getEditions)
             .unpackT([])
-            .flatMap(WordableT.words)
+            .flatMap(TokenableT.tokens)
             .map(TEITokenFuncs.textWithoutInterpuncts)
             // .map(FormableT.form)
     

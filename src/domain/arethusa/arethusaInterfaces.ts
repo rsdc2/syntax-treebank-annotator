@@ -17,5 +17,5 @@ interface IArtificial extends IArethusaToken {
 }
 
 interface ArethusaSentenceable extends Nodeable {
-    sentences: Wordable[]
+    sentences: Tokenable[]
 }

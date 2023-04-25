@@ -7,14 +7,14 @@ namespace DXML {
         return XML.hasAttr('artificial')(node)
     }
 
-    export function multiwordsFromArray(component: MultiwordT): (a: XMLNode[]) => Wordable[] {
+    export function multiwordsFromArray(component: MultiwordT): (a: XMLNode[]) => Tokenable[] {
         return map(component.of)
     }
     
-    export function multiwordsFromXmlDoc(component: MultiwordT, xmldoc: Maybe<XMLDocument | XMLNode>): Wordable[] {
+    export function multiwordsFromXmlDoc(component: MultiwordT, xmldoc: Maybe<XMLDocument | XMLNode>): Tokenable[] {
         const nodes = XML.xpathMaybe(component.xpathAddress) (xmldoc)
         const components = nodes.fmap(DXML.multiwordsFromArray(component))
-        return maybe (new Array<Wordable>) (components)
+        return maybe (new Array<Tokenable>) (components)
     }
 
     export function node(n: Nodeable) {

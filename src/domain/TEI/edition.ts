@@ -1,5 +1,5 @@
 
-class Edition implements Wordable, Nodeable {
+class Edition implements Tokenable, Nodeable {
     _node: XMLNode
 
     constructor(node: XMLNode) {
