@@ -80,7 +80,6 @@ SentenceViewState.updateFromTSIO = (tsio) => (svs) => {
     const tsioIds = tsio.outputArethusaSentenceIds;
     const svsIds = svs.sentenceIds;
     const result = tsioIds.map((id) => {
-        console.log(id, svsIds);
         if (svsIds.includes(id)) {
             return {
                 _sentenceId: id,

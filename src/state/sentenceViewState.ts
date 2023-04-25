@@ -116,8 +116,6 @@ class SentenceViewState {
 
         const result = tsioIds.map( 
             (id:string): ISentenceViewBox => {
-                console.log(id, svsIds)
-
                 if (svsIds.includes(id)) {
                     return {
                         _sentenceId: id,
