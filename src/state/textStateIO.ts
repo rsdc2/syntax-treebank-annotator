@@ -41,7 +41,7 @@ class TextStateIO {
             s.bind(TextState.epidocDeep)
         )
 
-        console.log('appendNewState', newState.outputArethusa.value?.node)
+        // console.log('appendNewState', newState.outputArethusa.value?.node)
 
         if (newState._sentenceVS.isNothing) {
             if (this.currentState.value?._sentenceVS != null) {
@@ -57,7 +57,7 @@ class TextStateIO {
         
         if (!maybeNS.fmap(TextState.hasNothing).unpackT(true)) {
             maybeNS.fmap(this.push)
-            console.log('Has TS')
+            // console.log('Has TS')
             this.currentStateIdx = this.lastStateIdx
         }
 
@@ -206,8 +206,8 @@ class TextStateIO {
             .outputArethusaP
             .bind(flip(ArethusaDoc.replaceSentence)(newS))
 
-        console.log('changeArethusaSentence', s.outputArethusaP.value?.node)
-        console.log('newArethusa', newArethusa.value?.node)
+        // console.log('changeArethusaSentence', s.outputArethusaP.value?.node)
+        // console.log('newArethusa', newArethusa.value?.node)
 
         s.pushOutputArethusa
             (ext)
@@ -309,12 +309,12 @@ class TextStateIO {
             .bind(TextState.sentenceVS)
             .bind(setViewBox)
         
-        console.log(
-            globalState
-                .textStateIO
-                .bind(TextStateIO.sentenceViewState)
-                .fmap(SentenceViewState.viewstates)
-        )
+        // console.log(
+        //     globalState
+        //         .textStateIO
+        //         .bind(TextStateIO.sentenceViewState)
+        //         .fmap(SentenceViewState.viewstates)
+        // )
         return x
     }
 
@@ -806,11 +806,11 @@ class TextStateIO {
             .fmap(TextState.outputArethusaSentenceIds)
             .unpackT([])
 
-        console.log("calling new sentence view state")
+        // console.log("calling new sentence view state")
 
         if (ts.bind(TextState.sentenceVS).isNothing) {
             if (sentenceIds.length > 0) {
-                console.log("new sentence view state")
+                // console.log("new sentence view state")
                 // if (tsio.currentStateIdx.unpackT(0) > 0) {
                 //     console.log("copying")
                 //     const x = ts.fmap(TextState
