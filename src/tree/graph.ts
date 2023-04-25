@@ -39,7 +39,7 @@ namespace Graph {
     
     function resetClock() {
         // for this solution for stopping clock, cf. 
-        // https://stackoverflow.com/questions/23334366/how-to-stop-force-directed-graph-simulation
+        // https://stackoverflow.com/questions/23334366/how-to-stop-force-directed-graph-simulation @ Jaret Meyer
 
         start = Date.now();
         end = start + simDurationMs;
@@ -419,32 +419,37 @@ namespace Graph {
     function tick(paths, links, circles, nodeLabels, edgeLabels) {
     
         function _tick() {
-            if (Date.now() < end) {
-                paths.attr("d", linkArc(links));
-                circles.attr("transform", transform);
-                nodeLabels.attr("transform", transform_);
-                edgeLabels.attr("transform", edgeLabelPos(paths));
 
-            } else {
-                globalState.simulation.stop();
+            switch (Date.now() < end) {
+                case true:
+                    paths.attr("d", linkArc(links));
+                    circles.attr("transform", transform);
+                    nodeLabels.attr("transform", transform_);
+                    edgeLabels.attr("transform", edgeLabelPos(paths));
+                    break
+                case false:
+                    globalState.simulation.stop();
 
-                // Used to stop the graph starting from the beginning on undo / redo
-                globalState
-                    .treeStateIO
-                    .fmap(
-                        TreeStateIO.replaceSentStateFromNodes(
-                            globalState.simulation.nodes(),
-                            false, 
-                            globalState
-                                .treeStateIO
-                                .fmap(TreeStateIO.currentSentStateIdx).unpackT(0)
+                    // Used to stop the graph starting from the beginning on undo / redo
+                    globalState
+                        .treeStateIO
+                        .fmap(
+                            TreeStateIO.replaceSentStateFromNodes(
+                                globalState.simulation.nodes(),
+                                false, 
+                                globalState
+                                    .treeStateIO
+                                    .fmap(TreeStateIO.currentSentStateIdx)
+                                    .unpackT(0)
+                            )
                         )
-                    )
-
-                globalState
-                    .textStateIO
-                    .bind(TextStateIO.currentState)
-                    .fmap(TextState.updateTreeState(globalState.treeStateIO.fmap(TreeStateIO.currentSentState)))
+    
+                    globalState
+                        .textStateIO
+                        .bind(TextStateIO.currentState)
+                        .fmap(TextState.updateTreeState(globalState.treeStateIO.fmap(TreeStateIO.currentSentState)))
+                    break
+    
             }
         }
         return _tick
