@@ -5,8 +5,8 @@ class Edition {
     get names() {
         return DXML.wordsFromXmlDoc(TEIName, MaybeT.of(this._node.ownerDocument));
     }
-    get wordsProp() {
-        return DXML.wordsFromXmlDoc(TEIWord, MaybeT.of(this._node.ownerDocument));
+    get tokens() {
+        return DXML.wordsFromXmlDoc(TEIToken, MaybeT.of(this._node.ownerDocument));
     }
     static of(node) {
         return new Edition(node);

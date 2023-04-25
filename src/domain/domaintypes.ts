@@ -3,4 +3,4 @@ type docComponentT =
     typeof ArethusaWord |
     typeof ArethusaArtificial |
     typeof ArethusaToken | 
-    typeof TEIWord 
+    typeof TEIToken 

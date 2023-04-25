@@ -17,7 +17,7 @@ class ArethusaSentence {
         return Arr.head(sentence.tokensProp);
     }
     static firstWord(sentence) {
-        return Arr.head(sentence.wordsProp);
+        return Arr.head(sentence.tokens);
     }
     get _id() {
         return XML.attr("id")(this._node)
@@ -26,7 +26,7 @@ class ArethusaSentence {
     get tokensProp() {
         return ArethusaSentence.tokens(this);
     }
-    get wordsProp() {
+    get tokens() {
         return ArethusaSentence.words(this);
     }
     static get xpathAddress() {

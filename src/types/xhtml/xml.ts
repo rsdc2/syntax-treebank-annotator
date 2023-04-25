@@ -1,4 +1,3 @@
-
 interface XMLNode extends Node {
     attributes: NamedNodeMap
     setAttribute: (name: string, value:string) => void
@@ -13,7 +12,7 @@ interface Formable extends Nodeable {
 }
 
 interface Wordable extends Formable {
-    wordsProp: Formable[]
+    tokens: Formable[]
 }
 
 class FormableT {
@@ -24,8 +23,10 @@ class FormableT {
 
 class WordableT {
     static words(wordable: Wordable): Formable[] {
-        return wordable.wordsProp
+        return wordable.tokens
     }
+
+
 }
 
 
@@ -70,7 +71,7 @@ class Multiword implements Nodeable, Formable, Wordable {
         return MaybeT.of(this._node.textContent)
     }
 
-    get wordsProp(): Formable[] {
+    get tokens(): Formable[] {
         return []
     }
 }
@@ -253,6 +254,9 @@ class XML {
         return _nodes
     }
 
+    static concatText = (textNodes: Text[]): string => {
+        return textNodes.map(XML.textContent).join("")
+    }
 
     static createElement = (elementName: string) => (attrs: object) => (xmldoc: XMLDocument): Element => {
         const e = xmldoc.createElement(elementName)
@@ -582,6 +586,10 @@ class XML {
         return Arr.head (Str.matches (XMLTagRegExps.tagWithNameGroup) (tagStr))
             .fmap(RegexMatchT.groups)
             .bind(Arr.head)
+    }
+
+    static textContent = (text: Text): Maybe<string> => {
+        return MaybeT.of(text.textContent)
     }
 
     static toStr(root: Node) {

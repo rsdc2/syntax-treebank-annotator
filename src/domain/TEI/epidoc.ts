@@ -2,7 +2,7 @@ interface TEIEditionable {
     editions: Wordable[]
 }
 
-type TEIFormNodeMeta = typeof TEIWord | typeof TEIName
+type TEIFormNodeMeta = typeof TEIToken | typeof TEIName
 
 class EpiDoc implements TEIEditionable, Wordable {
     _node: XMLNode
@@ -83,7 +83,7 @@ class EpiDoc implements TEIEditionable, Wordable {
             .fmap( Frontend.updateTextArea(xml) )
     }
 
-    static TEIwordsFromArray = map(TEIWord.of)
+    static TEIwordsFromArray = map(TEIToken.of)
 
     get text() {
         return MaybeT.of(this._node.textContent)
@@ -93,8 +93,8 @@ class EpiDoc implements TEIEditionable, Wordable {
         return XML.toStr(epidoc.node)
     }
 
-    get wordsProp(): TEIWord[] {
+    get tokens(): TEIToken[] {
         return DXML
-            .wordsFromXmlDoc(TEIWord, MaybeT.of(this._node.ownerDocument))
+            .wordsFromXmlDoc(TEIToken, MaybeT.of(this._node.ownerDocument))
     }
 }

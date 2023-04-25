@@ -5,7 +5,7 @@ class FormableT {
 }
 class WordableT {
     static words(wordable) {
-        return wordable.wordsProp;
+        return wordable.tokens;
     }
 }
 class Word {
@@ -35,7 +35,7 @@ class Multiword {
     get text() {
         return MaybeT.of(this._node.textContent);
     }
-    get wordsProp() {
+    get tokens() {
         return [];
     }
 }
@@ -342,6 +342,9 @@ XML.childNodesByTagName = (tagName) => (node) => {
     });
     return _nodes;
 };
+XML.concatText = (textNodes) => {
+    return textNodes.map(XML.textContent).join("");
+};
 XML.createElement = (elementName) => (attrs) => (xmldoc) => {
     const e = xmldoc.createElement(elementName);
     Object.keys(attrs).forEach(k => {
@@ -449,6 +452,9 @@ XML.tagNameFromTagStr = (tagStr) => {
     return Arr.head(Str.matches(XMLTagRegExps.tagWithNameGroup)(tagStr))
         .fmap(RegexMatchT.groups)
         .bind(Arr.head);
+};
+XML.textContent = (text) => {
+    return MaybeT.of(text.textContent);
 };
 XML.xpathMaybe = (xpathstr) => (xmldoc) => {
     return xmldoc

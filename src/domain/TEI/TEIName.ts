@@ -1,5 +1,5 @@
 
-class TEIName implements Word, Formable {
+class TEIName implements TEIToken {
     _node: Node
 
     constructor(node: Node) {

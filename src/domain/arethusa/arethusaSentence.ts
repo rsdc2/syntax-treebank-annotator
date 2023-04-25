@@ -253,7 +253,7 @@ class ArethusaSentence implements Word, Wordable, Formable  {
     }
 
     static firstWord(sentence: ArethusaSentence): Maybe<Formable> {
-        return Arr.head (sentence.wordsProp)
+        return Arr.head (sentence.tokens)
     }
 
     static incrementId = (s: ArethusaSentence) => {
@@ -551,7 +551,7 @@ class ArethusaSentence implements Word, Wordable, Formable  {
             .map(ArethusaWord.fromXMLNode)
     }
 
-    get wordsProp(): ArethusaWord[] {
+    get tokens(): ArethusaWord[] {
         return ArethusaSentence.words(this)
     }
 

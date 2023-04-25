@@ -10,8 +10,8 @@ class Edition implements Wordable, Nodeable {
         return DXML.wordsFromXmlDoc(TEIName, MaybeT.of(this._node.ownerDocument))
     }
 
-    get wordsProp(): TEIWord[] {
-        return DXML.wordsFromXmlDoc(TEIWord, MaybeT.of(this._node.ownerDocument))
+    get tokens(): TEIToken[] {
+        return DXML.wordsFromXmlDoc(TEIToken, MaybeT.of(this._node.ownerDocument))
     }
 
     static of(node: XMLNode) {

@@ -747,7 +747,7 @@ class ArethusaDoc implements ArethusaSentenceable, Wordable {
             .fmap(ArethusaWord.fromXMLNode)
     }
 
-    get wordsProp(): ArethusaWord[] {
+    get tokens(): ArethusaWord[] {
         return ArethusaDoc.words(this)
     }
 

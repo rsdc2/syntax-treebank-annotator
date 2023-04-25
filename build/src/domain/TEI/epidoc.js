@@ -49,9 +49,9 @@ class EpiDoc {
     static toXMLStr(epidoc) {
         return XML.toStr(epidoc.node);
     }
-    get wordsProp() {
+    get tokens() {
         return DXML
-            .wordsFromXmlDoc(TEIWord, MaybeT.of(this._node.ownerDocument));
+            .wordsFromXmlDoc(TEIToken, MaybeT.of(this._node.ownerDocument));
     }
 }
 EpiDoc.deepcopy = (epidoc) => {
@@ -68,4 +68,4 @@ EpiDoc.filenameId = (epidoc) => {
         .bind(XML.nodeValue);
 };
 EpiDoc.namesFromArray = map(TEIName.of);
-EpiDoc.TEIwordsFromArray = map(TEIWord.of);
+EpiDoc.TEIwordsFromArray = map(TEIToken.of);

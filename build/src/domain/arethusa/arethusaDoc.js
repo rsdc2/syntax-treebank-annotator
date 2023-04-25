@@ -55,7 +55,7 @@ class ArethusaDoc {
     static toXMLStr(a) {
         return XML.toStr(a.node);
     }
-    get wordsProp() {
+    get tokens() {
         return ArethusaDoc.words(this);
     }
 }
