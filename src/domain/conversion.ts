@@ -26,11 +26,11 @@ class Conversion {
             .bind(EpiDoc.filenameId)
             .unpackT("")
 
-        const words = epidoc
+        const tokens = epidoc
             .fmap(EpiDoc.getEditions)
             .unpackT([])
             .flatMap(TokenableT.tokens)
-            .map(TEITokenFuncs.textNodesWithoutAncestorsByTagName(["g"]))
+            .map(TEITokenFuncs.textNodesWithoutAncestorsByTagName(["g", "orig", "am"]))
             .map( (tokenTextNodes: Text[]) => {
                 return tokenTextNodes.map( (textNode: Text) => TEITokenFuncs
                     .textWithSuppliedInBrackets(textNode))
@@ -45,7 +45,7 @@ class Conversion {
             .bind(ArethusaDoc.appendSentence)
             .bind(ArethusaDoc.lastSentence)
             // .bind(ArethusaSentence.appendMaybeWords(words))
-            .bind(ArethusaSentence.appendWords(words))
+            .bind(ArethusaSentence.appendWords(tokens))
     
         // Prettify Arethusa XML
         const arethusaXML = arethusa

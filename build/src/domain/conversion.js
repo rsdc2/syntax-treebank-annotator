@@ -19,11 +19,11 @@ Conversion.epidocXMLToArethusaXML = (epidocXML) => {
     const docId = epidoc
         .bind(EpiDoc.filenameId)
         .unpackT("");
-    const words = epidoc
+    const tokens = epidoc
         .fmap(EpiDoc.getEditions)
         .unpackT([])
         .flatMap(TokenableT.tokens)
-        .map(TEITokenFuncs.textNodesWithoutAncestorsByTagName(["g"]))
+        .map(TEITokenFuncs.textNodesWithoutAncestorsByTagName(["g", "orig", "am"]))
         .map((tokenTextNodes) => {
         return tokenTextNodes.map((textNode) => TEITokenFuncs
             .textWithSuppliedInBrackets(textNode))
@@ -37,7 +37,7 @@ Conversion.epidocXMLToArethusaXML = (epidocXML) => {
         .bind(ArethusaDoc.appendSentence)
         .bind(ArethusaDoc.lastSentence)
         // .bind(ArethusaSentence.appendMaybeWords(words))
-        .bind(ArethusaSentence.appendWords(words));
+        .bind(ArethusaSentence.appendWords(tokens));
     // Prettify Arethusa XML
     const arethusaXML = arethusa
         .fmap(DXML.node)
