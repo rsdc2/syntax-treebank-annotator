@@ -293,27 +293,6 @@ class XML {
         }
         return _xpath;
     }
-    // static xpathResultToNodeArr(xpathResult: XPathResult): Node[] {
-    //     function iterResults(acc: Node[]): Node[] {
-    //         const next = MaybeT.of(xpathResult.iterateNext())
-    //         if (next.isNothing) {
-    //             return acc;
-    //         }
-    //         const newAcc = next
-    //             .fmap(flip(Arr.push)(acc))
-    //             .unpackT([])
-    //         return iterResults(newAcc)
-    //     }
-    //     return iterResults([])
-    // }
-    // static xpathResultToNodeArr(xpathResult: XPathResult): Node[] {
-    //     let results: Node[] = []
-    //     let next = xpathResult.iterateNext()
-    //     while (next != null) {
-    //         results.push(next)
-    //     }
-    //     return results
-    // }
     static xpathResultToNodeArr(xpathResult) {
         let results = [];
         const length = xpathResult.snapshotLength;

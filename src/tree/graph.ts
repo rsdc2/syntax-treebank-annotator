@@ -6,7 +6,7 @@ namespace Graph {
 
     let container, start, end
     const alphaTarget = 0.5
-    const simDurationMs = 4000; 
+    const simDurationMs = 1500; 
     const linkDistance = 60;
     const linkStrength = 0.3;
     const xStrength = 0.25;
