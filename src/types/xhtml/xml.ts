@@ -651,18 +651,25 @@ class XML {
     }
 
     static _xpathEval = (xpathstr: string) => (nodeOrDoc: XMLDocument | Node) => (owner: XMLDocument) => {
-        return owner.evaluate(xpathstr, nodeOrDoc, XML.nsResolver, XPathResult.ANY_TYPE, null)
+        return owner.evaluate(xpathstr, nodeOrDoc, XML.nsResolver, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null)
     }
-
+    
     static xpathResultToNodeArr(xpathResult: XPathResult): Node[] {
-        function _getResults(acc: Node[]) {
-            const next = xpathResult.iterateNext()
-            if (next === null || next === undefined) {
-                return acc
+        let results: Node[] = []
+        const length = xpathResult.snapshotLength
+
+        for (let i=0; i<length; i++) {
+            const result = xpathResult.snapshotItem(i)
+            
+            if (result == null) {
+                continue
+            } else {
+                results.push(result)
             }
-            return _getResults(acc.concat([next]))
+            
         }
-        return _getResults([])
+
+        return results
     }
 }
 

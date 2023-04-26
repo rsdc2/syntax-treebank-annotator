@@ -293,15 +293,40 @@ class XML {
         }
         return _xpath;
     }
+    // static xpathResultToNodeArr(xpathResult: XPathResult): Node[] {
+    //     function iterResults(acc: Node[]): Node[] {
+    //         const next = MaybeT.of(xpathResult.iterateNext())
+    //         if (next.isNothing) {
+    //             return acc;
+    //         }
+    //         const newAcc = next
+    //             .fmap(flip(Arr.push)(acc))
+    //             .unpackT([])
+    //         return iterResults(newAcc)
+    //     }
+    //     return iterResults([])
+    // }
+    // static xpathResultToNodeArr(xpathResult: XPathResult): Node[] {
+    //     let results: Node[] = []
+    //     let next = xpathResult.iterateNext()
+    //     while (next != null) {
+    //         results.push(next)
+    //     }
+    //     return results
+    // }
     static xpathResultToNodeArr(xpathResult) {
-        function _getResults(acc) {
-            const next = xpathResult.iterateNext();
-            if (next === null || next === undefined) {
-                return acc;
+        let results = [];
+        const length = xpathResult.snapshotLength;
+        for (let i = 0; i < length; i++) {
+            const result = xpathResult.snapshotItem(i);
+            if (result == null) {
+                continue;
             }
-            return _getResults(acc.concat([next]));
+            else {
+                results.push(result);
+            }
         }
-        return _getResults([]);
+        return results;
     }
 }
 XML.appendChildToNode = (child) => (parent) => {
@@ -485,5 +510,5 @@ XML.xpathEval = (xpathstr) => (nodeOrDoc) => {
         .fmap(XML._xpathEval(xpathstr)(nodeOrDoc));
 };
 XML._xpathEval = (xpathstr) => (nodeOrDoc) => (owner) => {
-    return owner.evaluate(xpathstr, nodeOrDoc, XML.nsResolver, XPathResult.ANY_TYPE, null);
+    return owner.evaluate(xpathstr, nodeOrDoc, XML.nsResolver, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 };

@@ -1,10 +1,10 @@
 // For the approach of adopting a downward graph to represent the syntax tree
-// cf. https://stackoverflow.com/questions/21529242/d3-force-directed-graph-downward-force-simulation/21537377
+// cf. https://stackoverflow.com/questions/21529242/d3-force-directed-graph-downward-force-simulation/21537377 @VividD
 var Graph;
 (function (Graph) {
     let container, start, end;
     const alphaTarget = 0.5;
-    const simDurationMs = 1000;
+    const simDurationMs = 4000;
     const linkDistance = 60;
     const linkStrength = 0.3;
     const xStrength = 0.25;
