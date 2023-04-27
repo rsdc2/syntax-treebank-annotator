@@ -23,7 +23,7 @@ Conversion.epidocXMLToArethusaXML = (epidocXML) => {
         .fmap(EpiDoc.getEditions)
         .unpackT([])
         .flatMap(TokenableT.tokens)
-        .map(TEITokenFuncs.textNodesWithoutAncestorsByTagName(["g", "orig", "am"]))
+        .map(TEITokenFuncs.textNodesWithoutAncestorsByTagName(["g", "orig", "am", "sic"]))
         .map((tokenTextNodes) => {
         return tokenTextNodes.map((textNode) => TEITokenFuncs
             .textWithSuppliedInBrackets(textNode))

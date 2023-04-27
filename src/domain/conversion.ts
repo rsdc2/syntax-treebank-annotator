@@ -30,7 +30,7 @@ class Conversion {
             .fmap(EpiDoc.getEditions)
             .unpackT([])
             .flatMap(TokenableT.tokens)
-            .map(TEITokenFuncs.textNodesWithoutAncestorsByTagName(["g", "orig", "am"]))
+            .map(TEITokenFuncs.textNodesWithoutAncestorsByTagName(["g", "orig", "am", "sic"]))
             .map( (tokenTextNodes: Text[]) => {
                 return tokenTextNodes.map( (textNode: Text) => TEITokenFuncs
                     .textWithSuppliedInBrackets(textNode))
