@@ -81,8 +81,8 @@ of syntax
 (although it should preserve any morphology annotation).
 
 
-## Attributions
+## Acknowledgements
 
-The syntax treebank annotator was written in [TypeScript](https://www.typescriptlang.org/) and uses the library [D3.js](https://d3js.org/) for representation of the trees (graphs).
+The syntax treebank annotator was written in [TypeScript](https://www.typescriptlang.org/) and uses the library [D3.js](https://d3js.org/) for representation of the trees (graphs). Dev dependencies are the D3 types provided by [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/d3).
 
 The software for the Syntax Treebank Annotator was written by Robert Crellin as part of the Crossreads project at the Faculty of Classics, University of Oxford, and is licensed under the MIT license. This project has received funding from the European Research Council (ERC) under the European Union’s Horizon 2020 research and innovation programme (grant agreement No 885040, “Crossreads”).
