@@ -46,7 +46,8 @@ namespace TEITokenFuncs {
 
         const xpathStr = Str.concat(ancestorXpaths)("descendant::text()")
 
-        return XML.xpath(xpathStr)(token._node)
+        return XML
+            .xpath(xpathStr)(token._node)
             .unpackT([]) as Text[]
     }
 

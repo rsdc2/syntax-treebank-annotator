@@ -30,7 +30,8 @@ var TEITokenFuncs;
             return ancestors.concat(`[not(ancestor::t:${tagName})]`);
         }, '');
         const xpathStr = Str.concat(ancestorXpaths)("descendant::text()");
-        return XML.xpath(xpathStr)(token._node)
+        return XML
+            .xpath(xpathStr)(token._node)
             .unpackT([]);
     };
     TEITokenFuncs.textWithSuppliedInBrackets = (textNode) => {
