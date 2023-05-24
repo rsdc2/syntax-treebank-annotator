@@ -25,7 +25,7 @@ var TEITokenFuncs;
             .map(XML.textContent);
         return Arr.removeNothings(textArr).join("");
     };
-    TEITokenFuncs.textNodesWithoutAncestorsByTagName = (tagNames) => (token) => {
+    TEITokenFuncs.excludeTextNodesWithAncestors = (tagNames) => (token) => {
         const ancestorXpaths = tagNames.reduce((ancestors, tagName) => {
             return ancestors.concat(`[not(ancestor::t:${tagName})]`);
         }, '');

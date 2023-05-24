@@ -34,7 +34,7 @@ namespace TEITokenFuncs {
         return Arr.removeNothings(textArr).join("")
     }
 
-    export const textNodesWithoutAncestorsByTagName = 
+    export const excludeTextNodesWithAncestors = 
         (tagNames: string[]) => 
         (token: TEIToken): Text[] => 
     {

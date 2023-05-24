@@ -1,3 +1,6 @@
+// For the underlying procedures (minus functional overlay)
+// see https://github.com/papyrs/markdown-plugin/blob/main/src/plugin/utils/save.utils.ts (MIT license)
+// For an explanation, see also https://itnext.io/export-to-the-file-system-save-as-fallback-in-typescript-6561eba853cb
 var FileHandling;
 (function (FileHandling) {
     FileHandling.download = (filename) => (fileContent) => {

@@ -23,12 +23,13 @@ Conversion.epidocXMLToArethusaXML = (epidocXML) => {
         .fmap(EpiDoc.getEditions)
         .unpackT([])
         .flatMap(TokenableT.tokens)
-        .map(TEITokenFuncs.textNodesWithoutAncestorsByTagName(["g", "orig", "am", "sic"]))
+        .map(TEITokenFuncs.excludeTextNodesWithAncestors(["g", "orig", "am", "sic"]))
         .map((tokenTextNodes) => {
         return tokenTextNodes.map((textNode) => TEITokenFuncs
             .textWithSuppliedInBrackets(textNode))
             .join("")
-            .replace("][", "");
+            .replace("][", "")
+            .replace(",", "");
     });
     // Create Arethusa from EpiDoc tokens
     const arethusa = ArethusaDoc
