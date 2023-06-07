@@ -544,6 +544,15 @@ class ArethusaSentence implements Word, Tokenable, Formable  {
             .unpackT([])
     }
 
+    static wordsAsStr = (s: ArethusaSentence): string => {
+        const wordsArr = ArethusaSentence
+            .words(s)
+            .map(ArethusaWord.form)
+
+        const newWords = Arr.removeNothings(wordsArr)
+        return newWords.join(' ')
+    }
+
     static wordsFromNodes = (nodes: Node[]): ArethusaWord[] => {
         return nodes
             .filter( (node: Node) => node.nodeName === "word" ) 

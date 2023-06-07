@@ -391,6 +391,13 @@ ArethusaSentence.words = (s) => {
         .fmap(ArethusaSentence.wordsFromNodes)
         .unpackT([]);
 };
+ArethusaSentence.wordsAsStr = (s) => {
+    const wordsArr = ArethusaSentence
+        .words(s)
+        .map(ArethusaWord.form);
+    const newWords = Arr.removeNothings(wordsArr);
+    return newWords.join(' ');
+};
 ArethusaSentence.wordsFromNodes = (nodes) => {
     return nodes
         .filter((node) => node.nodeName === "word")
