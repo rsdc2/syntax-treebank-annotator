@@ -375,7 +375,7 @@ XML.hasAncestor = (tagName) => (node) => {
     return ancestors.length > 0;
 };
 XML.insertBefore = (nodeToInsert) => (refNode) => {
-    function __insertBefore(parentNode) {
+    function _insertBefore(parentNode) {
         const _nodeToInsert = XML.deepcopy(nodeToInsert);
         const insertNewNode = MaybeT.of(refNode)
             .fmap(XML._insertBefore(_nodeToInsert));
@@ -385,7 +385,7 @@ XML.insertBefore = (nodeToInsert) => (refNode) => {
             .bind(XML.parent);
     }
     const _parentNode = MaybeT.of(refNode).bind(XML.parent);
-    return __insertBefore(_parentNode);
+    return _insertBefore(_parentNode);
 };
 XML.insertAfter = (nodeToInsert) => (refNode) => {
     const _refNode = MaybeT.of(refNode.nextSibling);

@@ -28,6 +28,18 @@ ArethusaDiv.click = () => {
     AthDivCurs
         .setCursorPosFromAthDivOffset(divOffset);
 };
+ArethusaDiv.nextSentence = () => {
+    TextStateIO;
+    globalState
+        .textStateIO
+        .fmap(TextStateIO.changeView(Nothing.of())(AthDivCurs.nextSentenceId));
+};
+ArethusaDiv.prevSentence = () => {
+    TextStateIO;
+    globalState
+        .textStateIO
+        .fmap(TextStateIO.changeView(Nothing.of())(AthDivCurs.prevSentenceId));
+};
 ArethusaDiv.formatXMLForDiv = (xml) => {
     return xml
         .replace(/\</g, "&lt")

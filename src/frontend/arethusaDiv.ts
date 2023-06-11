@@ -17,6 +17,30 @@ class ArethusaDiv {
             .setCursorPosFromAthDivOffset(divOffset)
     }
 
+    static nextSentence = () => {
+        TextStateIO
+        globalState
+            .textStateIO
+            .fmap(
+                TextStateIO.changeView
+                    (Nothing.of()) 
+                    (AthDivCurs.nextSentenceId)
+            )
+
+    }
+
+    static prevSentence = () => {
+        TextStateIO
+        globalState
+            .textStateIO
+            .fmap(
+                TextStateIO.changeView
+                    (Nothing.of()) 
+                    (AthDivCurs.prevSentenceId)
+            )
+
+    }
+
     static get control() {
         return HTML.id("arethusaDiv") as Maybe<HTMLDivElement>
     }

@@ -388,7 +388,8 @@ class ArethusaSentence implements Word, Tokenable, Formable  {
         const moveNode = previousSibNodeId
             .fmap(ArethusaSentence.moveToken(XML.insertAfter) (tokenId))
 
-        return MaybeT.of(sentence)
+        return MaybeT
+            .of(sentence)
             .applyBind(moveNode)
     }
 
@@ -405,7 +406,9 @@ class ArethusaSentence implements Word, Tokenable, Formable  {
 
         const moveNode = previousSibNodeId
             .fmap(ArethusaSentence.moveToken(XML.insertBefore) (tokenId))
-        return MaybeT.of(sentence).applyBind(moveNode)
+        return MaybeT
+            .of(sentence)
+            .applyBind(moveNode)
     }
 
     static nextTokenIds = 

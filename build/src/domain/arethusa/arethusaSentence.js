@@ -286,7 +286,8 @@ ArethusaSentence.moveTokenDown = (tokenId) => (sentence) => {
         .bind(XML.attrVal("id"));
     const moveNode = previousSibNodeId
         .fmap(ArethusaSentence.moveToken(XML.insertAfter)(tokenId));
-    return MaybeT.of(sentence)
+    return MaybeT
+        .of(sentence)
         .applyBind(moveNode);
 };
 ArethusaSentence.moveTokenUp = (tokenId) => (sentence) => {
@@ -297,7 +298,9 @@ ArethusaSentence.moveTokenUp = (tokenId) => (sentence) => {
         .bind(XML.attrVal("id"));
     const moveNode = previousSibNodeId
         .fmap(ArethusaSentence.moveToken(XML.insertBefore)(tokenId));
-    return MaybeT.of(sentence).applyBind(moveNode);
+    return MaybeT
+        .of(sentence)
+        .applyBind(moveNode);
 };
 ArethusaSentence.nextTokenIds = (startTokenId) => (s) => {
     return ArethusaSentence

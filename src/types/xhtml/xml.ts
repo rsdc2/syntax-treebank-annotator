@@ -402,7 +402,7 @@ class XML {
 
     static insertBefore = (nodeToInsert: Node | Element | Text) => (refNode: Node) => {
 
-        function __insertBefore(parentNode: Maybe<Node>): Maybe<ParentNode>  {
+        function _insertBefore(parentNode: Maybe<Node>): Maybe<ParentNode>  {
             const _nodeToInsert = XML.deepcopy(nodeToInsert)
             const insertNewNode = MaybeT.of(refNode)
                 .fmap(XML._insertBefore(_nodeToInsert))
@@ -413,7 +413,7 @@ class XML {
         }
         
         const _parentNode = MaybeT.of(refNode).bind(XML.parent)
-        return __insertBefore(_parentNode)
+        return _insertBefore(_parentNode)
 
     }
 

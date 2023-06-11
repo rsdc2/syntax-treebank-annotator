@@ -92,6 +92,7 @@ class AthDivCurs {
         }
     }
 
+
     static get currentSentenceId() {
         if (AthDivCurs.currentXMLNodeName.eq("sentence")) {
             return AthDivCurs
@@ -112,6 +113,23 @@ class AthDivCurs {
         } else {
             return Nothing.of<string>()
         }
+    }
+
+    static get nextSentenceId() {
+        // const lastSentId = globalState.textStateIO
+        //     .bind(TextStateIO.sentences)
+        //     .fmap(Str.increment)
+
+        return globalState.textStateIO
+            .bind(TextStateIO.currentSentenceId)
+            .fmap(Str.increment)
+
+    }
+
+    static get prevSentenceId() {
+        return globalState.textStateIO
+            .bind(TextStateIO.currentSentenceId)
+            .fmap(Str.decrement)
     }
 
     static get currentXMLTagPosition() {

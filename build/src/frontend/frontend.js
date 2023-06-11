@@ -104,6 +104,12 @@ class Frontend {
     static get moveDownBtn() {
         return Frontend.buttonById("MoveDown");
     }
+    static get nextSentenceBtn() {
+        return Frontend.buttonById("NextSentence");
+    }
+    static get prevSentenceBtn() {
+        return Frontend.buttonById("PrevSentence");
+    }
     static get redoBtn() {
         return Frontend.buttonById("RedoTextEdit");
     }
@@ -172,9 +178,11 @@ class Frontend {
         Frontend.arethusaInputTextArea
             .fmapErr("No arethusaInputTextArea", HTML.Elem.setOnClickFunc(inputTextAreaClickFunc));
         Frontend.epidocInputTextArea
-            .fmapErr("No arethusaInputTextArea", HTML.Elem.setOnClickFunc(inputTextAreaClickFunc));
+            .fmapErr("No epidocInputTextArea", HTML.Elem.setOnClickFunc(inputTextAreaClickFunc));
         Frontend.textInputTextArea
-            .fmapErr("No arethusaInputTextArea", HTML.Elem.setOnClickFunc(inputTextAreaClickFunc));
+            .fmapErr("No textInputTextArea", HTML.Elem.setOnClickFunc(inputTextAreaClickFunc));
+        Frontend.sentencesDiv
+            .fmapErr("No sentencesDiv", HTML.Elem.setOnClickFunc(inputTextAreaClickFunc));
     }
     static setBtnEvents() {
         const epidocExampleBtnFunc = (e) => {
@@ -263,6 +271,14 @@ class Frontend {
                 .textStateIO
                 .fmap(TextStateIO.moveTokenDown);
         };
+        const nextSentenceFunc = (e) => {
+            e.stopPropagation();
+            ArethusaDiv.nextSentence();
+        };
+        const prevSentenceFunc = (e) => {
+            e.stopPropagation();
+            ArethusaDiv.prevSentence();
+        };
         const processEpiDocInputFunc = (e) => {
             e.stopPropagation();
             Frontend
@@ -317,6 +333,12 @@ class Frontend {
         Frontend
             .removeSentenceBtn
             .fmap(HTML.Elem.setOnClickFunc(removeSentenceFunc));
+        Frontend
+            .nextSentenceBtn
+            .fmap(HTML.Elem.setOnClickFunc(nextSentenceFunc));
+        Frontend
+            .prevSentenceBtn
+            .fmap(HTML.Elem.setOnClickFunc(prevSentenceFunc));
         Frontend
             .splitSentenceBtn
             .fmap(HTML.Elem.setOnClickFunc(splitSentenceFunc));

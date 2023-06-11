@@ -85,6 +85,16 @@ class AthDivCurs {
             return Nothing.of();
         }
     }
+    static get nextSentenceId() {
+        return globalState.textStateIO
+            .bind(TextStateIO.currentSentenceId)
+            .fmap(Str.increment);
+    }
+    static get prevSentenceId() {
+        return globalState.textStateIO
+            .bind(TextStateIO.currentSentenceId)
+            .fmap(Str.decrement);
+    }
     static get currentXMLTagPosition() {
         return AthDivCurs
             .currentXMLTagType
