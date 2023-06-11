@@ -123,12 +123,9 @@ class TextStateIO {
             Frontend.pushPlainTextToFrontend(this);
             this.updateSentenceViewState();
             // Set the sentences text
-            let v = this.currentSentence.fmap(ArethusaSentence.wordsAsStr).fmap(SentencesDiv.setText);
-            // console.log(this.currentSentence)
-            // if (v != undefined) {
-            //     SentencesDiv.setText(v)
-            // }
-            // SentencesDiv.setText(this.currentSentence.value?.text?.value)
+            let v = this.currentSentence
+                .fmap(ArethusaSentence.wordsAsStr)
+                .fmap(SentencesDiv.setText);
             // Update the tree
             const treeStateFunc = MaybeT.of(globalState.simulation).isNothing ?
                 ArethusaSentence.toTreeSentState :

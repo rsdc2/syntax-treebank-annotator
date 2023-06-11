@@ -399,7 +399,13 @@ ArethusaSentence.wordsAsStr = (s) => {
         .words(s)
         .map(ArethusaWord.form);
     const newWords = Arr.removeNothings(wordsArr);
-    return newWords.join(' ');
+    return newWords.join(' ')
+        .replace(/\s\./g, '.')
+        .replace(/\s,/g, ',')
+        // .replace(/\s;/g, ';')
+        // .replace(/\s:/g, ':')
+        .replace(/\s·/g, '·')
+        .replace(/\s·/g, '·');
 };
 ArethusaSentence.wordsFromNodes = (nodes) => {
     return nodes

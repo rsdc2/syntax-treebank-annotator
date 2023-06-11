@@ -554,6 +554,12 @@ class ArethusaSentence implements Word, Tokenable, Formable  {
 
         const newWords = Arr.removeNothings(wordsArr)
         return newWords.join(' ')
+            .replace(/\s\./g, '.')
+            .replace(/\s,/g, ',')
+            // .replace(/\s;/g, ';')
+            // .replace(/\s:/g, ':')
+            .replace(/\s·/g, '·')
+            .replace(/\s·/g, '·')
     }
 
     static wordsFromNodes = (nodes: Node[]): ArethusaWord[] => {

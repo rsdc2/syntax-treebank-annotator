@@ -86,6 +86,9 @@ class AthDivCurs {
         }
     }
     static get nextSentenceId() {
+        // const lastSentId = globalState.textStateIO
+        //     .bind(TextStateIO.sentences)
+        //     .fmap(Str.increment)
         return globalState.textStateIO
             .bind(TextStateIO.currentSentenceId)
             .fmap(Str.increment);
