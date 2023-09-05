@@ -3,7 +3,7 @@ class HasFormT {
         return f.text;
     }
 }
-class TokenableT {
+class HasTokensT {
     static tokens(tokenable) {
         return tokenable.tokens;
     }

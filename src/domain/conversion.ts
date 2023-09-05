@@ -29,19 +29,23 @@ class Conversion {
         const tokens = epidoc
             .fmap(EpiDoc.getEditions)
             .unpackT([])
-            .flatMap(TokenableT.tokens)
+            .flatMap(HasTokensT.tokens)
 
         const tokenStrings = tokens
-            .map(TEITokenFuncs.excludeTextNodesWithAncestors(["g", "orig", "am", "sic"]))  
-            .map( (tokenTextNodes: Text[]) => {
-                return tokenTextNodes.map( (textNode: Text) => TEITokenFuncs
-                    .textWithSuppliedInBrackets(textNode))
-                    .join("")
-                    .replace("][", "")
-                    .replace(",", "")
-            } )
+            .map( TEIToken.getNormalizedText )
 
-        const ids = tokens.
+        const attrs = (strs, xmlids) => {
+            
+        }
+
+
+        const xmlids = ArrMaybe.of(tokens)
+            .bind(HasNodeT.element)
+            .filter(MaybeT.isSomething)
+            .fmap(DOM.Elem.attributes)
+            .bind(DOM.NamedNodeMap.getNamedItemNS("http://www.tei-c.org/ns/1.0")("id"))
+            .fmap(DOM.Attr.value)
+            .defaultT("")        
     
         // Create Arethusa from EpiDoc tokens
         const arethusa = ArethusaDoc
@@ -49,7 +53,11 @@ class Conversion {
             .bind(ArethusaDoc.setDocId(docId))
             .bind(ArethusaDoc.appendSentence)
             .bind(ArethusaDoc.lastSentence)
-            .bind(ArethusaSentence.appendWords(tokens))
+            .bind(ArethusaSentence.appendWords(tokenStrings))
+            
+        arethusa.
+
+        
     
         // Prettify Arethusa XML
         const arethusaXML = arethusa
@@ -81,7 +89,7 @@ class Conversion {
         const tokens = epidoc
             .fmap(EpiDoc.getEditions)
             .unpackT([])
-            .flatMap(TokenableT.tokens)
+            .flatMap(HasTokensT.tokens)
             .map(TEITokenFuncs.excludeTextNodesWithAncestors(["g", "orig", "am", "sic"]))  
             .map( (tokenTextNodes: Text[]) => {
                 return tokenTextNodes.map( (textNode: Text) => TEITokenFuncs

@@ -7,8 +7,31 @@ interface HasNode {
     _node: Node   
 }
 
-interface HasForm extends HasNode {
+
+interface HasElement {
+    _element: Element
+}
+
+class HasNodeT {
+    static element(n: HasNode): Maybe<Element> {
+        if (n._node.nodeType === Node.ELEMENT_NODE) {
+            return MaybeT.of(n._node) as Just<Element>
+        }
+
+        return Nothing.of()
+    }
+    
+    static node(n: HasNode): Node {
+        return n._node
+    }
+}
+
+interface HasForm extends HasNode, HasElement {
     text: Maybe<string>
+}
+
+interface HasXMLId extends HasNode {
+    xmlid: Maybe<string>
 }
 
 interface HasToken extends HasForm {
@@ -21,26 +44,19 @@ class HasFormT {
     }
 }
 
-class TokenableT {
+class HasTokensT {
     static tokens(tokenable: HasToken): HasForm[] {
         return tokenable.tokens
     }
-
-    // /**
-    //  * Returns all tokens minus any supplied elements
-    //  * @param tokenable 
-    //  */
-    // static tokensNoSupplied(tokenable: HasToken): HasForm[] {
-    //     const node = tokenable._node
-        
-    // }   
 }
 
 class Word implements HasNode, HasForm {
     _node: Node
+    _element: Element
 
     constructor(node: Node) {
         this._node = node
+        this._element = DOM.Node_.element(this._node).unpackThrow()
     }
 
     static of(node: HasXMLNode): HasForm {
@@ -59,10 +75,12 @@ class Word implements HasNode, HasForm {
 type WordType = typeof Word
 
 class Multiword implements HasNode, HasForm, HasToken {
-    _node: HasXMLNode
+    _node: Node
+    _element: Element
 
     constructor(node: HasXMLNode) {
         this._node = node
+        this._element = DOM.Node_.element(this._node).unpackThrow()
     }
 
     static of(node: HasXMLNode): HasToken {
@@ -83,6 +101,7 @@ class Multiword implements HasNode, HasForm, HasToken {
 }
 
 type MultiwordT = typeof Multiword
+
 
 
 
@@ -639,8 +658,8 @@ class XML {
                 .fmap(XML.xpathResultToNodeArr)
     }
 
-    static xpath = (xpathstr: string) => (xmldoc: Node) => {
-        return MaybeT.of(xmldoc)   
+    static xpath = (xpathstr: string) => (node: Node) => {
+        return MaybeT.of(node)   
             .bind(XML.xpathEval(xpathstr))
             .fmap(XML.xpathResultToNodeArr)
     }

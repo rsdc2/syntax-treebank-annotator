@@ -1,13 +1,33 @@
 
 class TEIToken implements Word, HasForm {
     _node: Node
+    _element: Element
 
     constructor(node: Node) {
         this._node = node
+        this._element = DOM.Node_.element(node).unpackThrow()
+    }
+
+    get normalizedText(): string {
+        return this.textNodes
+            .filter(TextNode.filterByNotAncestor(["g", "orig", "am", "sic"]))
+            .map( (textNode: Text) => TextNode.suppliedInBrackets(textNode) )
+            .join("")
+            .replace("][", "")
+            .replace(",", "")
+    }
+
+    static getNormalizedText = (token: TEIToken) => {
+        return token.normalizedText
     }
 
     get text() {
         return MaybeT.of(this._node.textContent)
+    }
+
+    get textNodes(): Text[] {
+        return XML.xpath("descendant::text()")(this._node)
+            .unpackT([]) as Text[]
     }
 
     static of(node: Node) {
@@ -34,6 +54,27 @@ namespace TEITokenFuncs {
         return Arr.removeNothings(textArr).join("")
     }
 
+
+
+
+}
+
+namespace TextNode {
+
+    export const filterByNotAncestor = 
+        (tagNames: string[]) =>
+        (text: Text): boolean =>
+    {
+        const ancestorXpaths = tagNames.reduce(
+            (ancestors:string, tagName:string) => {
+                return ancestors.concat(`[not(ancestor::t:${tagName})]`)
+            }, ''
+        )
+        const xpathStr = Str.concat(ancestorXpaths)("descendant::text()")
+        
+        return XML.xpath(xpathStr)(text).unpack([]).length !== 0
+    }
+
     export const excludeTextNodesWithAncestors = 
         (tagNames: string[]) => 
         (token: TEIToken): Text[] => 
@@ -50,8 +91,10 @@ namespace TEITokenFuncs {
             .xpath(xpathStr)(token._node)
             .unpackT([]) as Text[]
     }
-
-    export const textWithSuppliedInBrackets = (textNode: Text): string => {
+    
+    export const suppliedInBrackets = (textNode: Text): string => {
+        
+    
         if (!XML.hasAncestor("supplied")(textNode)) {
             return MaybeT.of(textNode.textContent).unpackT("")
         }
@@ -74,4 +117,5 @@ namespace TEITokenFuncs {
         return returnString
 
     }
+
 }

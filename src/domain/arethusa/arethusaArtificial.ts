@@ -8,9 +8,11 @@
 
 class ArethusaArtificial implements HasForm {
     _node: Node
+    _element: Element
 
     constructor(node: Node) {
         this._node = node
+        this._element = DOM.Node_.element(node).unpackThrow()
     }
 
     static id = (w: ArethusaArtificial) => {

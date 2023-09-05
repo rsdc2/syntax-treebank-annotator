@@ -12,6 +12,7 @@ interface IMaybe<T> extends IFunctor<T>, IMonad<T>{
     return(a: T): Maybe<T>
     unpack<U>(def: T | U): T | U
     unpackT(def: T): T
+    unpackThrow():T
     eq(x: T): boolean
     isNothing: boolean
     isSomething: boolean
@@ -102,6 +103,10 @@ class Just<T> implements IMaybe<T> {
         return this._value
     }
 
+    unpackThrow(): T {
+        return this._value
+    }
+
     get value() {
         return this._value
     }
@@ -183,6 +188,10 @@ class Nothing<T> implements IMaybe<T> {
         return def
     }
 
+    unpackThrow(): T {
+        throw "Value cannot be Nothing."
+    }
+
     get value() {
         return null
     }
@@ -229,6 +238,10 @@ class MaybeT {
         
             }
         }
+    }
+
+    static isSomething = <T>(maybe: Maybe<T>) => {
+        return maybe.isSomething
     }
 
     static of<T>(val: T | null | undefined): Maybe<T> {

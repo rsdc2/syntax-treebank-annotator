@@ -22,7 +22,7 @@ Conversion.epidocXMLToArethusaXML = (epidocXML) => {
     const tokens = epidoc
         .fmap(EpiDoc.getEditions)
         .unpackT([])
-        .flatMap(TokenableT.tokens);
+        .flatMap(HasTokensT.tokens);
     const tokenStrings = tokens
         .map(TEITokenFuncs.excludeTextNodesWithAncestors(["g", "orig", "am", "sic"]))
         .map((tokenTextNodes) => {
@@ -62,7 +62,7 @@ Conversion.epidocXMLToArethusaXML_ = (epidocXML) => {
     const tokens = epidoc
         .fmap(EpiDoc.getEditions)
         .unpackT([])
-        .flatMap(TokenableT.tokens)
+        .flatMap(HasTokensT.tokens)
         .map(TEITokenFuncs.excludeTextNodesWithAncestors(["g", "orig", "am", "sic"]))
         .map((tokenTextNodes) => {
         return tokenTextNodes.map((textNode) => TEITokenFuncs

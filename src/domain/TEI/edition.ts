@@ -1,9 +1,11 @@
 
 class Edition implements HasToken, HasNode {
-    _node: HasXMLNode
+    _node: Node
+    _element: Element
 
     constructor(node: HasXMLNode) {
         this._node = node
+        this._element = DOM.Node_.element(node).unpackThrow()
     }
 
     get names(): TEIName[] {

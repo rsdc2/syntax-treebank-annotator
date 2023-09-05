@@ -1,9 +1,11 @@
 
 class ArethusaSentence implements Word, HasToken, HasForm  {
     _node: Node
+    _element: Element
 
     constructor(node: Node) {
         this._node = node
+        this._element = DOM.Node_.element(node).unpackThrow()
     }
 
     static appendArtificialToSentenceFromAttrs = 
@@ -220,6 +222,7 @@ class ArethusaSentence implements Word, HasToken, HasForm  {
 
         return words.reduce(_reduce, s.arethusa)
     }
+
 
     get arethusa() {
         return this.doc
