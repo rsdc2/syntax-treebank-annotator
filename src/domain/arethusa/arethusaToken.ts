@@ -1,4 +1,4 @@
-class ArethusaToken implements Formable {
+class ArethusaToken implements HasForm {
     _node: Node
 
     constructor(node: Node) {
@@ -36,7 +36,7 @@ class ArethusaToken implements Formable {
             .unpack("") === id
     }
 
-    static of(node: XMLNode): ArethusaToken {
+    static of(node: HasXMLNode): ArethusaToken {
         if (XML.hasAttr('artificial')) {
             return ArethusaArtificial.of(node)
         }

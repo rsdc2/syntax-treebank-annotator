@@ -16,6 +16,6 @@ interface IArtificial extends IArethusaToken {
     insertion_id: string
 }
 
-interface ArethusaSentenceable extends Nodeable {
-    sentences: Tokenable[]
+interface ArethusaSentenceable extends HasNode {
+    sentences: HasToken[]
 }

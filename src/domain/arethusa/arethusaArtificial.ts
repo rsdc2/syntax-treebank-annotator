@@ -6,7 +6,7 @@
  * Arethusa.
  */
 
-class ArethusaArtificial implements Formable {
+class ArethusaArtificial implements HasForm {
     _node: Node
 
     constructor(node: Node) {

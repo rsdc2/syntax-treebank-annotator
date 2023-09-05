@@ -1,4 +1,4 @@
-class ArethusaWord implements Formable {
+class ArethusaWord implements HasForm {
     _node: Node
 
     constructor(node: Node) {
@@ -31,7 +31,7 @@ class ArethusaWord implements Formable {
         return ArethusaWord.id(word).unpack("") === id
     }
 
-    static of(node: XMLNode): ArethusaWord {
+    static of(node: HasXMLNode): ArethusaWord {
         return new ArethusaWord(node)
     }
 

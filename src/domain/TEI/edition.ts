@@ -1,8 +1,8 @@
 
-class Edition implements Tokenable, Nodeable {
-    _node: XMLNode
+class Edition implements HasToken, HasNode {
+    _node: HasXMLNode
 
-    constructor(node: XMLNode) {
+    constructor(node: HasXMLNode) {
         this._node = node
     }
 
@@ -14,7 +14,7 @@ class Edition implements Tokenable, Nodeable {
         return DXML.wordsFromXmlDoc(TEIToken, MaybeT.of(this._node.ownerDocument))
     }
 
-    static of(node: XMLNode) {
+    static of(node: HasXMLNode) {
         return new Edition(node)
     }
 

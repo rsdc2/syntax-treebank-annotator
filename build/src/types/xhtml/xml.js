@@ -1,4 +1,4 @@
-class FormableT {
+class HasFormT {
     static form(f) {
         return f.text;
     }

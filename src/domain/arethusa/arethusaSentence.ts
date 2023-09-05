@@ -1,5 +1,5 @@
 
-class ArethusaSentence implements Word, Tokenable, Formable  {
+class ArethusaSentence implements Word, HasToken, HasForm  {
     _node: Node
 
     constructor(node: Node) {
@@ -248,11 +248,11 @@ class ArethusaSentence implements Word, Tokenable, Formable  {
         return this.doc.fmap(XML.deepcopy)
     }
 
-    static firstToken(sentence: ArethusaSentence): Maybe<Formable> {
+    static firstToken(sentence: ArethusaSentence): Maybe<HasForm> {
         return Arr.head (sentence.tokensProp)
     }
 
-    static firstWord(sentence: ArethusaSentence): Maybe<Formable> {
+    static firstWord(sentence: ArethusaSentence): Maybe<HasForm> {
         return Arr.head (sentence.tokens)
     }
 
@@ -270,7 +270,7 @@ class ArethusaSentence implements Word, Tokenable, Formable  {
             .fmap(ArethusaSentence.fromXMLNode)
     }
 
-    static lastToken = (sentence: ArethusaSentence): Maybe<Formable> => {
+    static lastToken = (sentence: ArethusaSentence): Maybe<HasForm> => {
         return MaybeT.of(sentence)
             .fmap(ArethusaSentence.tokens)
             .bind(Arr.last)
@@ -577,7 +577,7 @@ class ArethusaSentence implements Word, Tokenable, Formable  {
         return "descendant-or-self::treebank/sentence" 
     }
 
-    static of(node: XMLNode): ArethusaSentence {
+    static of(node: HasXMLNode): ArethusaSentence {
         return new ArethusaSentence(node)
     }
 

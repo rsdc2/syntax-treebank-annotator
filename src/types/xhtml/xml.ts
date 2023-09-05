@@ -1,28 +1,28 @@
-interface XMLNode extends Node {
+interface HasXMLNode extends Node {
     attributes: NamedNodeMap
     setAttribute: (name: string, value:string) => void
 }
 
-interface Nodeable {
-    _node: Node
+interface HasNode {
+    _node: Node   
 }
 
-interface Formable extends Nodeable {
+interface HasForm extends HasNode {
     text: Maybe<string>
 }
 
-interface Tokenable extends Formable {
-    tokens: Formable[]
+interface HasToken extends HasForm {
+    tokens: HasForm[]
 }
 
-class FormableT {
-    static form(f: Formable) {
+class HasFormT {
+    static form(f: HasForm) {
         return f.text
     }
 }
 
 class TokenableT {
-    static tokens(tokenable: Tokenable): Formable[] {
+    static tokens(tokenable: HasToken): HasForm[] {
         return tokenable.tokens
     }
 
@@ -30,20 +30,20 @@ class TokenableT {
     //  * Returns all tokens minus any supplied elements
     //  * @param tokenable 
     //  */
-    // static tokensNoSupplied(tokenable: Tokenable): Formable[] {
+    // static tokensNoSupplied(tokenable: HasToken): HasForm[] {
     //     const node = tokenable._node
         
     // }   
 }
 
-class Word implements Nodeable, Formable {
+class Word implements HasNode, HasForm {
     _node: Node
 
     constructor(node: Node) {
         this._node = node
     }
 
-    static of(node: XMLNode): Formable {
+    static of(node: HasXMLNode): HasForm {
         return new Word(node)
     }
 
@@ -58,14 +58,14 @@ class Word implements Nodeable, Formable {
 
 type WordType = typeof Word
 
-class Multiword implements Nodeable, Formable, Tokenable {
-    _node: XMLNode
+class Multiword implements HasNode, HasForm, HasToken {
+    _node: HasXMLNode
 
-    constructor(node: XMLNode) {
+    constructor(node: HasXMLNode) {
         this._node = node
     }
 
-    static of(node: XMLNode): Tokenable {
+    static of(node: HasXMLNode): HasToken {
         return new Multiword(node)
     }
 
@@ -77,7 +77,7 @@ class Multiword implements Nodeable, Formable, Tokenable {
         return MaybeT.of(this._node.textContent)
     }
 
-    get tokens(): Formable[] {
+    get tokens(): HasForm[] {
         return []
     }
 }
@@ -601,12 +601,12 @@ class XML {
             .unpackT([])
     }
 
-    static setAttr = (attrName: string) => (attrVal: string) => (n: XMLNode) => {
+    static setAttr = (attrName: string) => (attrVal: string) => (n: HasXMLNode) => {
         n.setAttribute(attrName, attrVal)
         return n
     }
 
-    static setId = (id: string) => (n: XMLNode) => {
+    static setId = (id: string) => (n: HasXMLNode) => {
         return XML.setAttr("id")(id)(n)
     }
 
@@ -673,4 +673,4 @@ class XML {
     }
 }
 
-type N = XMLNode | Node | XMLDocument | ParentNode
+type N = HasXMLNode | Node | XMLDocument | ParentNode

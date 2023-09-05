@@ -1,5 +1,5 @@
 
-class TEIToken implements Word, Formable {
+class TEIToken implements Word, HasForm {
     _node: Node
 
     constructor(node: Node) {
