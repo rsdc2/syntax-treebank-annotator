@@ -59,7 +59,7 @@ var SVG;
             return MaybeT.of(s)
                 .fmap(Str.split(" "))
                 .fmap(f(val)(index))
-                .unpackT([])
+                .fromMaybe([])
                 .join(" ");
         };
         const changeViewBoxVal = (func) => (limit) => (index) => (svg) => {
@@ -92,7 +92,7 @@ var SVG;
         };
         const decrViewBoxVal = (limit) => (index) => (viewBoxStr) => {
             if (limit !== null) {
-                if (ViewBox.getViewBoxVal(index)(viewBoxStr).fmap(Str.toNum).unpackT(0) - 50 < limit) {
+                if (ViewBox.getViewBoxVal(index)(viewBoxStr).fmap(Str.toNum).fromMaybe(0) - 50 < limit) {
                     return;
                 }
             }

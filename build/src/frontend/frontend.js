@@ -471,7 +471,7 @@ Frontend.downloadArethusa = () => {
         .bind(TextState.outputArethusaDeep);
     const docId = arethusa
         .bind(ArethusaDoc.docId)
-        .unpackT("tree");
+        .fromMaybe("tree");
     arethusa
         .fmap(ArethusaDoc.toXMLStr)
         .fmap(FileHandling.download(docId));
@@ -588,7 +588,7 @@ Frontend.updateArethusaDiv = (newXML) => (xmlToHighlight) =>
     //     .map(ArethusaDiv.formatXMLForDiv)
     const formattedHighlighted = xmlToHighlight
         .fmap(ArethusaDiv.formatXMLForDiv)
-        .unpackT("");
+        .fromMaybe("");
     const setTextContent = MaybeT.of(newXML)
         .fmap(ArethusaDiv.formatXMLForDiv)
         .fmap(Str.replace(formattedHighlighted)('<span style="color:blue" class="selected">' + formattedHighlighted + "</span>"))

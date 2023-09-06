@@ -1,8 +1,10 @@
 class ArethusaDoc implements ArethusaSentenceable, HasToken {
     _node: Node
+    _element: Element
 
     constructor(node: Node) {
         this._node = node
+        this._element = this._element = DOM.Node_.element(node).fromMaybeThrow()
     }
 
     static appendArtificial = 
@@ -117,6 +119,10 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
         return ArethusaDoc
             .sentenceById (sentenceId) (a)
             .bind(ArethusaSentence.appendWordToSentenceFromAttrs(attrs))
+    }
+
+    get attrs(): NamedNodeMap {
+        return this._element.attributes
     }
 
 

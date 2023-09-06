@@ -388,9 +388,11 @@ class XML {
             .parseFromString(xml, "text/xml")
     }
 
-    static getAttrVal = (namespace: string) => (localName: string) => (token: HasElement) => {
-        const attrs = DOM.Elem.attributes(token._element)
-        return DOM.NamedNodeMap.getNamedItemNS(namespace)(localName)(attrs).fromMaybe(new Attr()).value
+    static getAttrVal = (namespace: string) => (localName: string) => (token: HasElement): Maybe<string> => {
+        const attrs = token.attrs
+        return DOM.NamedNodeMap
+            .getNamedItemNS(namespace, localName, attrs)
+            .fmap(DOM.Attr.value)
     }
 
     static hasAncestor = (tagName: string) => (node: Node) => {

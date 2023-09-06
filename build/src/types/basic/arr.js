@@ -1,3 +1,29 @@
+class ArrMaybe {
+    constructor(array) {
+        this.removeNothings = () => {
+            return Arr.removeNothings(this._array);
+        };
+        const arr = array;
+    }
+    get array() {
+        return this._array;
+    }
+    bind(f) {
+        return new ArrMaybe([...this._array].map((value) => value.bind(f)));
+    }
+    fmap(f) {
+        return new ArrMaybe([...this._array].map((value) => value.fmap(f)));
+    }
+    filter(f) {
+        return new ArrMaybe([...this._array].filter(f));
+    }
+    defaultT(defaultVal) {
+        return [...this._array].map((value) => value.value !== null && value.value !== undefined ? value.value : defaultVal);
+    }
+}
+ArrMaybe.of = (array) => {
+    return new ArrMaybe(array.map(MaybeT.of));
+};
 class Arr {
     static byIdx(idx) {
         function _byIdx(array) {
@@ -10,7 +36,7 @@ class Arr {
             const reduceFunc = (acc, array2Item) => {
                 return array2Item
                     .fmap(Arr.arrify)
-                    .unpackT([])
+                    .fromMaybe([])
                     .concat(acc);
             };
             return array2.reduce(reduceFunc, array1);
@@ -75,7 +101,7 @@ Arr.removeByIdx = (array) => (idx) => {
         }
         return acc;
     }, new Array))
-        .unpackT(array);
+        .fromMaybe(array);
 };
 Arr.removeNothingReduce = (acc, item) => {
     if (item.value !== null) {
@@ -115,7 +141,7 @@ Arr.replaceByIdx = (array) => (newItem) => (idx) => {
         }
         return Arr.push(newItem)(acc);
     }, new Array))
-        .unpackT(array);
+        .fromMaybe(array);
 };
 Arr.reverse = (array) => {
     const copy = [...array];

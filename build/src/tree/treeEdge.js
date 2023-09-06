@@ -21,7 +21,7 @@ var TreeEdge;
             const f = flip(_countEdgesToRoot);
             return headToken
                 .fmap(TreeToken.id)
-                .fmap(f(count)).unpackT(0);
+                .fmap(f(count)).fromMaybe(0);
         };
         return _countEdgesToRoot(startId)(0);
     }

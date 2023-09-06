@@ -1,6 +1,10 @@
 class ArethusaSentence {
     constructor(node) {
         this._node = node;
+        this._element = DOM.Node_.element(node).fromMaybeThrow();
+    }
+    get attrs() {
+        return DOM.Elem.attributes(this._element);
     }
     get arethusa() {
         return this.doc
@@ -45,7 +49,7 @@ ArethusaSentence.appendArtificialToSentenceFromAttrs = (attrs) => (sentence) => 
     const nextId = {
         "id": arethusa
             .fmap(ArethusaDoc.nextTokenId)
-            .unpackT("")
+            .fromMaybe("")
     };
     const createWordElement = XML
         .createElement("word")({ ...nextId, ...attrs });
@@ -72,7 +76,7 @@ ArethusaSentence.appendWordToSentenceFromAttrs = (attrs) => (sentence) => {
     const nextId = {
         "id": arethusa
             .fmap(ArethusaDoc.nextTokenId)
-            .unpackT("")
+            .fromMaybe("")
     };
     // Remove newlines from form
     attrs.form = attrs.form.replace(/[\n\t\s]+/g, "");
@@ -118,7 +122,7 @@ ArethusaSentence.appendArtificial = (artificial) => (sentence) => {
 ArethusaSentence.tokenById = (tokenId) => (sentence) => {
     return MaybeT.of(MaybeT.of(sentence)
         .fmap(ArethusaSentence.tokens)
-        .unpackT([])
+        .fromMaybe([])
         .find(ArethusaWord.matchId(tokenId)));
 };
 ArethusaSentence.arethusaTokenIds = (s) => {
@@ -133,7 +137,7 @@ ArethusaSentence.tokens = (s) => {
         .fmap(DXML.node)
         .fmap(XML.childNodes)
         .fmap(ArethusaSentence.arethusaTokensFromNodes)
-        .unpackT([]);
+        .fromMaybe([]);
 };
 ArethusaSentence.arethusaTokensFromNodes = (nodes) => {
     return nodes
@@ -159,6 +163,19 @@ ArethusaSentence.prependToken = (token) => (sentence) => {
         .bind(XML.ownerDocument)
         .bind(XML.documentElement)
         .bind(ArethusaDoc.fromNode);
+};
+ArethusaSentence.appendWordAttrs = (attrs) => (s) => {
+    function _reduce(a, wordAttrs) {
+        const getSent = ArethusaSentence
+            .id(s)
+            .fmap(ArethusaDoc.sentenceById);
+        const appendWord = MaybeT.of(wordAttrs)
+            .fmap(ArethusaSentence.appendWordToSentenceFromAttrs);
+        return a
+            .applyBind(getSent)
+            .applyBind(appendWord);
+    }
+    return attrs.reduce(_reduce, s.arethusa);
 };
 /**
  * Only used in conversion from EpiDoc,
@@ -198,7 +215,7 @@ ArethusaSentence.tokenByTokenAndSentenceId = (tokenId) => (sentenceId) => (a) =>
     return MaybeT.of(ArethusaDoc
         .sentenceById(sentenceId)(a)
         .fmap(ArethusaSentence.tokens)
-        .unpackT([])
+        .fromMaybe([])
         .find(ArethusaWord.matchId(tokenId)));
 };
 ArethusaSentence.incrementId = (s) => {
@@ -245,7 +262,7 @@ ArethusaSentence.XMLStrFromPlainTextStr = (a) => (str) => {
     }
     const wordElems = MaybeT.of(str)
         .fmapErr("Error with string.", Str.split(/[\s\t\n]/g))
-        .unpackT([])
+        .fromMaybe([])
         .map(Str.strip)
         .map(ArethusaWord.createAttrs)
         .map(createWord);
@@ -307,7 +324,7 @@ ArethusaSentence.nextTokenIds = (startTokenId) => (s) => {
         .tokenById(startTokenId)(s)
         .fmap(DXML.node)
         .bind(XML.nextSiblingElements)
-        .unpackT([])
+        .fromMaybe([])
         .map(ArethusaWord.fromXMLNode)
         .map(ArethusaWord.id)
         .filter((item) => item.isSomething)
@@ -364,20 +381,20 @@ ArethusaSentence.toTreeSentStateWithNodesFromExistingTree = (nodes) => (sentence
 ArethusaSentence.treeTokens = (sentence) => {
     return MaybeT.of(sentence)
         .fmap(ArethusaSentence.tokens)
-        .unpackT([])
+        .fromMaybe([])
         .map(ArethusaToken.toTreeToken);
 };
 ArethusaSentence.wordByWordAndSentenceId = (wordId) => (sentenceId) => (a) => {
     return MaybeT.of(ArethusaDoc
         .sentenceById(sentenceId)(a)
         .fmap(ArethusaSentence.words)
-        .unpackT([])
+        .fromMaybe([])
         .find(ArethusaWord.matchId(wordId)));
 };
 ArethusaSentence.wordById = (wordId) => (sentence) => {
     return MaybeT.of(MaybeT.of(sentence)
         .fmap(ArethusaSentence.words)
-        .unpackT([])
+        .fromMaybe([])
         .find(ArethusaWord.matchId(wordId)));
 };
 ArethusaSentence.wordIds = (s) => {
@@ -392,7 +409,7 @@ ArethusaSentence.words = (s) => {
         .fmap(DXML.node)
         .fmap(XML.childNodes)
         .fmap(ArethusaSentence.wordsFromNodes)
-        .unpackT([]);
+        .fromMaybe([]);
 };
 ArethusaSentence.wordsAsStr = (s) => {
     const wordsArr = ArethusaSentence

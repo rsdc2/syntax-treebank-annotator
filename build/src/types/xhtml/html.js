@@ -74,7 +74,7 @@ var HTML;
             return elem;
         };
         Elem.toggleHidden = (elem) => {
-            if (MaybeT.of(elem).bind(Elem.getHidden).unpackT("false") == "false") {
+            if (MaybeT.of(elem).bind(Elem.getHidden).fromMaybe("false") == "false") {
                 HTML.Elem.setHidden(elem);
                 return;
             }

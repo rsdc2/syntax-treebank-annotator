@@ -32,15 +32,17 @@ class Conversion {
             .flatMap(Edition.getTokens)
 
         const attrs = tokens.map ( (token): IArethusaWord => {
-            return {
+            const attr = {
                 form: token.text.fromMaybe(""),
                 lemma: "",
                 postag: "",
                 relation: "",
                 head: "",
                 secdeps: "",
-                xmlid: XML.getAttrVal("http://www.tei-c.org/ns/1.0")("id")(token)
+                xmlid: XML.getAttrVal("http://www.w3.org/XML/1998/namespace")("id")(token).fromMaybe("")
             }
+            console.log(attr)
+            return attr
         } 
             
         )

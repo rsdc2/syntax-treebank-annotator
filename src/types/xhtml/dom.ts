@@ -4,13 +4,15 @@ namespace DOM {
     }
 
     export namespace Elem {
-        export const attributes = (e: Element) => e.attributes
+        export const attributes = (e: Element) => {return e.attributes}
     }
 
     export namespace Node_ {
         export const element = (n: Node): Maybe<Element> => {
             if (n.nodeType === Node.ELEMENT_NODE) {
                 return MaybeT.of(n) as Just<Element>
+            } else if (n.nodeType === Node.DOCUMENT_NODE) {
+                return MaybeT.of(n['documentElement'])
             }
     
             return Nothing.of()
@@ -22,7 +24,7 @@ namespace DOM {
             return MaybeT.of(m.getNamedItem(qualifiedName))
         }
 
-        export const getNamedItemNS = (namespace: string) => (localName: string) => (m: NamedNodeMap): Maybe<Attr> => {
+        export function getNamedItemNS(namespace: string, localName: string, m: NamedNodeMap): Maybe<Attr> {
             return MaybeT.of(m.getNamedItemNS(namespace, localName))
         }
 

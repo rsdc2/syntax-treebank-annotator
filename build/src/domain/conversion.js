@@ -18,58 +18,23 @@ Conversion.epidocXMLToArethusaXML = (epidocXML) => {
         .bind(EpiDoc.fromXMLStr);
     const docId = epidoc
         .bind(EpiDoc.filenameId)
-        .unpackT("");
+        .fromMaybe("");
     const tokens = epidoc
         .fmap(EpiDoc.getEditions)
-        .unpackT([])
-        .flatMap(HasTokensT.tokens);
-    const tokenStrings = tokens
-        .map(TEITokenFuncs.excludeTextNodesWithAncestors(["g", "orig", "am", "sic"]))
-        .map((tokenTextNodes) => {
-        return tokenTextNodes.map((textNode) => TEITokenFuncs
-            .textWithSuppliedInBrackets(textNode))
-            .join("")
-            .replace("][", "")
-            .replace(",", "");
-    });
-    const ids = tokens.
-    ;
-    // Create Arethusa from EpiDoc tokens
-    const arethusa = ArethusaDoc
-        .fromXMLStr(arethusaTemplate)
-        .bind(ArethusaDoc.setDocId(docId))
-        .bind(ArethusaDoc.appendSentence)
-        .bind(ArethusaDoc.lastSentence)
-        .bind(ArethusaSentence.appendWords(tokens));
-    // Prettify Arethusa XML
-    const arethusaXML = arethusa
-        .fmap(DXML.node)
-        .fmap(XMLFormatter.deprettifyFromRoot(true))
-        .fmap(XMLFormatter.prettifyFromRoot(true))
-        .bind(ArethusaDoc.fromNode)
-        .fmap(ArethusaDoc.toXMLStr);
-    return arethusaXML;
-};
-// This is the old version of the function
-Conversion.epidocXMLToArethusaXML_ = (epidocXML) => {
-    const epidoc = MaybeT.of(XML.fromXMLStr(epidocXML))
-        .fmap(XMLFormatter.deprettifyFromRoot(true))
-        .fmap(XML.toStr)
-        .bind(EpiDoc.fromXMLStr);
-    const docId = epidoc
-        .bind(EpiDoc.filenameId)
-        .unpackT("");
-    const tokens = epidoc
-        .fmap(EpiDoc.getEditions)
-        .unpackT([])
-        .flatMap(HasTokensT.tokens)
-        .map(TEITokenFuncs.excludeTextNodesWithAncestors(["g", "orig", "am", "sic"]))
-        .map((tokenTextNodes) => {
-        return tokenTextNodes.map((textNode) => TEITokenFuncs
-            .textWithSuppliedInBrackets(textNode))
-            .join("")
-            .replace("][", "")
-            .replace(",", "");
+        .fromMaybe([])
+        .flatMap(Edition.getTokens);
+    const attrs = tokens.map((token) => {
+        const attr = {
+            form: token.text.fromMaybe(""),
+            lemma: "",
+            postag: "",
+            relation: "",
+            head: "",
+            secdeps: "",
+            xmlid: XML.getAttrVal("http://www.w3.org/XML/1998/namespace")("id")(token).fromMaybe("")
+        };
+        console.log(attr);
+        return attr;
     });
     // Create Arethusa from EpiDoc tokens
     const arethusa = ArethusaDoc
@@ -77,8 +42,7 @@ Conversion.epidocXMLToArethusaXML_ = (epidocXML) => {
         .bind(ArethusaDoc.setDocId(docId))
         .bind(ArethusaDoc.appendSentence)
         .bind(ArethusaDoc.lastSentence)
-        // .bind(ArethusaSentence.appendMaybeWords(words))
-        .bind(ArethusaSentence.appendWords(tokens));
+        .bind(ArethusaSentence.appendWordAttrs(attrs));
     // Prettify Arethusa XML
     const arethusaXML = arethusa
         .fmap(DXML.node)

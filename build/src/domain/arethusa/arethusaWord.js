@@ -1,6 +1,10 @@
 class ArethusaWord {
     constructor(node) {
         this._node = node;
+        this._element = DOM.Node_.element(node).fromMaybeThrow();
+    }
+    get attrs() {
+        return DOM.Elem.attributes(this._element);
     }
     static of(node) {
         return new ArethusaWord(node);
@@ -69,7 +73,7 @@ ArethusaWord.postag = (w) => {
 ArethusaWord.relation = (w) => {
     const rel = XML.attr("relation")(w._node)
         .bind(XML.nodeValue)
-        .unpackT("");
+        .fromMaybe("");
     if (rel === "") {
         return ""; // Constants.defaultRel
     }
@@ -78,32 +82,32 @@ ArethusaWord.relation = (w) => {
 ArethusaWord.slashes = (w) => {
     const slashStr = XML.attr("secdeps")(w._node)
         .bind(XML.nodeValue)
-        .unpackT("");
+        .fromMaybe("");
     if (slashStr === "")
         return new Array;
     const slashStrs = slashStr
         .split(";");
-    return slashStrs.map(SecondaryDep.ofStr(ArethusaWord.id(w).unpackT("-1")));
+    return slashStrs.map(SecondaryDep.ofStr(ArethusaWord.id(w).fromMaybe("-1")));
 };
 ArethusaWord.toTreeToken = (w) => {
     return {
         form: ArethusaWord
             .form(w)
-            .unpackT("[None]"),
+            .fromMaybe("[None]"),
         headId: ArethusaWord
             .head(w)
             .bind(Str.toMaybeNum)
-            .unpackT(-1),
+            .fromMaybe(-1),
         id: ArethusaWord
             .id(w)
             .fmap(Str.toNum)
-            .unpackT(-1),
+            .fromMaybe(-1),
         lemma: ArethusaWord
             .lemma(w)
-            .unpackT(""),
+            .fromMaybe(""),
         postag: ArethusaWord
             .postag(w)
-            .unpackT(""),
+            .fromMaybe(""),
         relation: ArethusaWord
             .relation(w),
         secondaryDeps: ArethusaWord

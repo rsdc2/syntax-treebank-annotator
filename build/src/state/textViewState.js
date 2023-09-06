@@ -66,7 +66,7 @@ ViewState.deepcopy = (s) => {
     return new ViewState(s._tokenId, s._sentenceId, s._arethusa.bind(ArethusaDoc.deepcopy));
 };
 ViewState.sentencesSame = (s1) => (s2) => {
-    return s1.sentenceId.unpackT("") == s2.sentenceId.unpackT("");
+    return s1.sentenceId.fromMaybe("") == s2.sentenceId.fromMaybe("");
 };
 ViewState.of = (wordId) => (sentenceId) => (arethusa) => {
     return new ViewState(MaybeT.of(wordId), MaybeT.of(sentenceId), MaybeT.of(arethusa));

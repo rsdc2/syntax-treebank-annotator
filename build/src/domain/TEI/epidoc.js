@@ -1,6 +1,10 @@
 class EpiDoc {
     constructor(epidocXML) {
         this._node = XML.fromXMLStr(epidocXML).documentElement;
+        this._element = DOM.Node_.element(this._node).fromMaybeThrow();
+    }
+    get attrs() {
+        return this._element.attributes;
     }
     get editions() {
         return EpiDoc.getEditions(this);
@@ -17,7 +21,7 @@ class EpiDoc {
         return MaybeT.of(epidoc.node)
             .bind(XML.xpath(Edition.xpathAddress))
             .fmap(EpiDoc.editionsFromArray)
-            .unpackT([]);
+            .fromMaybe([]);
     }
     get names() {
         return DXML
@@ -30,7 +34,7 @@ class EpiDoc {
         const xml = textStateIO
             .epidoc
             .fmap(EpiDoc.toXMLStr)
-            .unpackT("");
+            .fromMaybe("");
         if (xml.includes("parsererror")) {
             Frontend
                 .epidocInputTextArea

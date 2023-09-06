@@ -101,7 +101,7 @@ class AthDivCurs {
     static get currentXMLTagPosition() {
         return AthDivCurs
             .currentXMLTagType
-            .unpackT(XMLCursorTagPosition.unknown);
+            .fromMaybe(XMLCursorTagPosition.unknown);
     }
     static get currentTokenId() {
         if (AthDivCurs.currentXMLNodeName.eq("word")) {
@@ -129,7 +129,7 @@ class AthDivCurs {
     //         (XMLTagFragAlias["<"])
     // }
     static get currentXMLTagRange() {
-        const tagType = AthDivCurs.currentXMLTagType.unpackT(XMLCursorTagPosition.unknown);
+        const tagType = AthDivCurs.currentXMLTagType.fromMaybe(XMLCursorTagPosition.unknown);
         switch (tagType) {
             case (XMLCursorTagPosition.insideAtomicTag): {
                 const [leftAlias, rightAlias] = cursorTagPositionToAlias.insideAtomicTag;
@@ -149,7 +149,7 @@ class AthDivCurs {
     static get currentXMLTagAsStr() {
         const cursorTagPosition = AthDivCurs
             .currentXMLTagType
-            .unpackT(XMLCursorTagPosition.unknown);
+            .fromMaybe(XMLCursorTagPosition.unknown);
         switch (cursorTagPosition) {
             case XMLCursorTagPosition.insideAtomicTag:
                 return AthDivCurs.currentXMLTagTextByAlias("<")("/>");
@@ -289,7 +289,7 @@ AthDivCurs.textNodeOfIdx = (idx) => {
     const textNodes = ArethusaDiv
         .control
         .bind(XML.descendantTextNodes)
-        .unpackT([]);
+        .fromMaybe([]);
     return textNodes.reduce((nodeInfo, textNode) => {
         const newTotalLength = nodeInfo.totalLength + textNode.length;
         if (idx > nodeInfo.totalLength && idx < newTotalLength) {

@@ -6,19 +6,25 @@ type TEIFormNodeMeta = typeof TEIToken | typeof TEIName
 
 class EpiDoc implements TEIEditionable, HasToken {
     _node: HasXMLNode
+    _element: Element
 
     constructor(epidocXML: string) {
         this._node = XML.fromXMLStr(epidocXML).documentElement
+        this._element = DOM.Node_.element(this._node).fromMaybeThrow()
     }
 
-    get editions(): Edition[] {
-        return EpiDoc.getEditions(this)
+    get attrs(): NamedNodeMap {
+        return this._element.attributes
     }
 
     static deepcopy = (epidoc: EpiDoc) => {
         return MaybeT.of(epidoc)
             .fmap(EpiDoc.toXMLStr)
             .bind(EpiDoc.fromXMLStr)
+    }
+
+    get editions(): Edition[] {
+        return EpiDoc.getEditions(this)
     }
 
     static editionsFromArray = map(Edition.of)
@@ -51,7 +57,7 @@ class EpiDoc implements TEIEditionable, HasToken {
 
     get names(): TEIName[] {
         return DXML
-            .wordsFromXmlDoc(TEIName, MaybeT.of(this._node.ownerDocument))
+            .wordsFromXmlDoc(TEIName, MaybeT.of(this._node.ownerDocument)) as TEIName[]
     }
 
     static namesFromArray = map(TEIName.of)
@@ -95,6 +101,6 @@ class EpiDoc implements TEIEditionable, HasToken {
 
     get tokens(): TEIToken[] {
         return DXML
-            .wordsFromXmlDoc(TEIToken, MaybeT.of(this._node.ownerDocument))
+            .wordsFromXmlDoc(TEIToken, MaybeT.of(this._node.ownerDocument)) as TEIToken[]
     }
 }
