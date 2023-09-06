@@ -5,6 +5,7 @@ interface IMaybe<T> extends IFunctor<T>, IMonad<T>{
     fmap<U>(f: (a: T | null | undefined) => U): Maybe<U>
     fmapDefault<U>(def:Maybe<U>, f: (a: T | null | undefined) => U): Maybe<U>
     fmapErr<U>(message:string, f: (a: T | null | undefined) => U): Maybe<U>
+    fmapDefaultErr<U>(f: (a: T | null | undefined) => U): Maybe<U>
     bind<U>(f: (a: T | null | undefined) => Maybe<U>): Maybe<U>
     bindErr<U>(message:string, f: (a: T | null | undefined) => Maybe<U>): Maybe<U>
     flatMap<U>(f: (a: T | null | undefined) => Maybe<U>): Maybe<U>
@@ -57,6 +58,10 @@ class Just<T> implements IMaybe<T> {
     }
 
     fmap<U>(f: (a: T) => U): Maybe<U> {
+        return MaybeT.of<U>(f(this._value))
+    }
+
+    fmapDefaultErr <U>(f: (a: T) => U): Maybe<U> {
         return MaybeT.of<U>(f(this._value))
     }
 
@@ -143,11 +148,17 @@ class Nothing<T> implements IMaybe<T> {
     }
 
     fmap<U>(f: (a:T) => U): Maybe<U> {
+        // console.error("Default error")
         return new Nothing<U>()
     }
 
     fmapDefault<U>(def:Maybe<U>, f: (a: T) => U): Maybe<U>{
         return def
+    }
+
+    fmapDefaultErr<U>(f: (a: T) => U): Maybe<U>{
+        console.error("Default error")
+        return new Nothing<U>()
     }
 
 

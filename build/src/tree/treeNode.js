@@ -36,7 +36,8 @@ var TreeNode;
             postag: "",
             insertionId: "",
             type: NodeType.None,
-            artificialType: ArtificialType.None
+            artificialType: ArtificialType.None,
+            xmlid: ""
         };
     };
     TreeNode.headTreeNodeId = (sentState) => (treeNode) => {
@@ -182,7 +183,8 @@ var TreeNode;
             type: token.type === TreeTokenType.Root ?
                 NodeType.Root :
                 NodeType.NonRoot,
-            artificialType: TreeToken.artificialType(token)
+            artificialType: TreeToken.artificialType(token),
+            xmlid: token.xmlid
         };
         return node;
     };
@@ -212,9 +214,9 @@ var TreeNode;
     };
     TreeNode.toArethusaWordXMLStr = (node) => {
         if (node.artificialType == ArtificialType.Elliptic) {
-            return `<word id="${node.arethusaTokenId}" form="${node.name}" artificial="${node.artificialType}" insertion_id="${node.insertionId}" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}"/>`;
+            return `<word id="${node.arethusaTokenId}" form="${node.name}" artificial="${node.artificialType}" insertion_id="${node.insertionId}" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}" xmlid="${node.xmlid === undefined ? "" : node.xmlid}"/>`;
         }
-        return `<word id="${node.arethusaTokenId}" form="${node.name}" lemma="${node.lemma}" postag="${node.postag}" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}"/>`;
+        return `<word id="${node.arethusaTokenId}" form="${node.name}" lemma="${node.lemma}" postag="${node.postag}" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}" xmlid="${node.xmlid === undefined ? "" : node.xmlid}"/>`;
     };
     TreeNode.toXMLNode = (node) => {
         return MaybeT.of(TreeNode

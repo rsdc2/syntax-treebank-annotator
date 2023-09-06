@@ -510,14 +510,9 @@ class TreeStateIO {
         state.replace(newSentState, update, idx)
     }
 
-
-
-
-
     get slashes() {
         return this.currentTreeState.slashes
     }
-
 
     undo = () => {
         TreeStateIO.undo(this)

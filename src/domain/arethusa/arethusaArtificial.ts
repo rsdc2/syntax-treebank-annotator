@@ -36,7 +36,8 @@ class ArethusaArtificial implements HasText {
             "insertion_id": "",
             "relation": "",
             "head": "",
-            "secdeps": ""
+            "secdeps": "",
+            // "xmlid": ""
         }
     }
 
@@ -137,7 +138,12 @@ class ArethusaArtificial implements HasText {
                 .id(w).eq("0") ? 
                     TreeTokenType.Root : 
                     TreeTokenType.NonRoot,
+            xmlid: w.xmlid
         }
+    }
+
+    get xmlid(): string {
+        return MaybeT.of(this._element.getAttribute("xmlid")).fromMaybe("")
     }
 
     static get xpathAddress(): string {

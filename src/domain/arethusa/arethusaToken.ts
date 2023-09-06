@@ -16,7 +16,8 @@ class ArethusaToken implements HasText {
             "form": form,
             "relation": "",
             "head": "",
-            "secdeps": ""
+            "secdeps": "",
+            "xmlid": ""
         }
     }
 
@@ -129,6 +130,10 @@ class ArethusaToken implements HasText {
             return ArethusaArtificial.toTreeToken(w)
         }
         return ArethusaWord.toTreeToken(w)
+    }
+
+    get xmlid(): string {
+        return MaybeT.of(this._element.getAttribute("xmlid")).fromMaybe("")
     }
 
     static get xpathAddress(): string {

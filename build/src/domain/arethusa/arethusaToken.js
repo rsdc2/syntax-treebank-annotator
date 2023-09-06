@@ -15,6 +15,9 @@ class ArethusaToken {
     get text() {
         return MaybeT.of(this._node.textContent);
     }
+    get xmlid() {
+        return MaybeT.of(this._element.getAttribute("xmlid")).fromMaybe("");
+    }
     static get xpathAddress() {
         return "./treebank/sentence/word";
     }
@@ -24,7 +27,8 @@ ArethusaToken.createAttrs = (form) => {
         "form": form,
         "relation": "",
         "head": "",
-        "secdeps": ""
+        "secdeps": "",
+        "xmlid": ""
     };
 };
 ArethusaToken.form = (w) => {

@@ -26,6 +26,9 @@ class Just {
     fmap(f) {
         return MaybeT.of(f(this._value));
     }
+    fmapDefaultErr(f) {
+        return MaybeT.of(f(this._value));
+    }
     fmapErr(message, f) {
         return MaybeT.of(f(this._value));
     }
@@ -87,10 +90,15 @@ class Nothing {
         return this._value == x;
     }
     fmap(f) {
+        // console.error("Default error")
         return new Nothing();
     }
     fmapDefault(def, f) {
         return def;
+    }
+    fmapDefaultErr(f) {
+        console.error("Default error");
+        return new Nothing();
     }
     fmapErr(message, f) {
         console.error(message);
