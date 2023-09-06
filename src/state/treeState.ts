@@ -179,7 +179,7 @@ class TreeState implements ITreeState {
                 .treeStateIO
                 .fmap(TreeStateIO.currentStateId)
                 .fmap(Num.add(1))
-                .unpackT(0), 
+                .fromMaybe(0), 
             sentence_id, 
             tokens, 
             nodes, 
@@ -206,7 +206,7 @@ class TreeState implements ITreeState {
                 .treeStateIO
                 .fmap(TreeStateIO.currentStateId)
                 .fmap(Num.add(1))
-                .unpackT(0),
+                .fromMaybe(0),
             sentence_id, 
             tokens, 
             _nodes, 

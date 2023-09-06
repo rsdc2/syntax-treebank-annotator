@@ -1,10 +1,14 @@
-class ArethusaWord implements HasForm {
+class ArethusaWord implements HasText {
     _node: Node
     _element: Element
 
     constructor(node: Node) {
         this._node = node
-        this._element = DOM.Node_.element(node).unpackThrow()
+        this._element = DOM.Node_.element(node).fromMaybeThrow()
+    }
+
+    get attrs(): NamedNodeMap {
+        return DOM.Elem.attributes(this._element)
     }
 
     static id = (w: ArethusaWord) => {
@@ -80,7 +84,7 @@ class ArethusaWord implements HasForm {
     static relation = (w: ArethusaWord) => {
         const rel = XML.attr ("relation") (w._node)
             .bind(XML.nodeValue)
-            .unpackT("")
+            .fromMaybe("")
 
         if (rel === "") {
             return "" // Constants.defaultRel
@@ -92,7 +96,7 @@ class ArethusaWord implements HasForm {
     static slashes = (w: ArethusaWord) => {
         const slashStr = XML.attr ("secdeps") (w._node)
             .bind(XML.nodeValue)
-            .unpackT("")
+            .fromMaybe("")
 
         if (slashStr === "") return new Array<ISecondaryDep>
 
@@ -101,7 +105,7 @@ class ArethusaWord implements HasForm {
 
         return slashStrs.map(
             SecondaryDep.ofStr(
-                ArethusaWord.id(w).unpackT("-1")
+                ArethusaWord.id(w).fromMaybe("-1")
             )
         )
     }
@@ -114,21 +118,21 @@ class ArethusaWord implements HasForm {
         return {
             form: ArethusaWord
                 .form(w)
-                .unpackT("[None]"),
+                .fromMaybe("[None]"),
             headId: ArethusaWord
                 .head(w)
                 .bind(Str.toMaybeNum)
-                .unpackT(-1),
+                .fromMaybe(-1),
             id: ArethusaWord
                 .id(w)
                 .fmap(Str.toNum)
-                .unpackT(-1),
+                .fromMaybe(-1),
             lemma: ArethusaWord
                 .lemma(w)
-                .unpackT(""),
+                .fromMaybe(""),
             postag: ArethusaWord
                 .postag(w)
-                .unpackT(""),
+                .fromMaybe(""),
             relation: ArethusaWord
                 .relation(w),
             secondaryDeps: ArethusaWord

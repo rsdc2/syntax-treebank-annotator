@@ -6,13 +6,17 @@
  * Arethusa.
  */
 
-class ArethusaArtificial implements HasForm {
+class ArethusaArtificial implements HasText {
     _node: Node
     _element: Element
 
     constructor(node: Node) {
         this._node = node
-        this._element = DOM.Node_.element(node).unpackThrow()
+        this._element = DOM.Node_.element(node).fromMaybeThrow()
+    }
+
+    get attrs(): NamedNodeMap {
+        return DOM.Elem.attributes(this._element)
     }
 
     static id = (w: ArethusaArtificial) => {
@@ -80,7 +84,7 @@ class ArethusaArtificial implements HasForm {
     static relation = (w: ArethusaArtificial) => {
         const rel = XML.attr ("relation") (w._node)
             .bind(XML.nodeValue)
-            .unpackT("")
+            .fromMaybe("")
 
         if (rel === "") {
             return "" // Constants.defaultRel
@@ -92,7 +96,7 @@ class ArethusaArtificial implements HasForm {
     static secondaryDeps = (w: ArethusaArtificial) => {
         const slashStr = XML.attr ("secdeps") (w._node)
             .bind(XML.nodeValue)
-            .unpackT("")
+            .fromMaybe("")
 
         if (slashStr === "") return new Array<ISecondaryDep>
 
@@ -101,7 +105,7 @@ class ArethusaArtificial implements HasForm {
 
         return slashStrs.map(
             SecondaryDep.ofStr(
-                ArethusaArtificial.id(w).unpackT("-1")
+                ArethusaArtificial.id(w).fromMaybe("-1")
             )
         )
     }
@@ -114,15 +118,15 @@ class ArethusaArtificial implements HasForm {
         return {
             form: ArethusaArtificial
                 .form(w)
-                .unpackT("[None]"),
+                .fromMaybe("[None]"),
             headId: ArethusaArtificial
                 .head(w)
                 .bind(Str.toMaybeNum)
-                .unpackT(-1),
+                .fromMaybe(-1),
             id: ArethusaArtificial
                 .id(w)
                 .fmap(Str.toNum)
-                .unpackT(-1),
+                .fromMaybe(-1),
             artificial: "elliptical",
             insertionId: "",
             relation: ArethusaArtificial

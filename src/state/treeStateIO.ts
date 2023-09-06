@@ -362,7 +362,7 @@ class TreeStateIO {
         const newViewBoxStr = Graph
             .svg()
             .bind(SVG.ViewBox.getViewBoxStr)
-            .unpackT("")
+            .fromMaybe("")
 
         const x = globalState
             .textStateIO

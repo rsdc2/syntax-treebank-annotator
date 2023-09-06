@@ -11,8 +11,8 @@ interface IMaybe<T> extends IFunctor<T>, IMonad<T>{
     flatMapArr<U>(f: (a: T | null | undefined) => Maybe<Array<U>>): Array<U>
     return(a: T): Maybe<T>
     unpack<U>(def: T | U): T | U
-    unpackT(def: T): T
-    unpackThrow():T
+    fromMaybe(def: T): T
+    fromMaybeThrow():T
     eq(x: T): boolean
     isNothing: boolean
     isSomething: boolean
@@ -76,7 +76,7 @@ class Just<T> implements IMaybe<T> {
     }
 
     flatMapArr<U>(f: (a: T) => Maybe<Array<U>>): Array<U> {
-        return f(this._value).unpackT([])
+        return f(this._value).fromMaybe([])
     }
 
     get isNothing() {
@@ -99,11 +99,11 @@ class Just<T> implements IMaybe<T> {
         return this._value
     }
 
-    unpackT(def: T): T {
+    fromMaybe(def: T): T {
         return this._value
     }
 
-    unpackThrow(): T {
+    fromMaybeThrow(): T {
         return this._value
     }
 
@@ -184,11 +184,11 @@ class Nothing<T> implements IMaybe<T> {
         return def
     }
 
-    unpackT(def: T): T {
+    fromMaybe(def: T): T {
         return def
     }
 
-    unpackThrow(): T {
+    fromMaybeThrow(): T {
         throw "Value cannot be Nothing."
     }
 
@@ -200,7 +200,7 @@ class Nothing<T> implements IMaybe<T> {
 class MaybeT {
 
     static comp = (x: Maybe<number>) => (f: (a: number) => (b: number) => boolean) => (y: Maybe<number>) =>  {
-        return y.applyFmap(x.fmap(f)).unpackT(false)
+        return y.applyFmap(x.fmap(f)).fromMaybe(false)
     }
 
     static isNearest = (direction: Dir) => (x: Maybe<number>) => (y: Maybe<number>[]) => {
@@ -270,7 +270,7 @@ class MaybeT {
     }
 
     static toList<T>(val: Maybe<Array<T>>): T[] {
-        return val.unpackT([])
+        return val.fromMaybe([])
     }
 }
 

@@ -67,7 +67,7 @@ class ArethusaDiv {
         const regexp = XML.buildRegExp (genericTagRegExp) (tagName)
         return ArethusaDiv.textContent
             .fmap(Str.matches (regexp))
-            .unpackT([])
+            .fromMaybe([])
     }
 
     static get textContent() {

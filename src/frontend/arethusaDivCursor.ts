@@ -135,7 +135,7 @@ class AthDivCurs {
     static get currentXMLTagPosition() {
         return AthDivCurs
             .currentXMLTagType
-            .unpackT(XMLCursorTagPosition.unknown)
+            .fromMaybe(XMLCursorTagPosition.unknown)
     }
 
     static get currentTokenId() {
@@ -198,7 +198,7 @@ class AthDivCurs {
     // }
 
     static get currentXMLTagRange() {
-        const tagType = AthDivCurs.currentXMLTagType.unpackT(XMLCursorTagPosition.unknown)
+        const tagType = AthDivCurs.currentXMLTagType.fromMaybe(XMLCursorTagPosition.unknown)
         switch (tagType) {
             case (XMLCursorTagPosition.insideAtomicTag): {
                 const [leftAlias, rightAlias] = cursorTagPositionToAlias.insideAtomicTag
@@ -240,7 +240,7 @@ class AthDivCurs {
     static get currentXMLTagAsStr(): Maybe<string> {
         const cursorTagPosition = AthDivCurs
             .currentXMLTagType
-            .unpackT(XMLCursorTagPosition.unknown)
+            .fromMaybe(XMLCursorTagPosition.unknown)
 
         switch (cursorTagPosition) {
             case XMLCursorTagPosition.insideAtomicTag:
@@ -395,7 +395,7 @@ class AthDivCurs {
         const textNodes = ArethusaDiv
             .control
             .bind(XML.descendantTextNodes)
-            .unpackT([])
+            .fromMaybe([])
 
         return textNodes.reduce(
             (nodeInfo: IDivTextNodeInfo, textNode: Text) => {

@@ -62,7 +62,7 @@ class ViewState {
     }
 
     static sentencesSame = (s1: ViewState) => (s2: ViewState) => {
-        return s1.sentenceId.unpackT("") == s2.sentenceId.unpackT("")
+        return s1.sentenceId.fromMaybe("") == s2.sentenceId.fromMaybe("")
     }
 
     get isSentence () {

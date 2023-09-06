@@ -27,13 +27,13 @@ namespace DXML {
             .fmap(XML.toStr)
     }
 
-    export function wordsFromArray(component: WordType): (a: Node[]) => HasForm[] {
+    export function wordsFromArray(component: WordType): (a: Node[]) => HasText[] {
         return map(component.of)
     }
 
-    export function wordsFromXmlDoc(component: docComponentT, xmlDocOrNode: Maybe<XMLDocument | Node>): HasForm[] {
+    export function wordsFromXmlDoc(component: docComponentT, xmlDocOrNode: Maybe<XMLDocument | Node>): HasText[] {
         const nodes = XML.xpathMaybe(component.xpathAddress) (xmlDocOrNode)
         const components = nodes.fmap(DXML.wordsFromArray(component))
-        return components.unpack(new Array<HasForm>)
+        return components.unpack(new Array<HasText>)
     }
 }

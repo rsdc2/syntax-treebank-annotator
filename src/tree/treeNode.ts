@@ -38,7 +38,7 @@ namespace TreeNode {
         const nodeCopy = Obj.deepcopy(node)
         MaybeT.of(nodeCopy)
             .fmap(TreeNode.slashes)
-            .unpackT([])
+            .fromMaybe([])
             .splice(slashesIdx, 1, slash)
 
         return nodeCopy
@@ -146,12 +146,12 @@ namespace TreeNode {
             if (headTreeNode.isNothing) return acc;
     
             const link: ITreeLink = {
-                id: id.unpackT(""),
+                id: id.fromMaybe(""),
                 target: treeNode,
-                source: headTreeNode.unpackT(TreeNode.empty()),
+                source: headTreeNode.fromMaybe(TreeNode.empty()),
                 type: LinkType.Head,
                 relation: treeNode.relation,
-                headTreeNodeId: headId.unpackT(-1),
+                headTreeNodeId: headId.fromMaybe(-1),
                 depTreeNodeId: treeNode.treeNodeId 
             }
 

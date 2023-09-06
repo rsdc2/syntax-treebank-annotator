@@ -24,28 +24,26 @@ class Conversion {
     
         const docId = epidoc
             .bind(EpiDoc.filenameId)
-            .unpackT("")
+            .fromMaybe("")
 
         const tokens = epidoc
             .fmap(EpiDoc.getEditions)
-            .unpackT([])
-            .flatMap(HasTokensT.tokens)
+            .fromMaybe([])
+            .flatMap(Edition.getTokens)
 
-        const tokenStrings = tokens
-            .map( TEIToken.getNormalizedText )
-
-        const attrs = (strs, xmlids) => {
+        const attrs = tokens.map ( (token): IArethusaWord => {
+            return {
+                form: token.text.fromMaybe(""),
+                lemma: "",
+                postag: "",
+                relation: "",
+                head: "",
+                secdeps: "",
+                xmlid: XML.getAttrVal("http://www.tei-c.org/ns/1.0")("id")(token)
+            }
+        } 
             
-        }
-
-
-        const xmlids = ArrMaybe.of(tokens)
-            .bind(HasNodeT.element)
-            .filter(MaybeT.isSomething)
-            .fmap(DOM.Elem.attributes)
-            .bind(DOM.NamedNodeMap.getNamedItemNS("http://www.tei-c.org/ns/1.0")("id"))
-            .fmap(DOM.Attr.value)
-            .defaultT("")        
+        )
     
         // Create Arethusa from EpiDoc tokens
         const arethusa = ArethusaDoc
@@ -53,12 +51,8 @@ class Conversion {
             .bind(ArethusaDoc.setDocId(docId))
             .bind(ArethusaDoc.appendSentence)
             .bind(ArethusaDoc.lastSentence)
-            .bind(ArethusaSentence.appendWords(tokenStrings))
+            .bind(ArethusaSentence.appendWordAttrs(attrs))
             
-        arethusa.
-
-        
-    
         // Prettify Arethusa XML
         const arethusaXML = arethusa
             .fmap(DXML.node)
@@ -84,16 +78,16 @@ class Conversion {
     
         const docId = epidoc
             .bind(EpiDoc.filenameId)
-            .unpackT("")
+            .fromMaybe("")
 
         const tokens = epidoc
             .fmap(EpiDoc.getEditions)
-            .unpackT([])
-            .flatMap(HasTokensT.tokens)
-            .map(TEITokenFuncs.excludeTextNodesWithAncestors(["g", "orig", "am", "sic"]))  
+            .fromMaybe([])
+            .flatMap(Edition.getTokens)
+            .map(TextNode.excludeTextNodesWithAncestors(["g", "orig", "am", "sic"]))  
             .map( (tokenTextNodes: Text[]) => {
-                return tokenTextNodes.map( (textNode: Text) => TEITokenFuncs
-                    .textWithSuppliedInBrackets(textNode))
+                return tokenTextNodes.map( (textNode: Text) => TextNode
+                    .suppliedInBrackets(textNode))
                     .join("")
                     .replace("][", "")
                     .replace(",", "")

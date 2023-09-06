@@ -5,11 +5,24 @@ class TEIName implements TEIToken {
 
     constructor(node: Node) {
         this._node = node
-        this._element = DOM.Node_.element(node).unpackThrow()
+        this._element = DOM.Node_.element(node).fromMaybeThrow()
     }
 
-    static get xpathAddress(): string {
-        return Edition.xpathAddress + "[self::t:name]"
+    get attrs(): NamedNodeMap {
+        return DOM.Elem.attributes(this._element)
+    }
+
+    static getNormalizedText = (token: TEIToken) => {
+        return token.normalizedText
+    }
+
+    get normalizedText(): string {
+        return this.textNodes
+            .filter(TextNode.filterByNotAncestor(["g", "orig", "am", "sic"]))
+            .map( (textNode: Text) => TextNode.suppliedInBrackets(textNode) )
+            .join("")
+            .replace("][", "")
+            .replace(",", "")
     }
 
     static of(node: Node) {
@@ -19,4 +32,14 @@ class TEIName implements TEIToken {
     get text() {
         return MaybeT.of(this._node.textContent)
     }
+
+    get textNodes(): Text[] {
+        return XML.xpath("descendant::text()")(this._node)
+            .fromMaybe([]) as Text[]
+    }
+
+    static get xpathAddress(): string {
+        return Edition.xpathAddress + "[self::t:name]"
+    }
+
 }

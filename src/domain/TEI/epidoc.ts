@@ -37,7 +37,7 @@ class EpiDoc implements TEIEditionable, HasToken {
         return MaybeT.of(epidoc.node)
             .bind(XML.xpath (Edition.xpathAddress))
             .fmap(EpiDoc.editionsFromArray)
-            .unpackT([])
+            .fromMaybe([])
     }
 
     static filenameId = (epidoc: EpiDoc) => {
@@ -64,7 +64,7 @@ class EpiDoc implements TEIEditionable, HasToken {
         const xml = textStateIO
             .epidoc
             .fmap(EpiDoc.toXMLStr)
-            .unpackT("")
+            .fromMaybe("")
 
         if (xml.includes("parsererror")) {
             Frontend

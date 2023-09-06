@@ -75,11 +75,11 @@ class Div {
 
         const previousTextNodes = selection
             .fmap(Div.textNodesPriorToSelAnchorNodeByDivId (id))
-            .unpackT([])
+            .fromMaybe([])
 
         const anchorNodeOffset = selection
             .fmap(Sel.anchorOffset)
-            .unpackT(0)
+            .fromMaybe(0)
 
         const previousTextLength = previousTextNodes
             .reduce (
@@ -93,7 +93,7 @@ class Div {
         return MaybeT.of(sel)
             .bind( Sel.anchorNode )
             .fmap( XML.previousTextNodesWithAncestorByAncestorId ("div") ("id") (id) )
-            .unpackT([]) 
+            .fromMaybe([]) 
     }
 
     static selectionEndPosByDivId = (id: string) => {
@@ -102,11 +102,11 @@ class Div {
         const previousTextNodes = selection
             .bind(Sel.extentNode)
             .fmap(XML.previousTextNodesWithAncestorByAncestorId ("div") ("id") (id) )
-            .unpackT([]) 
+            .fromMaybe([]) 
 
         const extentNodeOffset = selection
             .fmap(Sel.extentOffset)
-            .unpackT(0)
+            .fromMaybe(0)
 
         const previousTextLength = previousTextNodes
             .reduce (

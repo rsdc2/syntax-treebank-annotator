@@ -58,7 +58,7 @@ class Arr {
             const reduceFunc = (acc: T[], array2Item: Maybe<T>) => {
                 return array2Item
                     .fmap(Arr.arrify)
-                    .unpackT([])
+                    .fromMaybe([])
                     .concat(acc)
                 } 
 
@@ -125,7 +125,7 @@ class Arr {
             return acc
         }, new Array<T>
         )) 
-        .unpackT(array)
+        .fromMaybe(array)
     }
 
     static removeNothingReduce = <T>(acc: T[], item: Maybe<T>) => {
@@ -172,7 +172,7 @@ class Arr {
             return Arr.push(newItem)(acc)
         }, new Array<T>
         )) 
-        .unpackT(array)
+        .fromMaybe(array)
     }
 
     static reverse = <T>(array: T[]) => {

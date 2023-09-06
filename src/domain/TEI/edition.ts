@@ -5,27 +5,34 @@ class Edition implements HasToken, HasNode {
 
     constructor(node: HasXMLNode) {
         this._node = node
-        this._element = DOM.Node_.element(node).unpackThrow()
+        this._element = DOM.Node_.element(node).fromMaybeThrow()
+    }
+
+    get attrs(): NamedNodeMap {
+        return DOM.Elem.attributes(this._element)
+    }
+
+    static getTokens = (edition: Edition) => {
+        return edition.tokens
     }
 
     get names(): TEIName[] {
-        return DXML.wordsFromXmlDoc(TEIName, MaybeT.of(this._node.ownerDocument))
-    }
-
-    get tokens(): TEIToken[] {
-        return DXML.wordsFromXmlDoc(TEIToken, MaybeT.of(this._node.ownerDocument))
+        return DXML.wordsFromXmlDoc(TEIName, MaybeT.of(this._node.ownerDocument)) as TEIName[]
     }
 
     static of(node: HasXMLNode) {
         return new Edition(node)
     }
 
-    static get xpathAddress(): string {
-        return ".//t:div[@type='edition']"
-    }
-
     get text() {
         return MaybeT.of(this._node.textContent)
     }
 
+    get tokens(): TEIToken[] {
+        return DXML.wordsFromXmlDoc(TEIToken, MaybeT.of(this._node.ownerDocument)) as TEIToken[]
+    }
+
+    static get xpathAddress(): string {
+        return ".//t:div[@type='edition']"
+    }
 }

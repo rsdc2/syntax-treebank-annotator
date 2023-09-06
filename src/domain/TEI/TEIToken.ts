@@ -1,11 +1,19 @@
 
-class TEIToken implements Word, HasForm {
+class TEIToken implements Word, HasText {
     _node: Node
     _element: Element
 
     constructor(node: Node) {
         this._node = node
-        this._element = DOM.Node_.element(node).unpackThrow()
+        this._element = DOM.Node_.element(node).fromMaybeThrow()
+    }
+
+    get attrs(): NamedNodeMap {
+        return DOM.Elem.attributes(this._element)
+    }
+
+    static getNormalizedText = (token: TEIToken) => {
+        return token.normalizedText
     }
 
     get normalizedText(): string {
@@ -17,9 +25,6 @@ class TEIToken implements Word, HasForm {
             .replace(",", "")
     }
 
-    static getNormalizedText = (token: TEIToken) => {
-        return token.normalizedText
-    }
 
     get text() {
         return MaybeT.of(this._node.textContent)
@@ -27,7 +32,7 @@ class TEIToken implements Word, HasForm {
 
     get textNodes(): Text[] {
         return XML.xpath("descendant::text()")(this._node)
-            .unpackT([]) as Text[]
+            .fromMaybe([]) as Text[]
     }
 
     static of(node: Node) {
@@ -48,7 +53,7 @@ namespace TEITokenFuncs {
      */
     export const textWithoutInterpuncts = (token: TEIToken): string => {
         const textArr = XML.xpath("descendant::text()[not(ancestor::t:g)]")(token._node)
-            .unpackT([])
+            .fromMaybe([])
             .map(XML.textContent)
             
         return Arr.removeNothings(textArr).join("")
@@ -89,14 +94,14 @@ namespace TextNode {
 
         return XML
             .xpath(xpathStr)(token._node)
-            .unpackT([]) as Text[]
+            .fromMaybe([]) as Text[]
     }
     
     export const suppliedInBrackets = (textNode: Text): string => {
         
     
         if (!XML.hasAncestor("supplied")(textNode)) {
-            return MaybeT.of(textNode.textContent).unpackT("")
+            return MaybeT.of(textNode.textContent).fromMaybe("")
         }
 
         const preceding = XML.precedingTextNodesWithAncestorByAncestorName("supplied")(textNode)

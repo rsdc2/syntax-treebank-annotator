@@ -5,7 +5,7 @@ class XMLFormatter {
         const _node = deepcopy ? XML.deepcopy(node.getRootNode()) : node.getRootNode()
 
         XML.descendantTextNodes(_node)
-            .unpackT([])
+            .fromMaybe([])
             .filter(XMLFormatter.notInXMLSpacePreserve)
             .map(XML.replaceText(/\s{2}/g) ("\t"))
             .map(XML.replaceText(/[\n\t]/g) (""))
@@ -52,7 +52,7 @@ class XMLFormatter {
                 maybeNode.applyBind(insertNewlineBefore)
                 maybeNode.applyBind(insertTabsBefore)
 
-                if (XML.nextSiblingElements(node2).unpackT([]).length === 0) {
+                if (XML.nextSiblingElements(node2).fromMaybe([]).length === 0) {
                     maybeNode.applyBind(insertTabsAfter)
                     maybeNode.applyBind(insertNewlineAfter)
                 }

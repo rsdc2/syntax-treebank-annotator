@@ -1,11 +1,11 @@
 
-class ArethusaSentence implements Word, HasToken, HasForm  {
+class ArethusaSentence implements Word, HasToken, HasText  {
     _node: Node
     _element: Element
 
     constructor(node: Node) {
         this._node = node
-        this._element = DOM.Node_.element(node).unpackThrow()
+        this._element = DOM.Node_.element(node).fromMaybeThrow()
     }
 
     static appendArtificialToSentenceFromAttrs = 
@@ -17,7 +17,7 @@ class ArethusaSentence implements Word, HasToken, HasForm  {
         const nextId = {
             "id": arethusa
                 .fmap(ArethusaDoc.nextTokenId)
-                .unpackT("")
+                .fromMaybe("")
         }
         const createWordElement = XML
             .createElement("word")({...nextId, ...attrs})
@@ -40,6 +40,9 @@ class ArethusaSentence implements Word, HasToken, HasForm  {
             .bind(ArethusaDoc.fromNode) 
     }
 
+    get attrs(): NamedNodeMap {
+        return DOM.Elem.attributes(this._element)
+    }
 
     static appendWordToSentenceFromAttrs = 
         (attrs: IArethusaWord) => 
@@ -50,7 +53,7 @@ class ArethusaSentence implements Word, HasToken, HasForm  {
         const nextId = {
             "id": arethusa
                 .fmap(ArethusaDoc.nextTokenId)
-                .unpackT("")
+                .fromMaybe("")
         }
 
         // Remove newlines from form
@@ -114,7 +117,7 @@ class ArethusaSentence implements Word, HasToken, HasForm  {
         return MaybeT.of (
             MaybeT.of (sentence)
                 .fmap(ArethusaSentence.tokens)
-                .unpackT([])
+                .fromMaybe([])
                 .find(ArethusaWord.matchId(tokenId))
         )
     }
@@ -132,7 +135,7 @@ class ArethusaSentence implements Word, HasToken, HasForm  {
             .fmap(DXML.node)
             .fmap(XML.childNodes)
             .fmap(ArethusaSentence.arethusaTokensFromNodes)
-            .unpackT([])
+            .fromMaybe([])
     }
 
     static arethusaTokensFromNodes = 
@@ -142,6 +145,8 @@ class ArethusaSentence implements Word, HasToken, HasForm  {
             .filter( (node:Node) => node.nodeName === "word" ) 
             .map(ArethusaToken.fromXMLNode)
     }
+
+
 
     static prependArtificial = 
         (artificial: ArethusaArtificial) => 
@@ -172,6 +177,27 @@ class ArethusaSentence implements Word, HasToken, HasForm  {
             .bind(XML.documentElement)
             .bind(ArethusaDoc.fromNode)
     }
+
+    static appendWordAttrs = 
+        (attrs: Array<IArethusaWord>) => 
+        (s: ArethusaSentence): Maybe<ArethusaDoc> => 
+    {    
+        function _reduce (a: Maybe<ArethusaDoc>, wordAttrs: IArethusaWord) {
+            const getSent = ArethusaSentence
+                .id(s)
+                .fmap(ArethusaDoc.sentenceById)
+
+            const appendWord = MaybeT.of(wordAttrs)
+                .fmap(ArethusaSentence.appendWordToSentenceFromAttrs)
+                                    
+            return a
+                .applyBind(getSent)
+                .applyBind(appendWord)
+        }
+
+        return attrs.reduce(_reduce, s.arethusa)
+    }
+
 
     /**
      * Only used in conversion from EpiDoc, 
@@ -238,7 +264,7 @@ class ArethusaSentence implements Word, HasToken, HasForm  {
         return MaybeT.of (ArethusaDoc
             .sentenceById (sentenceId) (a)
             .fmap(ArethusaSentence.tokens)
-            .unpackT([])
+            .fromMaybe([])
             .find(ArethusaWord.matchId(tokenId))
         )
     }
@@ -251,11 +277,11 @@ class ArethusaSentence implements Word, HasToken, HasForm  {
         return this.doc.fmap(XML.deepcopy)
     }
 
-    static firstToken(sentence: ArethusaSentence): Maybe<HasForm> {
+    static firstToken(sentence: ArethusaSentence): Maybe<ArethusaToken> {
         return Arr.head (sentence.tokensProp)
     }
 
-    static firstWord(sentence: ArethusaSentence): Maybe<HasForm> {
+    static firstWord(sentence: ArethusaSentence): Maybe<ArethusaWord> {
         return Arr.head (sentence.tokens)
     }
 
@@ -273,7 +299,7 @@ class ArethusaSentence implements Word, HasToken, HasForm  {
             .fmap(ArethusaSentence.fromXMLNode)
     }
 
-    static lastToken = (sentence: ArethusaSentence): Maybe<HasForm> => {
+    static lastToken = (sentence: ArethusaSentence): Maybe<HasText> => {
         return MaybeT.of(sentence)
             .fmap(ArethusaSentence.tokens)
             .bind(Arr.last)
@@ -320,7 +346,7 @@ class ArethusaSentence implements Word, HasToken, HasForm  {
 
         const wordElems = MaybeT.of(str)
             .fmapErr("Error with string.", Str.split(/[\s\t\n]/g))
-            .unpackT([])
+            .fromMaybe([])
             .map(Str.strip)
             .map(ArethusaWord.createAttrs)
             .map(createWord)
@@ -422,7 +448,7 @@ class ArethusaSentence implements Word, HasToken, HasForm  {
             .tokenById(startTokenId) (s)
             .fmap(DXML.node)
             .bind(XML.nextSiblingElements)
-            .unpackT([])
+            .fromMaybe([])
             .map(ArethusaWord.fromXMLNode)
             .map(ArethusaWord.id)
             .filter( (item: Maybe<string>) => item.isSomething ) 
@@ -505,7 +531,7 @@ class ArethusaSentence implements Word, HasToken, HasForm  {
     static treeTokens = (sentence: ArethusaSentence) => {
         return MaybeT.of(sentence)
             .fmap(ArethusaSentence.tokens)
-            .unpackT([])
+            .fromMaybe([])
             .map(ArethusaToken.toTreeToken)
     }
 
@@ -517,7 +543,7 @@ class ArethusaSentence implements Word, HasToken, HasForm  {
         return MaybeT.of (ArethusaDoc
             .sentenceById (sentenceId) (a)
             .fmap(ArethusaSentence.words)
-            .unpackT([])
+            .fromMaybe([])
             .find(ArethusaWord.matchId(wordId))
         )
     }
@@ -529,7 +555,7 @@ class ArethusaSentence implements Word, HasToken, HasForm  {
         return MaybeT.of (
             MaybeT.of (sentence)
                 .fmap(ArethusaSentence.words)
-                .unpackT([])
+                .fromMaybe([])
                 .find(ArethusaWord.matchId(wordId))
         )
     }
@@ -547,7 +573,7 @@ class ArethusaSentence implements Word, HasToken, HasForm  {
             .fmap(DXML.node)
             .fmap(XML.childNodes)
             .fmap(ArethusaSentence.wordsFromNodes)
-            .unpackT([])
+            .fromMaybe([])
     }
 
     static wordsAsStr = (s: ArethusaSentence): string => {

@@ -9,6 +9,7 @@ interface IArethusaToken {
 interface IArethusaWord extends IArethusaToken{
     lemma: string,
     postag: string,
+    xmlid?: string
 }
 
 interface IArtificial extends IArethusaToken {
