@@ -31,7 +31,7 @@ npx tsc
 
 ## Relationship to other annotators
 
-My annotator is designed to be compatible with 
+The annotator is designed to be compatible with 
 [Arethusa](https://www.perseids.org/tools/arethusa/app/#/), 
 currently the annotator of choice for those working 
 on ancient Greek and Latin texts.
