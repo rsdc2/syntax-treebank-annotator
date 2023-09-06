@@ -62,7 +62,7 @@ or you can make up your own.
 
 
 ### Secondary dependencies
-AGDLT does not allow for the annotation of secondary dependencies.
+AGLDT does not allow for the annotation of secondary dependencies.
 However, this is possible both in 
 [PROIEL](http://dev.syntacticus.org/annotation-guide/#introduction) dependencies and in
 [Universal Dependencies](https://universaldependencies.org/u/overview/enhanced-syntax.html).
