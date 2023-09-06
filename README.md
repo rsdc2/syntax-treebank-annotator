@@ -55,7 +55,7 @@ e.g. collaboration.
 There are several depdency grammars out there.
 Arethusa is designed for use with the
 [Ancient Greek and Latin dependency Treebank (AGLDT)](http://perseusdl.github.io/treebank_data/).
-My annotator is agnostic as to
+The annotator is agnostic as to
 dependency grammar: 
 you are free to use whichever schema you wish (e.g. PROIEL, Universal Dependencies)
 or you can make up your own.
@@ -76,7 +76,7 @@ Accordingly, you may wish to make use of this.
 ### Only syntax
 Arethusa allows you to annotate morphology as well
 as syntax. 
-Currently my annotator only allows for the annotation 
+Currently the annotator only allows for the annotation 
 of syntax 
 (although it should preserve any morphology annotation).
 
