@@ -9,10 +9,10 @@ namespace Graph {
     const alphaTarget = 0.5
     const simDurationMs = 1500; 
     const linkDistance = 60;
-    const linkStrength = 0.3;
-    const xStrength = 0.1; // x-positioning force; the greater this value, the narrower the tree: 
-    const yStrength = 0.25; // y-positioning force; proportional to the distance from the root; if this is zero then nodes spread up and down from root; if positive down from the root
-    const collisionStrength = 0.1;
+    const linkStrength = 0.7;
+    const xStrength = 0.17; // x-positioning force; the greater this value, the narrower the tree: 
+    const yStrength = 0.3; // y-positioning force; proportional to the distance from the root; if this is zero then nodes spread up and down from root; if positive down from the root
+    const collisionStrength = 0.05;
     const manyBodyStrength = -600;
     const xMult = 20;
     const yMult = 50;

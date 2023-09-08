@@ -1,18 +1,21 @@
-// For the approach of adopting a downward graph to represent the syntax tree
-// cf. https://stackoverflow.com/questions/21529242/d3-force-directed-graph-downward-force-simulation/21537377 @VividD
+// The approach of using force directed graph to generate a tree was inspired by
+// https://stackoverflow.com/questions/21529242/d3-force-directed-graph-downward-force-simulation/21537377 @VividD
+// The latter uses d3 v. 3; here d3 v. 7 is used
 var Graph;
 (function (Graph) {
     let container, start, end;
     const alphaTarget = 0.5;
     const simDurationMs = 1500;
     const linkDistance = 60;
-    const linkStrength = 0.3;
-    const xStrength = 0.1; // the stronger this is, the narrow the tree on the x-axis
-    const yStrength = 0.25; // y-axis force: postive = down, negative = up
-    const collisionStrength = 0.1;
+    const linkStrength = 0.7;
+    const xStrength = 0.17; // x-positioning force; the greater this value, the narrower the tree: 
+    const yStrength = 0.3; // y-positioning force; proportional to the distance from the root; if this is zero then nodes spread up and down from root; if positive down from the root
+    const collisionStrength = 0.05;
     const manyBodyStrength = -600;
     const xMult = 20;
     const yMult = 50;
+    const centerForceX = 300;
+    const centerForceY = 300;
     Graph.circles = () => {
         const circles = document.querySelectorAll("circle");
         const circleArr = new Array();
@@ -302,12 +305,14 @@ var Graph;
     function setForces(nodes, links) {
         globalState.simulation
             .force('charge', d3.forceManyBody().strength(manyBodyStrength))
-            .force('center', d3.forceCenter(300, 300))
+            .force('center', d3.forceCenter(centerForceX, centerForceY))
             .force('link', d3.forceLink()
             .links(links)
             .distance(linkDistance)
             .strength(linkStrength))
             .force('x', d3.forceX().x((d) => {
+            // Each node is attributed a positioning force centered on a different coordinate 
+            // according to its id
             // switch (treebank.direction) {
             //     case (TextDir.LTR): {
             //         return d.treeNodeId * xMult;
@@ -322,6 +327,8 @@ var Graph;
         })
             .strength(xStrength))
             .force('y', d3.forceY().y(function (d) {
+            // Each node is centred ona different y coordinate according to 
+            // its distance from the root
             return d.distToRoot * yMult;
         })
             .strength(yStrength))
