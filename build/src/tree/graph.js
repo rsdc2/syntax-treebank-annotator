@@ -7,8 +7,8 @@ var Graph;
     const simDurationMs = 1500;
     const linkDistance = 60;
     const linkStrength = 0.3;
-    const xStrength = 0.25;
-    const yStrength = 0.25;
+    const xStrength = 0.1; // the stronger this is, the narrow the tree on the x-axis
+    const yStrength = 0.25; // y-axis force: postive = down, negative = up
     const collisionStrength = 0.1;
     const manyBodyStrength = -600;
     const xMult = 20;
