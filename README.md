@@ -31,7 +31,7 @@ npx tsc
 
 ## Relationship to other annotators
 
-My annotator is designed to be compatible with 
+The annotator is designed to be compatible with 
 [Arethusa](https://www.perseids.org/tools/arethusa/app/#/), 
 currently the annotator of choice for those working 
 on ancient Greek and Latin texts.
@@ -55,14 +55,14 @@ e.g. collaboration.
 There are several depdency grammars out there.
 Arethusa is designed for use with the
 [Ancient Greek and Latin dependency Treebank (AGLDT)](http://perseusdl.github.io/treebank_data/).
-My annotator is agnostic as to
+The annotator is agnostic as to
 dependency grammar: 
 you are free to use whichever schema you wish (e.g. PROIEL, Universal Dependencies)
 or you can make up your own.
 
 
 ### Secondary dependencies
-AGDLT does not allow for the annotation of secondary dependencies.
+AGLDT does not allow for the annotation of secondary dependencies.
 However, this is possible both in 
 [PROIEL](http://dev.syntacticus.org/annotation-guide/#introduction) dependencies and in
 [Universal Dependencies](https://universaldependencies.org/u/overview/enhanced-syntax.html).
@@ -76,7 +76,7 @@ Accordingly, you may wish to make use of this.
 ### Only syntax
 Arethusa allows you to annotate morphology as well
 as syntax. 
-Currently my annotator only allows for the annotation 
+Currently the annotator only allows for the annotation 
 of syntax 
 (although it should preserve any morphology annotation).
 
