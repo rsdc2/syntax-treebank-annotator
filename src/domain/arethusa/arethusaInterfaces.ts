@@ -4,7 +4,7 @@ interface IArethusaToken {
     relation: string,
     head: string,
     secdeps: string
-    xmlid?: string
+    corpusId?: string
 }
 
 interface IArethusaWord extends IArethusaToken{

@@ -31,9 +31,9 @@ interface HasText extends HasNode, HasElement {
     text: Maybe<string>
 }
 
-interface HasXMLId extends HasNode {
-    xmlid: Maybe<string>
-}
+// interface HasXMLId extends HasNode {
+//     xmlid: Maybe<string>
+// }
 
 interface HasToken extends HasText {
     tokens: HasText[]

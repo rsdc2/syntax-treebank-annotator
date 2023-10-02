@@ -12,8 +12,8 @@ class ArethusaWord {
     get text() {
         return MaybeT.of(this._node.textContent);
     }
-    get xmlid() {
-        return MaybeT.of(this._element.getAttribute("xmlid")).fromMaybe("");
+    get corpusId() {
+        return MaybeT.of(this._element.getAttribute("corpusId")).fromMaybe("");
     }
     static get xpathAddress() {
         return "./treebank/sentence/word";
@@ -119,6 +119,6 @@ ArethusaWord.toTreeToken = (w) => {
             .id(w).eq("0") ?
             TreeTokenType.Root :
             TreeTokenType.NonRoot,
-        xmlid: w.xmlid
+        corpusId: w.corpusId
     };
 };

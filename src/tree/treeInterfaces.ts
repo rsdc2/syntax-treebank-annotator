@@ -16,7 +16,7 @@ interface ITreeWord {
     secondaryDeps: ISecondaryDep[]
     lemma: string,
     postag: string,
-    xmlid?: string
+    corpusId?: string
 }
 
 interface ITreeArtificial {
@@ -28,7 +28,7 @@ interface ITreeArtificial {
     secondaryDeps: ISecondaryDep[]
     insertionId: string,
     artificial: string,
-    xmlid?: string
+    corpusId?: string
 }
 
 type ITreeToken = ITreeWord | ITreeArtificial
@@ -51,7 +51,7 @@ interface ITreeNode extends d3.SimulationNodeDatum {
     insertionId: string,
     artificialType: ArtificialType,
     radius?: number | undefined;
-    xmlid?: string,
+    corpusId?: string,
 }
 
 

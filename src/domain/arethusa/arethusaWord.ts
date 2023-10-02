@@ -141,12 +141,12 @@ class ArethusaWord implements HasText {
                 .id(w).eq("0") ? 
                     TreeTokenType.Root : 
                     TreeTokenType.NonRoot,
-            xmlid: w.xmlid
+            corpusId: w.corpusId
         }
     }
 
-    get xmlid(): string {
-        return MaybeT.of(this._element.getAttribute("xmlid")).fromMaybe("")
+    get corpusId(): string {
+        return MaybeT.of(this._element.getAttribute("corpusId")).fromMaybe("")
     }
 
     static get xpathAddress(): string {

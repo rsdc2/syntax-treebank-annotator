@@ -19,8 +19,8 @@ class ArethusaArtificial {
     get text() {
         return MaybeT.of(this._node.textContent);
     }
-    get xmlid() {
-        return MaybeT.of(this._element.getAttribute("xmlid")).fromMaybe("");
+    get corpusId() {
+        return MaybeT.of(this._element.getAttribute("corpusId")).fromMaybe("");
     }
     static get xpathAddress() {
         return './treebank/sentence/word[@lemma]';
@@ -41,8 +41,7 @@ ArethusaArtificial.createAttrs = (form) => {
         "insertion_id": "",
         "relation": "",
         "head": "",
-        "secdeps": "",
-        // "xmlid": ""
+        "secdeps": ""
     };
 };
 ArethusaArtificial.matchId = (id) => (word) => {
@@ -114,6 +113,6 @@ ArethusaArtificial.toTreeToken = (w) => {
             .id(w).eq("0") ?
             TreeTokenType.Root :
             TreeTokenType.NonRoot,
-        xmlid: w.xmlid
+        corpusId: w.corpusId
     };
 };
