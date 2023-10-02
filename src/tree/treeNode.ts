@@ -322,10 +322,24 @@ namespace TreeNode {
 
     export const toArethusaWordXMLStr = (node: ITreeNode):string => {
         if (node.artificialType == ArtificialType.Elliptic) {
-            return `<word id="${node.arethusaTokenId}" form="${node.name}" artificial="${node.artificialType}" insertion_id="${node.insertionId}" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}" corpusId="${node.corpusId === undefined ? "" : node.corpusId}"/>`
+            return `<word id="${node.arethusaTokenId}" 
+                    form="${node.name}" 
+                    artificial="${node.artificialType}" 
+                    insertion_id="${node.insertionId}" 
+                    relation="${node.relation}" 
+                    head="${node.headTokenId}" 
+                    secdeps="${TreeNode.slashesToStr(node)}"
+                    "${node.corpusId === undefined ? "" : " corpusId=" + node.corpusId}"/>`
         }
 
-        return `<word id="${node.arethusaTokenId}" form="${node.name}" lemma="${node.lemma}" postag="${node.postag}" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}" corpusId="${node.corpusId === undefined ? "" : node.corpusId}"/>`
+        return `<word id="${node.arethusaTokenId}" 
+                form="${node.name}" 
+                lemma="${node.lemma}" 
+                postag="${node.postag}" 
+                relation="${node.relation}" 
+                head="${node.headTokenId}" 
+                secdeps="${TreeNode.slashesToStr(node)}"
+                "${node.corpusId === undefined ? "" : 'corpusId=' + node.corpusId}"/>`
     }
 
     export const toXMLNode = (node: ITreeNode) => {
