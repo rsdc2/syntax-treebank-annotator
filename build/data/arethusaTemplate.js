@@ -1,10 +1,10 @@
 const arethusaTemplate = `<?xml version="1.0" encoding="UTF-8"?>
-<treebank xml:lang="">
+<treebank xml:lang="" format="aldt">
     <annotator name="" address="" role="" date="" layer=""/>
     <document_meta/>
 </treebank>`;
 const arethusaUglifiedExample = `<?xml version="1.0" encoding="UTF-8"?>
-<treebank xml:lang="la">
+<treebank xml:lang="la" format="aldt">
 <annotator name="" address="" role="" date="" layer=""/>
 <sentence id="1" document_id="ISic000001">	<word id="1" form="Dis" lemma="" postag="" relation="" head=""/>
 <word id="2" form="manibus" lemma="" postag="" relation="" head=""/>
