@@ -24,20 +24,27 @@ class Conversion {
     
         const docId = epidoc
             .bind(EpiDoc.filenameId)
-            .unpackT("")
+            .fromMaybe("")
 
         const tokens = epidoc
             .fmap(EpiDoc.getEditions)
-            .unpackT([])
-            .flatMap(TokenableT.tokens)
-            .map(TEITokenFuncs.excludeTextNodesWithAncestors(["g", "orig", "am", "sic"]))  
-            .map( (tokenTextNodes: Text[]) => {
-                return tokenTextNodes.map( (textNode: Text) => TEITokenFuncs
-                    .textWithSuppliedInBrackets(textNode))
-                    .join("")
-                    .replace("][", "")
-                    .replace(",", "")
-            } )
+            .fromMaybe([])
+            .flatMap(Edition.getTokens)
+
+        const attrs = tokens.map ( (token): IArethusaWord => {
+            const attr = {
+                form: token.text.fromMaybe(""),
+                lemma: "",
+                postag: "",
+                relation: "",
+                head: "",
+                secdeps: "",
+                corpusId: XML.getAttrVal("http://www.w3.org/XML/1998/namespace")("id")(token).fromMaybe("")
+            }
+            return attr
+        } 
+            
+        )
     
         // Create Arethusa from EpiDoc tokens
         const arethusa = ArethusaDoc
@@ -45,9 +52,8 @@ class Conversion {
             .bind(ArethusaDoc.setDocId(docId))
             .bind(ArethusaDoc.appendSentence)
             .bind(ArethusaDoc.lastSentence)
-            // .bind(ArethusaSentence.appendMaybeWords(words))
-            .bind(ArethusaSentence.appendWords(tokens))
-    
+            .bind(ArethusaSentence.appendWordAttrs(attrs))
+            
         // Prettify Arethusa XML
         const arethusaXML = arethusa
             .fmap(DXML.node)
@@ -58,4 +64,5 @@ class Conversion {
     
         return arethusaXML
     }
+
 }

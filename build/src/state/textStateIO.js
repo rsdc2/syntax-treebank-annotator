@@ -15,7 +15,7 @@ class TextStateIO {
                 }
             }
             const maybeNS = MaybeT.of(newState);
-            if (!maybeNS.fmap(TextState.hasNothing).unpackT(true)) {
+            if (!maybeNS.fmap(TextState.hasNothing).fromMaybe(true)) {
                 maybeNS.fmap(this.push);
                 // console.log('Has TS')
                 this.currentStateIdx = this.lastStateIdx;
@@ -102,7 +102,7 @@ class TextStateIO {
                 .fmap(Arr.slice(0));
             this._textStates = MaybeT.of(this._textStates)
                 .applyFmap(getSlice)
-                .unpackT([]);
+                .fromMaybe([]);
         };
         this.removeSentence = () => {
             TextStateIO.removeSentence(this);
@@ -155,7 +155,7 @@ class TextStateIO {
             }
             // Set the viewbox
             this.sentenceViewState
-                .fmap(SentenceViewState.updateSVGViewBox(this.currentSentenceId.unpackT("")));
+                .fmap(SentenceViewState.updateSVGViewBox(this.currentSentenceId.fromMaybe("")));
         };
         this.undo = () => {
             TextStateIO.undo(this);
@@ -227,7 +227,7 @@ class TextStateIO {
         switch (this
             .viewState
             .fmap(ViewState.viewType)
-            .unpackT(ViewType.Unknown)) {
+            .fromMaybe(ViewType.Unknown)) {
             case (ViewType.Word): {
                 const getWord = this
                     .currentTokenId
@@ -296,7 +296,7 @@ class TextStateIO {
         const sentences = this
             .outputArethusaP
             .fmap(ArethusaDoc.sentences)
-            .unpackT([]);
+            .fromMaybe([]);
         const sentenceStrs = sentences
             .map((s) => {
             const words = ArethusaSentence
@@ -377,7 +377,7 @@ TextStateIO.outputArethusaSentenceIds = (tsio) => {
     const sentenceIds = tsio
         .outputArethusaP
         .fmap(ArethusaDoc.sentences)
-        .unpackT([])
+        .fromMaybe([])
         .map(ArethusaSentence.id);
     const sentenceIdsNoNothings = Arr
         .removeNothings(sentenceIds);
@@ -403,7 +403,7 @@ TextStateIO.changeView = (wordId) => (sentenceId) => (s) => {
     s.show(false);
 };
 TextStateIO.currentState = (s) => {
-    return MaybeT.of(s.states[s.currentStateIdx.unpackT(-1)]);
+    return MaybeT.of(s.states[s.currentStateIdx.fromMaybe(-1)]);
 };
 TextStateIO.currentSentence = (textStateIO) => {
     const getSent = textStateIO
@@ -415,7 +415,7 @@ TextStateIO.currentSentence = (textStateIO) => {
     return sent;
 };
 TextStateIO.setCurrentSentenceViewBoxStr = (vb) => (tsio) => {
-    const sentId = tsio.currentSentenceId.unpackT("1");
+    const sentId = tsio.currentSentenceId.fromMaybe("1");
     const setViewBox = SentenceViewState
         .setViewBoxBySentenceId(sentId)(vb);
     const x = tsio.currentState
@@ -555,7 +555,7 @@ TextStateIO.initSentenceViewState = (tsio) => {
     const ts = TextStateIO.currentState(tsio);
     const sentenceIds = ts
         .fmap(TextState.outputArethusaSentenceIds)
-        .unpackT([]);
+        .fromMaybe([]);
     // console.log("calling new sentence view state")
     if (ts.bind(TextState.sentenceVS).isNothing) {
         if (sentenceIds.length > 0) {

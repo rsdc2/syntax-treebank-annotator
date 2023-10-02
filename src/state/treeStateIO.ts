@@ -362,7 +362,7 @@ class TreeStateIO {
         const newViewBoxStr = Graph
             .svg()
             .bind(SVG.ViewBox.getViewBoxStr)
-            .unpackT("")
+            .fromMaybe("")
 
         const x = globalState
             .textStateIO
@@ -510,14 +510,9 @@ class TreeStateIO {
         state.replace(newSentState, update, idx)
     }
 
-
-
-
-
     get slashes() {
         return this.currentTreeState.slashes
     }
-
 
     undo = () => {
         TreeStateIO.undo(this)

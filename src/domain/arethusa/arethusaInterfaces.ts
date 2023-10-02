@@ -4,6 +4,7 @@ interface IArethusaToken {
     relation: string,
     head: string,
     secdeps: string
+    corpusId?: string
 }
 
 interface IArethusaWord extends IArethusaToken{
@@ -13,9 +14,9 @@ interface IArethusaWord extends IArethusaToken{
 
 interface IArtificial extends IArethusaToken {
     artificial: string,
-    insertion_id: string
+    insertion_id: string,
 }
 
-interface ArethusaSentenceable extends Nodeable {
-    sentences: Tokenable[]
+interface ArethusaSentenceable extends HasNode {
+    sentences: HasToken[]
 }

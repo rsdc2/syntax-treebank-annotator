@@ -1,11 +1,15 @@
 class ArethusaDoc {
     constructor(node) {
         this._node = node;
+        this._element = this._element = DOM.Node_.element(node).fromMaybeThrow();
     }
     static appendEmptyWord(a) {
         return ArethusaDoc
             .lastSentence(a)
             .bind(ArethusaSentence.appendWordToSentenceFromAttrs(ArethusaWord.createAttrs("---")));
+    }
+    get attrs() {
+        return this._element.attributes;
     }
     get doc() {
         if (XML.isDocument(this.node)) {
@@ -107,7 +111,7 @@ ArethusaDoc.appendSentenceFromPlainTextStr = (s) => (a) => {
         .bind(ArethusaDoc.lastSentence);
     const words = MaybeT.of(s)
         .fmapErr("Error with string.", Str.split(" "))
-        .unpackT([])
+        .fromMaybe([])
         .map(Str.strip);
     return sentence.bind(ArethusaSentence.appendWords(words));
 };
@@ -182,7 +186,7 @@ ArethusaDoc.fromPlainTextStr = (plainText) => {
     }
     const sentenceStrs = MaybeT.of(plainText)
         .fmapErr("Error in plainText input.", Str.split(/[\.\?\;\:]/g))
-        .unpackT([])
+        .fromMaybe([])
         .map(Str.replace(/\,/g)(""))
         .map(Str.strip);
     const sentenceElems = Arr
@@ -335,7 +339,7 @@ ArethusaDoc.nextSentenceIds = (startSentenceId) => (a) => {
         .sentenceById(startSentenceId)(a)
         .fmap(DXML.node)
         .bind(XML.nextSiblingElements)
-        .unpackT([])
+        .fromMaybe([])
         .map(ArethusaSentence.fromXMLNode)
         .map(ArethusaSentence.id)
         .filter((item) => item.isSomething)
@@ -364,7 +368,7 @@ ArethusaDoc.removeSentences = (a) => {
     let doc = ArethusaDoc.deepcopy(a);
     const ids = doc
         .fmap(ArethusaDoc.sentences)
-        .unpackT([])
+        .fromMaybe([])
         .map(ArethusaSentence.id);
     const newIds = Arr.removeNothings(ids);
     newIds.forEach((id) => {
@@ -381,7 +385,7 @@ ArethusaDoc.reorderSentenceIds = (a) => {
     const maybeSentences = MaybeT.of(a)
         .bind(ArethusaDoc.deepcopy)
         .fmap(ArethusaDoc.sentences)
-        .unpackT([])
+        .fromMaybe([])
         .map((s, idx) => MaybeT.of(DXML.node(s))
         .fmap(XML.setId(Str.fromNum(idx + 1)))
         .fmap(ArethusaSentence.fromXMLNode));
@@ -395,7 +399,7 @@ ArethusaDoc.reorderTokenIds = (a) => {
     const maybeWords = MaybeT.of(a)
         .bindErr("No Arethusa.", ArethusaDoc.deepcopy)
         .fmapErr("No words in Arethusa.", ArethusaDoc.tokens)
-        .unpackT([])
+        .fromMaybe([])
         .map((w, idx) => MaybeT.ofThrow("Could not create Maybe<Word>.", DXML.node(w))
         .fmapErr("Could not make word node.", XML.setId(Str.fromNum(idx + 1)))
         .fmapErr("Could not set ID.", ArethusaToken.fromXMLNode));
@@ -413,14 +417,14 @@ ArethusaDoc.replaceSentence = (a) => (newSentence) => {
     const sentenceNodes = ArethusaDoc
         .deepcopy(a)
         .fmap(ArethusaDoc.sentences)
-        .unpackT([])
+        .fromMaybe([])
         .map(DXML.node);
     // Replace the sentence
     const newSentences = ArethusaSentence
         .id(newSentence)
         .fmap(flip(ArethusaDoc.sentenceNodeIdxById)(a))
         .fmap(Arr.replaceByIdx(sentenceNodes)(newSentenceXML))
-        .unpackT([])
+        .fromMaybe([])
         .map(ArethusaSentence.fromXMLNode);
     const newdoc = ArethusaDoc.removeSentences(a);
     return newdoc.bind(ArethusaDoc.appendSentences(newSentences));
@@ -430,7 +434,7 @@ ArethusaDoc.sentences = (a) => {
     return MaybeT.of(a)
         .fmap(DXML.node)
         .bind(getSentences)
-        .unpackT([])
+        .fromMaybe([])
         .map(ArethusaSentence.fromXMLNode);
 };
 ArethusaDoc.sentenceById = (id) => (a) => {
@@ -448,7 +452,7 @@ ArethusaDoc.sentenceNodeById = (id) => (a) => {
 ArethusaDoc.sentenceNodeIdxById = (id) => (a) => {
     return MaybeT.of(a)
         .fmap(ArethusaDoc.sentences)
-        .unpackT([])
+        .fromMaybe([])
         .map(DXML.node)
         .findIndex((node) => {
         return XML.attrVal("id")(node).eq(id);
@@ -489,7 +493,7 @@ ArethusaDoc.splitSentenceAt = (startTokenId) => (a) => {
     const nextTokenIds = ArethusaDoc
         .sentenceByTokenId(startTokenId)(a)
         .fmap(ArethusaSentence.nextTokenIds(startTokenId))
-        .unpackT([]);
+        .fromMaybe([]);
     const insertSentence = MaybeT.of(a)
         .bind(ArethusaDoc.sentenceIdByTokenId(startTokenId))
         .fmap(ArethusaDoc.insertSentenceAfter);

@@ -49,5 +49,5 @@ ArethusaDiv.tagsByNameAndType = (genericTagRegExp) => (tagName) => {
     const regexp = XML.buildRegExp(genericTagRegExp)(tagName);
     return ArethusaDiv.textContent
         .fmap(Str.matches(regexp))
-        .unpackT([]);
+        .fromMaybe([]);
 };

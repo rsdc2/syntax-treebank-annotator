@@ -60,7 +60,7 @@ Str.matches = (pattern) => (s) => {
     const push = flip(Arr.push);
     while (pattern.lastIndex > 0) {
         let match = MaybeT.of(result).fmap(RegexMatchT.of);
-        acc = match.fmap(push(acc)).unpackT([]);
+        acc = match.fmap(push(acc)).fromMaybe([]);
         result = pattern.exec(s);
     }
     return acc;

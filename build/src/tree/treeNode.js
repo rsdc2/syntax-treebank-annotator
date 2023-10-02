@@ -19,7 +19,7 @@ var TreeNode;
         const nodeCopy = Obj.deepcopy(node);
         MaybeT.of(nodeCopy)
             .fmap(TreeNode.slashes)
-            .unpackT([])
+            .fromMaybe([])
             .splice(slashesIdx, 1, slash);
         return nodeCopy;
     };
@@ -36,7 +36,8 @@ var TreeNode;
             postag: "",
             insertionId: "",
             type: NodeType.None,
-            artificialType: ArtificialType.None
+            artificialType: ArtificialType.None,
+            corpusId: ""
         };
     };
     TreeNode.headTreeNodeId = (sentState) => (treeNode) => {
@@ -94,12 +95,12 @@ var TreeNode;
             if (headTreeNode.isNothing)
                 return acc;
             const link = {
-                id: id.unpackT(""),
+                id: id.fromMaybe(""),
                 target: treeNode,
-                source: headTreeNode.unpackT(TreeNode.empty()),
+                source: headTreeNode.fromMaybe(TreeNode.empty()),
                 type: LinkType.Head,
                 relation: treeNode.relation,
-                headTreeNodeId: headId.unpackT(-1),
+                headTreeNodeId: headId.fromMaybe(-1),
                 depTreeNodeId: treeNode.treeNodeId
             };
             return Arr.push(link)(acc);
@@ -182,7 +183,8 @@ var TreeNode;
             type: token.type === TreeTokenType.Root ?
                 NodeType.Root :
                 NodeType.NonRoot,
-            artificialType: TreeToken.artificialType(token)
+            artificialType: TreeToken.artificialType(token),
+            corpusId: token.corpusId
         };
         return node;
     };
@@ -212,9 +214,9 @@ var TreeNode;
     };
     TreeNode.toArethusaWordXMLStr = (node) => {
         if (node.artificialType == ArtificialType.Elliptic) {
-            return `<word id="${node.arethusaTokenId}" form="${node.name}" artificial="${node.artificialType}" insertion_id="${node.insertionId}" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}"/>`;
+            return `<word id="${node.arethusaTokenId}" form="${node.name}" artificial="${node.artificialType}" insertion_id="${node.insertionId}" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}" corpusId="${node.corpusId === undefined ? "" : node.corpusId}"/>`;
         }
-        return `<word id="${node.arethusaTokenId}" form="${node.name}" lemma="${node.lemma}" postag="${node.postag}" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}"/>`;
+        return `<word id="${node.arethusaTokenId}" form="${node.name}" lemma="${node.lemma}" postag="${node.postag}" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}" corpusId="${node.corpusId === undefined ? "" : node.corpusId}"/>`;
     };
     TreeNode.toXMLNode = (node) => {
         return MaybeT.of(TreeNode

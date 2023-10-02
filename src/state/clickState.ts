@@ -65,12 +65,12 @@ class ClickState {
         const labelClicked = clickState
             .labelElem
             .fmap(HTML.Elem.Class.contains("clicked"))
-            .unpackT(false)
+            .fromMaybe(false)
 
         const circleClicked = clickState
             .circleElem
             .fmap(HTML.Elem.Class.contains("clicked"))
-            .unpackT(false)
+            .fromMaybe(false)
 
         if (labelClicked || circleClicked) {
             ClickState.unclicked(clickState)

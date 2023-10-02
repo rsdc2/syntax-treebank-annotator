@@ -38,7 +38,7 @@ namespace TreeNode {
         const nodeCopy = Obj.deepcopy(node)
         MaybeT.of(nodeCopy)
             .fmap(TreeNode.slashes)
-            .unpackT([])
+            .fromMaybe([])
             .splice(slashesIdx, 1, slash)
 
         return nodeCopy
@@ -57,7 +57,8 @@ namespace TreeNode {
             postag: "",
             insertionId: "",
             type: NodeType.None,
-            artificialType: ArtificialType.None
+            artificialType: ArtificialType.None,
+            corpusId: ""
         }
     }
 
@@ -146,12 +147,12 @@ namespace TreeNode {
             if (headTreeNode.isNothing) return acc;
     
             const link: ITreeLink = {
-                id: id.unpackT(""),
+                id: id.fromMaybe(""),
                 target: treeNode,
-                source: headTreeNode.unpackT(TreeNode.empty()),
+                source: headTreeNode.fromMaybe(TreeNode.empty()),
                 type: LinkType.Head,
                 relation: treeNode.relation,
-                headTreeNodeId: headId.unpackT(-1),
+                headTreeNodeId: headId.fromMaybe(-1),
                 depTreeNodeId: treeNode.treeNodeId 
             }
 
@@ -272,9 +273,10 @@ namespace TreeNode {
             type: token.type === TreeTokenType.Root ? 
                 NodeType.Root : 
                 NodeType.NonRoot,
-            artificialType: TreeToken.artificialType(token)
+            artificialType: TreeToken.artificialType(token),
+            corpusId: token.corpusId
         }
-    
+
         return node
     }
 
@@ -318,12 +320,12 @@ namespace TreeNode {
             .map(TreeNode.tokenToTreeNode)
     }
 
-    export const toArethusaWordXMLStr = (node: ITreeNode) => {
+    export const toArethusaWordXMLStr = (node: ITreeNode):string => {
         if (node.artificialType == ArtificialType.Elliptic) {
-            return `<word id="${node.arethusaTokenId}" form="${node.name}" artificial="${node.artificialType}" insertion_id="${node.insertionId}" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}"/>`
+            return `<word id="${node.arethusaTokenId}" form="${node.name}" artificial="${node.artificialType}" insertion_id="${node.insertionId}" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}" corpusId="${node.corpusId === undefined ? "" : node.corpusId}"/>`
         }
 
-        return `<word id="${node.arethusaTokenId}" form="${node.name}" lemma="${node.lemma}" postag="${node.postag}" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}"/>`
+        return `<word id="${node.arethusaTokenId}" form="${node.name}" lemma="${node.lemma}" postag="${node.postag}" relation="${node.relation}" head="${node.headTokenId}" secdeps="${TreeNode.slashesToStr(node)}" corpusId="${node.corpusId === undefined ? "" : node.corpusId}"/>`
     }
 
     export const toXMLNode = (node: ITreeNode) => {

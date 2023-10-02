@@ -1,49 +1,70 @@
-interface XMLNode extends Node {
+interface HasXMLNode extends Node {
     attributes: NamedNodeMap
     setAttribute: (name: string, value:string) => void
 }
 
-interface Nodeable {
-    _node: Node
+interface HasNode {
+    _node: Node   
 }
 
-interface Formable extends Nodeable {
+
+interface HasElement {
+    _element: Element
+    attrs: NamedNodeMap
+}
+
+class HasNodeT {
+    static element(n: HasNode): Maybe<Element> {
+        if (n._node.nodeType === Node.ELEMENT_NODE) {
+            return MaybeT.of(n._node) as Just<Element>
+        }
+
+        return Nothing.of()
+    }
+    
+    static node(n: HasNode): Node {
+        return n._node
+    }
+}
+
+interface HasText extends HasNode, HasElement {
     text: Maybe<string>
 }
 
-interface Tokenable extends Formable {
-    tokens: Formable[]
+// interface HasXMLId extends HasNode {
+//     xmlid: Maybe<string>
+// }
+
+interface HasToken extends HasText {
+    tokens: HasText[]
 }
 
-class FormableT {
-    static form(f: Formable) {
+class HasFormT {
+    static form(f: HasText) {
         return f.text
     }
 }
 
-class TokenableT {
-    static tokens(tokenable: Tokenable): Formable[] {
+class HasTokensT {
+    static tokens(tokenable: HasToken): HasText[] {
         return tokenable.tokens
     }
-
-    // /**
-    //  * Returns all tokens minus any supplied elements
-    //  * @param tokenable 
-    //  */
-    // static tokensNoSupplied(tokenable: Tokenable): Formable[] {
-    //     const node = tokenable._node
-        
-    // }   
 }
 
-class Word implements Nodeable, Formable {
+class Word implements HasNode, HasText {
     _node: Node
+    _element: Element
 
     constructor(node: Node) {
         this._node = node
+        this._element = DOM.Node_.element(this._node).fromMaybeThrow()
     }
 
-    static of(node: XMLNode): Formable {
+    get attrs(): NamedNodeMap {
+        return DOM.Elem.attributes(this._element)
+    }
+
+    static of(node: HasXMLNode): HasText {
         return new Word(node)
     }
 
@@ -58,14 +79,20 @@ class Word implements Nodeable, Formable {
 
 type WordType = typeof Word
 
-class Multiword implements Nodeable, Formable, Tokenable {
-    _node: XMLNode
+class Multiword implements HasNode, HasText, HasToken {
+    _node: Node
+    _element: Element
 
-    constructor(node: XMLNode) {
+    constructor(node: HasXMLNode) {
         this._node = node
+        this._element = DOM.Node_.element(this._node).fromMaybeThrow()
     }
 
-    static of(node: XMLNode): Tokenable {
+    get attrs(): NamedNodeMap {
+        return DOM.Elem.attributes(this._element)
+    }
+
+    static of(node: HasXMLNode): HasToken {
         return new Multiword(node)
     }
 
@@ -77,12 +104,13 @@ class Multiword implements Nodeable, Formable, Tokenable {
         return MaybeT.of(this._node.textContent)
     }
 
-    get tokens(): Formable[] {
+    get tokens(): HasText[] {
         return []
     }
 }
 
 type MultiwordT = typeof Multiword
+
 
 
 
@@ -220,7 +248,7 @@ class XML {
     static attrs(node: Node) {
         return XML
             .xpathMaybeC ("attribute::*") (MaybeT.of(node))
-            .unpackT([])
+            .fromMaybe([])
             .reduce( (acc: {[k: string]: Node}, item: Node) => {
                 acc[item.nodeName] = item
                 return acc
@@ -347,13 +375,12 @@ class XML {
 
     static followingTextNodesWithAncestorByAncestorId = (ancestorName: string) => (attrName: string) => (attrVal: string) => (node: Node) =>  {
         return XML.xpathMaybeC(`following::text()[ancestor::${ancestorName}[@${attrName}="${attrVal}"]]`) (MaybeT.of(node))
-            .unpackT([]) as Text[]
+            .fromMaybe([]) as Text[]
     }
-
 
     static followingTextNodesWithAncestorByAncestorName = (ancestorName: string) => (node: Node) =>  {
         return XML.xpathMaybeC(`following::text()[ancestor::${ancestorName}]`) (MaybeT.of(node))
-            .unpackT([]) as Text[]
+            .fromMaybe([]) as Text[]
     }
 
     static fromXMLStr(xml: string): XMLDocument {
@@ -361,16 +388,23 @@ class XML {
             .parseFromString(xml, "text/xml")
     }
 
+    static getAttrVal = (namespace: string) => (localName: string) => (token: HasElement): Maybe<string> => {
+        const attrs = token.attrs
+        return DOM.NamedNodeMap
+            .getNamedItemNS(namespace, localName, attrs)
+            .fmap(DOM.Attr.value)
+    }
+
     static hasAncestor = (tagName: string) => (node: Node) => {
         const ancestors = XML
             .xpath(`ancestor::t:${tagName}`)(node)
-            .unpackT([])
+            .fromMaybe([])
         return ancestors.length > 0
     }
 
     static hasAttr(attr: string) {
         function _hasAttr(node: Node) {
-            const attributes = XML.xpathMaybeC (`attribute::${attr}`) (MaybeT.of(node)).unpackT([])
+            const attributes = XML.xpathMaybeC (`attribute::${attr}`) (MaybeT.of(node)).fromMaybe([])
             return attributes.length > 0
         }
         return _hasAttr
@@ -455,7 +489,7 @@ class XML {
 
 
     static nextSibling = (node: Node) => {
-        return Arr.head (XML.xpathMaybeC("following-sibling::*") (MaybeT.of(node)).unpackT([]))
+        return Arr.head (XML.xpathMaybeC("following-sibling::*") (MaybeT.of(node)).fromMaybe([]))
     }
 
     static nextSiblingElements(node: Node) {
@@ -515,25 +549,25 @@ class XML {
 
 
     static previous = (node: Node) => {
-        return (XML.xpathMaybeC("preceding::*") (MaybeT.of(node)).unpackT([]))        
+        return (XML.xpathMaybeC("preceding::*") (MaybeT.of(node)).fromMaybe([]))        
     }
 
     static previousSibling = (node: Node) => {
-        return Arr.head (XML.xpathMaybeC("preceding-sibling::*") (MaybeT.of(node)).unpackT([]))
+        return Arr.head (XML.xpathMaybeC("preceding-sibling::*") (MaybeT.of(node)).fromMaybe([]))
     }
 
     static previousSiblings = (node: Node) => {
-        return (XML.xpathMaybeC("preceding-sibling::*") (MaybeT.of(node)).unpackT([]))
+        return (XML.xpathMaybeC("preceding-sibling::*") (MaybeT.of(node)).fromMaybe([]))
     }
 
     static previousSiblingTextNodes(node: Node) {
         return XML.xpathMaybeC ('preceding-sibling::text()') (MaybeT.of(node))
-            .unpackT([]) as Text[]
+            .fromMaybe([]) as Text[]
     }
 
     static previousTextNodes = (node: Node) => {
         return XML.xpathMaybeC("preceding::text()") (MaybeT.of(node))
-            .unpackT([]) as Text[]
+            .fromMaybe([]) as Text[]
     }
 
     static previousTextNodesWithAncestorByAncestorId = 
@@ -543,7 +577,7 @@ class XML {
         (node: Node) =>  {
             
         return XML.xpathMaybeC(`preceding::text()[ancestor::${ancestorName}[@${attrName}="${attrVal}"]]`) (MaybeT.of(node))
-            .unpackT([]) as Text[]
+            .fromMaybe([]) as Text[]
     }
 
 
@@ -552,7 +586,7 @@ class XML {
         (node: Node) =>  {
             
         return XML.xpathMaybeC(`preceding::text()[ancestor::${ancestorName}]`) (MaybeT.of(node))
-            .unpackT([]) as Text[]
+            .fromMaybe([]) as Text[]
     }
 
     static buildRegExp = (genericTagRegExp: string) => (tagName: string) => {
@@ -598,15 +632,15 @@ class XML {
         const tagIdx = MaybeT.ofNonNeg(XML.tagFragNames.findIndex( (x) => x === tagFragmentName ))
         return tagIdx
             .fmap(Arr.removeByIdx (XML.tagFragNames)) 
-            .unpackT([])
+            .fromMaybe([])
     }
 
-    static setAttr = (attrName: string) => (attrVal: string) => (n: XMLNode) => {
+    static setAttr = (attrName: string) => (attrVal: string) => (n: HasXMLNode) => {
         n.setAttribute(attrName, attrVal)
         return n
     }
 
-    static setId = (id: string) => (n: XMLNode) => {
+    static setId = (id: string) => (n: HasXMLNode) => {
         return XML.setAttr("id")(id)(n)
     }
 
@@ -639,8 +673,8 @@ class XML {
                 .fmap(XML.xpathResultToNodeArr)
     }
 
-    static xpath = (xpathstr: string) => (xmldoc: Node) => {
-        return MaybeT.of(xmldoc)   
+    static xpath = (xpathstr: string) => (node: Node) => {
+        return MaybeT.of(node)   
             .bind(XML.xpathEval(xpathstr))
             .fmap(XML.xpathResultToNodeArr)
     }
@@ -673,4 +707,4 @@ class XML {
     }
 }
 
-type N = XMLNode | Node | XMLDocument | ParentNode
+type N = HasXMLNode | Node | XMLDocument | ParentNode

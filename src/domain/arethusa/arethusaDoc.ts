@@ -1,8 +1,10 @@
-class ArethusaDoc implements ArethusaSentenceable, Tokenable {
+class ArethusaDoc implements ArethusaSentenceable, HasToken {
     _node: Node
+    _element: Element
 
     constructor(node: Node) {
         this._node = node
+        this._element = this._element = DOM.Node_.element(node).fromMaybeThrow()
     }
 
     static appendArtificial = 
@@ -81,7 +83,7 @@ class ArethusaDoc implements ArethusaSentenceable, Tokenable {
 
         const words = MaybeT.of(s)
             .fmapErr("Error with string.", Str.split(" "))
-            .unpackT([])
+            .fromMaybe([])
             .map(Str.strip)
         
         return sentence.bind(ArethusaSentence.appendWords(words))
@@ -117,6 +119,10 @@ class ArethusaDoc implements ArethusaSentenceable, Tokenable {
         return ArethusaDoc
             .sentenceById (sentenceId) (a)
             .bind(ArethusaSentence.appendWordToSentenceFromAttrs(attrs))
+    }
+
+    get attrs(): NamedNodeMap {
+        return this._element.attributes
     }
 
 
@@ -171,7 +177,7 @@ class ArethusaDoc implements ArethusaSentenceable, Tokenable {
         return ArethusaDoc.appendSentence(a)
     }
 
-    static firstSentence(a: ArethusaDoc): Maybe<Tokenable> {
+    static firstSentence(a: ArethusaDoc): Maybe<HasToken> {
         return Arr.head (a.sentences)
     }
 
@@ -209,7 +215,7 @@ class ArethusaDoc implements ArethusaSentenceable, Tokenable {
 
         const sentenceStrs = MaybeT.of(plainText)
             .fmapErr("Error in plainText input.", Str.split(/[\.\?\;\:]/g))
-            .unpackT([])
+            .fromMaybe([])
             .map(Str.replace(/\,/g) (""))
             .map(Str.strip)
 
@@ -297,7 +303,7 @@ class ArethusaDoc implements ArethusaSentenceable, Tokenable {
         return ArethusaDoc.insertSentence(XML.insertBefore)(refSentenceId)(a)
     }
 
-    static lastSentence(a: ArethusaDoc): Maybe<Tokenable> {
+    static lastSentence(a: ArethusaDoc): Maybe<HasToken> {
         return Arr.last (a.sentences)
     }
     
@@ -484,7 +490,7 @@ class ArethusaDoc implements ArethusaSentenceable, Tokenable {
             .sentenceById (startSentenceId) (a)
             .fmap(DXML.node)
             .bind(XML.nextSiblingElements)
-            .unpackT([])
+            .fromMaybe([])
             .map(ArethusaSentence.fromXMLNode)
             .map(ArethusaSentence.id)
             .filter( (item: Maybe<string>) => item.isSomething ) 
@@ -525,7 +531,7 @@ class ArethusaDoc implements ArethusaSentenceable, Tokenable {
         let doc = ArethusaDoc.deepcopy(a)
         const ids = doc
             .fmap(ArethusaDoc.sentences)
-            .unpackT([])
+            .fromMaybe([])
             .map(ArethusaSentence.id)
         
         const newIds = Arr.removeNothings(ids)
@@ -553,7 +559,7 @@ class ArethusaDoc implements ArethusaSentenceable, Tokenable {
         const maybeSentences = MaybeT.of(a)
             .bind(ArethusaDoc.deepcopy)
             .fmap(ArethusaDoc.sentences)
-            .unpackT([])
+            .fromMaybe([])
             .map( (s: ArethusaSentence, idx: number) => 
                 MaybeT.of(DXML.node(s))
                     .fmap(XML.setId(Str.fromNum(idx + 1)))
@@ -572,7 +578,7 @@ class ArethusaDoc implements ArethusaSentenceable, Tokenable {
         const maybeWords = MaybeT.of(a)
             .bindErr("No Arethusa.", ArethusaDoc.deepcopy)
             .fmapErr("No words in Arethusa.", ArethusaDoc.tokens)
-            .unpackT([])
+            .fromMaybe([])
             .map( (w: ArethusaWord, idx: number) => 
                 MaybeT.ofThrow("Could not create Maybe<Word>.", DXML.node(w))
                     .fmapErr(
@@ -599,7 +605,7 @@ class ArethusaDoc implements ArethusaSentenceable, Tokenable {
         const sentenceNodes = ArethusaDoc
             .deepcopy(a)
             .fmap(ArethusaDoc.sentences)
-            .unpackT([])
+            .fromMaybe([])
             .map(DXML.node)
 
         // Replace the sentence
@@ -607,7 +613,7 @@ class ArethusaDoc implements ArethusaSentenceable, Tokenable {
             .id(newSentence)
             .fmap(flip(ArethusaDoc.sentenceNodeIdxById)(a))
             .fmap(Arr.replaceByIdx(sentenceNodes)(newSentenceXML))
-            .unpackT([])
+            .fromMaybe([])
             .map(ArethusaSentence.fromXMLNode)
 
         const newdoc = ArethusaDoc.removeSentences(a)
@@ -619,7 +625,7 @@ class ArethusaDoc implements ArethusaSentenceable, Tokenable {
         return MaybeT.of(a)
             .fmap(DXML.node)
             .bind(getSentences)
-            .unpackT([])
+            .fromMaybe([])
             .map(ArethusaSentence.fromXMLNode)
     }
 
@@ -642,7 +648,7 @@ class ArethusaDoc implements ArethusaSentenceable, Tokenable {
     static sentenceNodeIdxById = (id: string) => (a: ArethusaDoc) => {
         return MaybeT.of(a)
             .fmap(ArethusaDoc.sentences)
-            .unpackT([])
+            .fromMaybe([])
             .map(DXML.node)
             .findIndex(
                 (node: Node) => {
@@ -694,7 +700,7 @@ class ArethusaDoc implements ArethusaSentenceable, Tokenable {
         const nextTokenIds = ArethusaDoc
             .sentenceByTokenId (startTokenId) (a)
             .fmap(ArethusaSentence.nextTokenIds (startTokenId))
-            .unpackT([])
+            .fromMaybe([])
 
         const insertSentence = MaybeT.of(a)
             .bind(ArethusaDoc.sentenceIdByTokenId(startTokenId))

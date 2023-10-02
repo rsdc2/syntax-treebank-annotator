@@ -81,7 +81,7 @@ TextState.outputArethusaSentenceIds = (ts) => {
     const sentenceIds = ts
         .outputArethusa
         .fmap(ArethusaDoc.sentences)
-        .unpackT([])
+        .fromMaybe([])
         .map(ArethusaSentence.id);
     const sentenceIdsNoNothings = Arr
         .removeNothings(sentenceIds);

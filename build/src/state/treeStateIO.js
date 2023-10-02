@@ -274,7 +274,7 @@ TreeStateIO.moveGraph = (moveFunc) => {
     const newViewBoxStr = Graph
         .svg()
         .bind(SVG.ViewBox.getViewBoxStr)
-        .unpackT("");
+        .fromMaybe("");
     const x = globalState
         .textStateIO
         .bindErr("Error", TextStateIO

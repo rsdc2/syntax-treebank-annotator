@@ -127,7 +127,7 @@ TreeState.ofTokens = (sentence_id) => (tokens) => {
         .treeStateIO
         .fmap(TreeStateIO.currentStateId)
         .fmap(Num.add(1))
-        .unpackT(0), sentence_id, tokens, nodes, ClickState.none());
+        .fromMaybe(0), sentence_id, tokens, nodes, ClickState.none());
 };
 TreeState.ofTokensWithExistingNodes = (nodes) => (sentence_id) => (tokens) => {
     const tokensWithRoot = Arr
@@ -138,7 +138,7 @@ TreeState.ofTokensWithExistingNodes = (nodes) => (sentence_id) => (tokens) => {
         .treeStateIO
         .fmap(TreeStateIO.currentStateId)
         .fmap(Num.add(1))
-        .unpackT(0), sentence_id, tokens, _nodes, ClickState.none());
+        .fromMaybe(0), sentence_id, tokens, _nodes, ClickState.none());
 };
 TreeState.tokenIdToTreeNodeId = (tokenId) => (treeState) => {
     return treeState

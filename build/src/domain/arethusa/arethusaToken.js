@@ -1,15 +1,22 @@
 class ArethusaToken {
     constructor(node) {
         this._node = node;
+        this._element = DOM.Node_.element(node).fromMaybeThrow();
+    }
+    get attrs() {
+        return DOM.Elem.attributes(this._element);
     }
     static of(node) {
-        if (XML.hasAttr('artificial')) {
+        if (XML.hasAttr('artificial')(node)) {
             return ArethusaArtificial.of(node);
         }
         return new ArethusaToken(node);
     }
     get text() {
         return MaybeT.of(this._node.textContent);
+    }
+    get corpusId() {
+        return MaybeT.of(this._element.getAttribute("corpusId")).fromMaybe("");
     }
     static get xpathAddress() {
         return "./treebank/sentence/word";
@@ -20,7 +27,8 @@ ArethusaToken.createAttrs = (form) => {
         "form": form,
         "relation": "",
         "head": "",
-        "secdeps": ""
+        "secdeps": "",
+        "corpusId": ""
     };
 };
 ArethusaToken.form = (w) => {
@@ -34,7 +42,7 @@ ArethusaToken.id = (w) => {
 ArethusaToken.isArtificial = (w) => {
     return MaybeT.of(w)
         .fmap(DXML.isArtificial)
-        .unpackT(false);
+        .fromMaybe(false);
 };
 ArethusaToken.matchId = (id) => (word) => {
     return ArethusaToken
@@ -72,7 +80,7 @@ ArethusaToken.parentSentenceId = (word) => {
 ArethusaToken.relation = (w) => {
     const rel = XML.attr("relation")(w._node)
         .bind(XML.nodeValue)
-        .unpackT("");
+        .fromMaybe("");
     if (rel === "") {
         return ""; // Constants.defaultRel
     }
@@ -81,12 +89,12 @@ ArethusaToken.relation = (w) => {
 ArethusaToken.secondaryDeps = (w) => {
     const secondaryDepStr = XML.attr("secdeps")(w._node)
         .bind(XML.nodeValue)
-        .unpackT("");
+        .fromMaybe("");
     if (secondaryDepStr === "")
         return new Array;
     const secondaryDepStrs = secondaryDepStr
         .split(";");
-    return secondaryDepStrs.map(SecondaryDep.ofStr(ArethusaToken.id(w).unpackT("-1")));
+    return secondaryDepStrs.map(SecondaryDep.ofStr(ArethusaToken.id(w).fromMaybe("-1")));
 };
 ArethusaToken.treeTokenType = (w) => {
     if (ArethusaToken.id(w).eq("0")) {

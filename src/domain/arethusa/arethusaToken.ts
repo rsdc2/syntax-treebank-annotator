@@ -1,8 +1,14 @@
-class ArethusaToken implements Formable {
+class ArethusaToken implements HasText {
     _node: Node
+    _element: Element
 
     constructor(node: Node) {
         this._node = node
+        this._element = DOM.Node_.element(node).fromMaybeThrow()
+    }
+
+    get attrs(): NamedNodeMap {
+        return DOM.Elem.attributes(this._element)
     }
     
     static createAttrs = (form: string): IArethusaToken => {
@@ -10,7 +16,8 @@ class ArethusaToken implements Formable {
             "form": form,
             "relation": "",
             "head": "",
-            "secdeps": ""
+            "secdeps": "",
+            "corpusId": ""
         }
     }
 
@@ -27,7 +34,7 @@ class ArethusaToken implements Formable {
     static isArtificial = (w: ArethusaToken): boolean => {
         return MaybeT.of(w)
             .fmap(DXML.isArtificial)
-            .unpackT(false)
+            .fromMaybe(false)
     }
 
     static matchId = (id: string) => (word: ArethusaToken) => {
@@ -36,8 +43,8 @@ class ArethusaToken implements Formable {
             .unpack("") === id
     }
 
-    static of(node: XMLNode): ArethusaToken {
-        if (XML.hasAttr('artificial')) {
+    static of(node: HasXMLNode): ArethusaToken {
+        if (XML.hasAttr('artificial')(node)) {
             return ArethusaArtificial.of(node)
         }
         return new ArethusaToken(node)
@@ -80,7 +87,7 @@ class ArethusaToken implements Formable {
     static relation = (w: ArethusaToken) => {
         const rel = XML.attr ("relation") (w._node)
             .bind(XML.nodeValue)
-            .unpackT("")
+            .fromMaybe("")
 
         if (rel === "") {
             return "" // Constants.defaultRel
@@ -92,7 +99,7 @@ class ArethusaToken implements Formable {
     static secondaryDeps = (w: ArethusaToken) => {
         const secondaryDepStr = XML.attr ("secdeps") (w._node)
             .bind(XML.nodeValue)
-            .unpackT("")
+            .fromMaybe("")
 
         if (secondaryDepStr === "") return new Array<ISecondaryDep>
 
@@ -101,7 +108,7 @@ class ArethusaToken implements Formable {
 
         return secondaryDepStrs.map(
             SecondaryDep.ofStr(
-                ArethusaToken.id(w).unpackT("-1")
+                ArethusaToken.id(w).fromMaybe("-1")
             )
         )
     }
@@ -123,6 +130,10 @@ class ArethusaToken implements Formable {
             return ArethusaArtificial.toTreeToken(w)
         }
         return ArethusaWord.toTreeToken(w)
+    }
+
+    get corpusId(): string {
+        return MaybeT.of(this._element.getAttribute("corpusId")).fromMaybe("")
     }
 
     static get xpathAddress(): string {

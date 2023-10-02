@@ -337,7 +337,7 @@ class Frontend {
         
         const docId = arethusa
             .bind(ArethusaDoc.docId)
-            .unpackT("tree")
+            .fromMaybe("tree")
 
         arethusa
             .fmap(ArethusaDoc.toXMLStr)
@@ -805,7 +805,7 @@ class Frontend {
         
         const formattedHighlighted = xmlToHighlight
             .fmap(ArethusaDiv.formatXMLForDiv)
-            .unpackT("")
+            .fromMaybe("")
 
         const setTextContent = MaybeT.of(newXML)
             .fmap(ArethusaDiv.formatXMLForDiv)

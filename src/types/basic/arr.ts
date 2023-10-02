@@ -1,3 +1,40 @@
+class ArrMaybe<T> {
+    _array: Array<Maybe<T>>
+
+    constructor(array:Array<Maybe<T>>) {
+        const arr = array
+    }
+
+    get array() {
+        return this._array
+    }
+
+    bind<U>(f: (a: T) => Maybe<U>): ArrMaybe<U> {
+        return new ArrMaybe ( [...this._array].map( (value) => value.bind(f)))
+    }
+
+    fmap<U>(f: (a: T) => U): ArrMaybe<U> {
+        return new ArrMaybe([...this._array].map( (value) => value.fmap(f)))
+    }
+
+    filter(f: (a: Maybe<T>) => boolean): ArrMaybe<T> {
+        return new ArrMaybe([...this._array].filter(f))
+    }
+
+    defaultT(defaultVal:T): Array<T> {
+        return [...this._array].map( (value) => value.value !== null && value.value !== undefined ? value.value : defaultVal )
+    }
+
+    static of = <T>(array:Array<T>) => {
+        return new ArrMaybe(array.map(MaybeT.of))
+    }
+
+    removeNothings = (): Array<T> => {
+        return Arr.removeNothings(this._array)
+    }
+}
+
+
 class Arr {
     static arrify = <T>(item: T) => {
         return [item]
@@ -21,7 +58,7 @@ class Arr {
             const reduceFunc = (acc: T[], array2Item: Maybe<T>) => {
                 return array2Item
                     .fmap(Arr.arrify)
-                    .unpackT([])
+                    .fromMaybe([])
                     .concat(acc)
                 } 
 
@@ -88,7 +125,7 @@ class Arr {
             return acc
         }, new Array<T>
         )) 
-        .unpackT(array)
+        .fromMaybe(array)
     }
 
     static removeNothingReduce = <T>(acc: T[], item: Maybe<T>) => {
@@ -135,7 +172,7 @@ class Arr {
             return Arr.push(newItem)(acc)
         }, new Array<T>
         )) 
-        .unpackT(array)
+        .fromMaybe(array)
     }
 
     static reverse = <T>(array: T[]) => {

@@ -1,13 +1,38 @@
 
-class TEIToken implements Word, Formable {
+class TEIToken implements Word, HasText {
     _node: Node
+    _element: Element
 
     constructor(node: Node) {
         this._node = node
+        this._element = DOM.Node_.element(node).fromMaybeThrow()
     }
+
+    get attrs(): NamedNodeMap {
+        return DOM.Elem.attributes(this._element)
+    }
+
+    static getNormalizedText = (token: TEIToken) => {
+        return token.normalizedText
+    }
+
+    get normalizedText(): string {
+        return this.textNodes
+            .filter(TextNode.filterByNotAncestor(["g", "orig", "am", "sic"]))
+            .map( (textNode: Text) => TextNode.suppliedInBrackets(textNode) )
+            .join("")
+            .replace("][", "")
+            .replace(",", "")
+    }
+
 
     get text() {
         return MaybeT.of(this._node.textContent)
+    }
+
+    get textNodes(): Text[] {
+        return XML.xpath("descendant::text()")(this._node)
+            .fromMaybe([]) as Text[]
     }
 
     static of(node: Node) {
@@ -28,10 +53,31 @@ namespace TEITokenFuncs {
      */
     export const textWithoutInterpuncts = (token: TEIToken): string => {
         const textArr = XML.xpath("descendant::text()[not(ancestor::t:g)]")(token._node)
-            .unpackT([])
+            .fromMaybe([])
             .map(XML.textContent)
             
         return Arr.removeNothings(textArr).join("")
+    }
+
+
+
+
+}
+
+namespace TextNode {
+
+    export const filterByNotAncestor = 
+        (tagNames: string[]) =>
+        (text: Text): boolean =>
+    {
+        const ancestorXpaths = tagNames.reduce(
+            (ancestors:string, tagName:string) => {
+                return ancestors.concat(`[not(ancestor::t:${tagName})]`)
+            }, ''
+        )
+        const xpathStr = Str.concat(ancestorXpaths)("descendant::text()")
+        
+        return XML.xpath(xpathStr)(text).unpack([]).length !== 0
     }
 
     export const excludeTextNodesWithAncestors = 
@@ -48,12 +94,14 @@ namespace TEITokenFuncs {
 
         return XML
             .xpath(xpathStr)(token._node)
-            .unpackT([]) as Text[]
+            .fromMaybe([]) as Text[]
     }
-
-    export const textWithSuppliedInBrackets = (textNode: Text): string => {
+    
+    export const suppliedInBrackets = (textNode: Text): string => {
+        
+    
         if (!XML.hasAncestor("supplied")(textNode)) {
-            return MaybeT.of(textNode.textContent).unpackT("")
+            return MaybeT.of(textNode.textContent).fromMaybe("")
         }
 
         const preceding = XML.precedingTextNodesWithAncestorByAncestorName("supplied")(textNode)
@@ -74,4 +122,5 @@ namespace TEITokenFuncs {
         return returnString
 
     }
+
 }

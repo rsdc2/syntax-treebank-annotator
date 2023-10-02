@@ -1,8 +1,14 @@
-class ArethusaWord implements Formable {
+class ArethusaWord implements HasText {
     _node: Node
+    _element: Element
 
     constructor(node: Node) {
         this._node = node
+        this._element = DOM.Node_.element(node).fromMaybeThrow()
+    }
+
+    get attrs(): NamedNodeMap {
+        return DOM.Elem.attributes(this._element)
     }
 
     static id = (w: ArethusaWord) => {
@@ -31,7 +37,7 @@ class ArethusaWord implements Formable {
         return ArethusaWord.id(word).unpack("") === id
     }
 
-    static of(node: XMLNode): ArethusaWord {
+    static of(node: HasXMLNode): ArethusaWord {
         return new ArethusaWord(node)
     }
 
@@ -78,7 +84,7 @@ class ArethusaWord implements Formable {
     static relation = (w: ArethusaWord) => {
         const rel = XML.attr ("relation") (w._node)
             .bind(XML.nodeValue)
-            .unpackT("")
+            .fromMaybe("")
 
         if (rel === "") {
             return "" // Constants.defaultRel
@@ -90,7 +96,7 @@ class ArethusaWord implements Formable {
     static slashes = (w: ArethusaWord) => {
         const slashStr = XML.attr ("secdeps") (w._node)
             .bind(XML.nodeValue)
-            .unpackT("")
+            .fromMaybe("")
 
         if (slashStr === "") return new Array<ISecondaryDep>
 
@@ -99,7 +105,7 @@ class ArethusaWord implements Formable {
 
         return slashStrs.map(
             SecondaryDep.ofStr(
-                ArethusaWord.id(w).unpackT("-1")
+                ArethusaWord.id(w).fromMaybe("-1")
             )
         )
     }
@@ -112,21 +118,21 @@ class ArethusaWord implements Formable {
         return {
             form: ArethusaWord
                 .form(w)
-                .unpackT("[None]"),
+                .fromMaybe("[None]"),
             headId: ArethusaWord
                 .head(w)
                 .bind(Str.toMaybeNum)
-                .unpackT(-1),
+                .fromMaybe(-1),
             id: ArethusaWord
                 .id(w)
                 .fmap(Str.toNum)
-                .unpackT(-1),
+                .fromMaybe(-1),
             lemma: ArethusaWord
                 .lemma(w)
-                .unpackT(""),
+                .fromMaybe(""),
             postag: ArethusaWord
                 .postag(w)
-                .unpackT(""),
+                .fromMaybe(""),
             relation: ArethusaWord
                 .relation(w),
             secondaryDeps: ArethusaWord
@@ -135,7 +141,12 @@ class ArethusaWord implements Formable {
                 .id(w).eq("0") ? 
                     TreeTokenType.Root : 
                     TreeTokenType.NonRoot,
+            corpusId: w.corpusId
         }
+    }
+
+    get corpusId(): string {
+        return MaybeT.of(this._element.getAttribute("corpusId")).fromMaybe("")
     }
 
     static get xpathAddress(): string {

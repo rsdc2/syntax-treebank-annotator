@@ -46,10 +46,10 @@ var Graph;
             // Fix the circle until the drag has finished
             const svgElem = HTML.q("svg").value;
             if (svgElem !== null) {
-                const viewBoxW = SVG.ViewBox.getViewBoxValFromSVGElem(2)(svgElem).unpackT(0);
-                const viewBoxH = SVG.ViewBox.getViewBoxValFromSVGElem(3)(svgElem).unpackT(0);
-                const viewBoxX = SVG.ViewBox.getViewBoxValFromSVGElem(0)(svgElem).unpackT(0);
-                const viewBoxY = SVG.ViewBox.getViewBoxValFromSVGElem(1)(svgElem).unpackT(0);
+                const viewBoxW = SVG.ViewBox.getViewBoxValFromSVGElem(2)(svgElem).fromMaybe(0);
+                const viewBoxH = SVG.ViewBox.getViewBoxValFromSVGElem(3)(svgElem).fromMaybe(0);
+                const viewBoxX = SVG.ViewBox.getViewBoxValFromSVGElem(0)(svgElem).fromMaybe(0);
+                const viewBoxY = SVG.ViewBox.getViewBoxValFromSVGElem(1)(svgElem).fromMaybe(0);
                 const xRat = viewBoxW / svgElem.clientWidth;
                 const yRat = viewBoxH / svgElem.clientHeight;
                 const clientX = event.sourceEvent.clientX;
@@ -65,7 +65,7 @@ var Graph;
             globalState.simulation.nodes(globalState
                 .treeStateIO
                 .fmap(TreeStateIO.nodes)
-                .unpackT([]));
+                .fromMaybe([]));
             globalState.simulation
                 .alphaTarget(alphaTarget)
                 .restart();
@@ -354,7 +354,7 @@ var Graph;
                         .fmap(TreeStateIO.replaceSentStateFromNodes(globalState.simulation.nodes(), false, globalState
                         .treeStateIO
                         .fmap(TreeStateIO.currentSentStateIdx)
-                        .unpackT(0)));
+                        .fromMaybe(0)));
                     globalState
                         .textStateIO
                         .bind(TextStateIO.currentState)

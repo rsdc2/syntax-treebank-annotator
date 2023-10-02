@@ -103,7 +103,7 @@ namespace HTML {
         }
 
         export const toggleHidden = (elem: HTMLElement) => {
-            if (MaybeT.of(elem).bind(getHidden).unpackT("false") == "false") {
+            if (MaybeT.of(elem).bind(getHidden).fromMaybe("false") == "false") {
                 HTML.Elem.setHidden(elem)
                 return
             } 

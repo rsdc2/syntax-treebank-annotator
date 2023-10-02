@@ -26,6 +26,9 @@ class Just {
     fmap(f) {
         return MaybeT.of(f(this._value));
     }
+    fmapDefaultErr(f) {
+        return MaybeT.of(f(this._value));
+    }
     fmapErr(message, f) {
         return MaybeT.of(f(this._value));
     }
@@ -39,7 +42,7 @@ class Just {
         return f(this._value);
     }
     flatMapArr(f) {
-        return f(this._value).unpackT([]);
+        return f(this._value).fromMaybe([]);
     }
     get isNothing() {
         return false;
@@ -56,7 +59,10 @@ class Just {
     unpack(def) {
         return this._value;
     }
-    unpackT(def) {
+    fromMaybe(def) {
+        return this._value;
+    }
+    fromMaybeThrow() {
         return this._value;
     }
     get value() {
@@ -84,10 +90,15 @@ class Nothing {
         return this._value == x;
     }
     fmap(f) {
+        // console.error("Default error")
         return new Nothing();
     }
     fmapDefault(def, f) {
         return def;
+    }
+    fmapDefaultErr(f) {
+        console.error("Default error");
+        return new Nothing();
     }
     fmapErr(message, f) {
         console.error(message);
@@ -114,8 +125,11 @@ class Nothing {
     unpack(def) {
         return def;
     }
-    unpackT(def) {
+    fromMaybe(def) {
         return def;
+    }
+    fromMaybeThrow() {
+        throw "Value cannot be Nothing.";
     }
     get value() {
         return null;
@@ -148,11 +162,11 @@ class MaybeT {
         }
     }
     static toList(val) {
-        return val.unpackT([]);
+        return val.fromMaybe([]);
     }
 }
 MaybeT.comp = (x) => (f) => (y) => {
-    return y.applyFmap(x.fmap(f)).unpackT(false);
+    return y.applyFmap(x.fmap(f)).fromMaybe(false);
 };
 MaybeT.isNearest = (direction) => (x) => (y) => {
     return y.every((item) => {
@@ -192,4 +206,7 @@ MaybeT.isNearer = (direction) => (x) => (y) => {
             return false;
         }
     }
+};
+MaybeT.isSomething = (maybe) => {
+    return maybe.isSomething;
 };

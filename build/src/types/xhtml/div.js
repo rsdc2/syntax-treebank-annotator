@@ -43,10 +43,10 @@ Div.selectionStartPosByDivId = (id) => {
     const selection = MaybeT.of(window.getSelection());
     const previousTextNodes = selection
         .fmap(Div.textNodesPriorToSelAnchorNodeByDivId(id))
-        .unpackT([]);
+        .fromMaybe([]);
     const anchorNodeOffset = selection
         .fmap(Sel.anchorOffset)
-        .unpackT(0);
+        .fromMaybe(0);
     const previousTextLength = previousTextNodes
         .reduce((acc, item) => acc + item.length, 0);
     return previousTextLength + anchorNodeOffset;
@@ -55,17 +55,17 @@ Div.textNodesPriorToSelAnchorNodeByDivId = (id) => (sel) => {
     return MaybeT.of(sel)
         .bind(Sel.anchorNode)
         .fmap(XML.previousTextNodesWithAncestorByAncestorId("div")("id")(id))
-        .unpackT([]);
+        .fromMaybe([]);
 };
 Div.selectionEndPosByDivId = (id) => {
     const selection = MaybeT.of(window.getSelection());
     const previousTextNodes = selection
         .bind(Sel.extentNode)
         .fmap(XML.previousTextNodesWithAncestorByAncestorId("div")("id")(id))
-        .unpackT([]);
+        .fromMaybe([]);
     const extentNodeOffset = selection
         .fmap(Sel.extentOffset)
-        .unpackT(0);
+        .fromMaybe(0);
     const previousTextLength = previousTextNodes
         .reduce((acc, item) => acc + item.length, 0);
     return previousTextLength + extentNodeOffset;

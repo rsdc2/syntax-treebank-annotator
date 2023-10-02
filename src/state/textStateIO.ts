@@ -55,7 +55,7 @@ class TextStateIO {
 
         const maybeNS = MaybeT.of(newState)
         
-        if (!maybeNS.fmap(TextState.hasNothing).unpackT(true)) {
+        if (!maybeNS.fmap(TextState.hasNothing).fromMaybe(true)) {
             maybeNS.fmap(this.push)
             // console.log('Has TS')
             this.currentStateIdx = this.lastStateIdx
@@ -170,7 +170,7 @@ class TextStateIO {
         const sentenceIds = tsio
             .outputArethusaP
             .fmap(ArethusaDoc.sentences)
-            .unpackT([])
+            .fromMaybe([])
             .map(ArethusaSentence.id)
 
         
@@ -255,7 +255,7 @@ class TextStateIO {
     }
 
     static currentState = (s: TextStateIO) => {
-        return MaybeT.of (s.states[s.currentStateIdx.unpackT(-1)])
+        return MaybeT.of (s.states[s.currentStateIdx.fromMaybe(-1)])
     }
 
     get currentStateIdx(): Maybe<number> {
@@ -302,7 +302,7 @@ class TextStateIO {
         (vb: string) => 
         (tsio: TextStateIO) => 
     {
-        const sentId = tsio.currentSentenceId.unpackT("1")
+        const sentId = tsio.currentSentenceId.fromMaybe("1")
         const setViewBox = SentenceViewState
             .setViewBoxBySentenceId(sentId)(vb)
         const x = tsio.currentState
@@ -425,7 +425,7 @@ class TextStateIO {
         switch (this
             .viewState
             .fmap(ViewState.viewType)
-            .unpackT(ViewType.Unknown))
+            .fromMaybe(ViewType.Unknown))
             {
             case (ViewType.Word): {
                 const getWord = this
@@ -741,7 +741,7 @@ class TextStateIO {
 
         this._textStates = MaybeT.of<TextState[]>(this._textStates)
             .applyFmap(getSlice)
-            .unpackT([])
+            .fromMaybe([])
     }
 
     removeSentence = () => {
@@ -804,7 +804,7 @@ class TextStateIO {
 
         const sentenceIds = ts
             .fmap(TextState.outputArethusaSentenceIds)
-            .unpackT([])
+            .fromMaybe([])
 
         // console.log("calling new sentence view state")
 
@@ -872,7 +872,7 @@ class TextStateIO {
         const sentences = this
             .outputArethusaP
             .fmap(ArethusaDoc.sentences)
-            .unpackT([])
+            .fromMaybe([])
 
         const sentenceStrs = sentences
             .map( (s: ArethusaSentence) => {
@@ -949,7 +949,7 @@ class TextStateIO {
 
         // Set the viewbox
         this.sentenceViewState
-            .fmap(SentenceViewState.updateSVGViewBox(this.currentSentenceId.unpackT("")))
+            .fmap(SentenceViewState.updateSVGViewBox(this.currentSentenceId.fromMaybe("")))
     }    
 
     get states() {

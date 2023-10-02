@@ -74,7 +74,7 @@ namespace SVG {
             return MaybeT.of(s)
                 .fmap(Str.split(" "))
                 .fmap(f(val)(index))
-                .unpackT([])
+                .fromMaybe([])
                 .join(" ")
         }
 
@@ -116,7 +116,7 @@ namespace SVG {
 
         const decrViewBoxVal = (limit: number | null) => (index: number) => (viewBoxStr: string) => {
             if (limit !== null) {
-                if (getViewBoxVal(index)(viewBoxStr).fmap(Str.toNum).unpackT(0) - 50 < limit) {
+                if (getViewBoxVal(index)(viewBoxStr).fmap(Str.toNum).fromMaybe(0) - 50 < limit) {
                     return
                 }
             }
