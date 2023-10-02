@@ -39,7 +39,7 @@ class Conversion {
                 relation: "",
                 head: "",
                 secdeps: "",
-                corpusid: XML.getAttrVal("http://www.w3.org/XML/1998/namespace")("id")(token).fromMaybe("")
+                corpusId: XML.getAttrVal("http://www.w3.org/XML/1998/namespace")("id")(token).fromMaybe("")
             }
             return attr
         } 
