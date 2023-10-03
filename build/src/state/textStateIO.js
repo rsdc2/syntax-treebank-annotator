@@ -342,7 +342,8 @@ TextStateIO.appendNewArtificialToSentence = (s) => {
         .fmap(ArethusaDoc.appendArtificialToSentence(ArethusaArtificial.createAttrs("0")));
     const newArethusa = s
         .outputArethusaP
-        .applyBind(appendArtificial);
+        .applyBind(appendArtificial)
+        .bind(ArethusaDoc.renumberTokenIds(true));
     const getSentence = s
         .currentSentenceId
         .fmap(ArethusaDoc.sentenceById);

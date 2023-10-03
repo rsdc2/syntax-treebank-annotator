@@ -94,13 +94,13 @@ class TextStateIO {
         const appendArtificial = s
             .currentSentenceId
             .fmap(
-                ArethusaDoc.appendArtificialToSentence 
-                    (ArethusaArtificial.createAttrs("0"))
+                ArethusaDoc.appendArtificialToSentence(ArethusaArtificial.createAttrs("0"))
             )
 
         const newArethusa = s
             .outputArethusaP
             .applyBind(appendArtificial)
+            .bind(ArethusaDoc.renumberTokenIds(true))
 
         const getSentence = s
             .currentSentenceId
