@@ -80,6 +80,21 @@ Currently the annotator only allows for the annotation
 of syntax 
 (although it should preserve any morphology annotation).
 
+## Other points to note
+
+### Word IDs
+
+The annotator expects each word in the treebank to have a unique ID. 
+While this may not make a huge amount of sense in the context of a 
+literary document, where the sentence boundaries are established,
+in an inscription sentence boundaries are not necessarily clear.
+Accordingly, it makes sense to number words according to their
+order in the inscription, which is fixed (at least in principle);
+their ID by sentence will necessarily be more fluid, according
+to the interpretation of the editor(s).
+
+Accordingly, when the annotator imports another file, the words
+are renumbered according to their position in the document.
 
 ## Acknowledgements
 
