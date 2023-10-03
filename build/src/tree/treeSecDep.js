@@ -108,5 +108,8 @@ SecondaryDep.relation = (slash) => {
     return slash.relation;
 };
 SecondaryDep.toStr = (iSlash) => {
+    if (MaybeT.of(iSlash._headTokenId).isNothing) {
+        return "";
+    }
     return `${iSlash._headTokenId}:${iSlash._relation}`;
 };

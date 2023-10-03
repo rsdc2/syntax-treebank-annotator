@@ -178,6 +178,9 @@ class SecondaryDep implements ISecondaryDep {
     }
 
     static toStr = (iSlash: ISecondaryDep) => {
+        if (MaybeT.of(iSlash._headTokenId).isNothing) {
+            return ""
+        }
         return `${iSlash._headTokenId}:${iSlash._relation}`
     }
     

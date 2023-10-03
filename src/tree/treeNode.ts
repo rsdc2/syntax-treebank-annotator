@@ -243,7 +243,14 @@ namespace TreeNode {
     }
 
     export const slashesToStr = (node: ITreeNode) => {
-        return node.secondaryDeps.map(SecondaryDep.toStr).join(";")
+        const s = node
+                .secondaryDeps
+                .map(SecondaryDep.toStr).join(";")
+        
+        if (s.charAt(0) === ";") {
+            return Str.substring(1)(s.length)(s)
+        } 
+        return s
     }
 
     /**
@@ -331,10 +338,7 @@ namespace TreeNode {
                     secdeps="${TreeNode.slashesToStr(node)}"
                     corpusId="${node.corpusId === undefined ? "" : node.corpusId}"
                     />`
-                    // "${node.corpusId === undefined ? "" : " corpusId=" + node.corpusId}"/>
-                    // corpusId=""
         }
-        // console.log(`${node.corpusId === undefined ? "" : 'corpusId="' + node.corpusId}"`)
         return `<word id="${node.arethusaTokenId}" 
                 form="${node.name}" 
                 lemma="${node.lemma}" 
@@ -344,7 +348,6 @@ namespace TreeNode {
                 secdeps="${TreeNode.slashesToStr(node)}"
                 corpusId="${node.corpusId === undefined ? "" : node.corpusId}"
                 />`
-                // "${node.corpusId === undefined ? "" : 'corpusId=' + node.corpusId}"
     }
 
     export const toXMLNode = (node: ITreeNode) => {

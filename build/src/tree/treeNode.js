@@ -159,7 +159,13 @@ var TreeNode;
         return node.secondaryDeps;
     };
     TreeNode.slashesToStr = (node) => {
-        return node.secondaryDeps.map(SecondaryDep.toStr).join(";");
+        const s = node
+            .secondaryDeps
+            .map(SecondaryDep.toStr).join(";");
+        if (s.charAt(0) === ";") {
+            return Str.substring(1)(s.length)(s);
+        }
+        return s;
     };
     /**
      * Converts a TreeToken to a TreeNode
@@ -223,10 +229,7 @@ var TreeNode;
                     secdeps="${TreeNode.slashesToStr(node)}"
                     corpusId="${node.corpusId === undefined ? "" : node.corpusId}"
                     />`;
-            // "${node.corpusId === undefined ? "" : " corpusId=" + node.corpusId}"/>
-            // corpusId=""
         }
-        // console.log(`${node.corpusId === undefined ? "" : 'corpusId="' + node.corpusId}"`)
         return `<word id="${node.arethusaTokenId}" 
                 form="${node.name}" 
                 lemma="${node.lemma}" 
@@ -236,7 +239,6 @@ var TreeNode;
                 secdeps="${TreeNode.slashesToStr(node)}"
                 corpusId="${node.corpusId === undefined ? "" : node.corpusId}"
                 />`;
-        // "${node.corpusId === undefined ? "" : 'corpusId=' + node.corpusId}"
     };
     TreeNode.toXMLNode = (node) => {
         return MaybeT.of(TreeNode
