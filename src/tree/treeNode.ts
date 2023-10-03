@@ -247,6 +247,9 @@ namespace TreeNode {
                 .secondaryDeps
                 .map(SecondaryDep.toStr).join(";")
         
+        // If secondary deps have no string representation, 
+        // can end up with empty strings at the start
+        // This code removes the resulting initial ';'
         if (s.charAt(0) === ";") {
             return Str.substring(1)(s.length)(s)
         } 
