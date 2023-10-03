@@ -1,7 +1,7 @@
 class EpiDoc {
     constructor(epidocXML) {
         this._node = XML.fromXMLStr(epidocXML).documentElement;
-        this._element = DOM.Node_.element(this._node).fromMaybeThrow();
+        this._element = DOM.Node_.element(this._node).fromMaybeErr();
     }
     get attrs() {
         return this._element.attributes;

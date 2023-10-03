@@ -5,7 +5,7 @@ class Edition implements HasToken, HasNode {
 
     constructor(node: HasXMLNode) {
         this._node = node
-        this._element = DOM.Node_.element(node).fromMaybeThrow()
+        this._element = DOM.Node_.element(node).fromMaybeErr()
     }
 
     get attrs(): NamedNodeMap {

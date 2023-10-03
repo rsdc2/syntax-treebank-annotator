@@ -8,7 +8,7 @@
 class ArethusaArtificial {
     constructor(node) {
         this._node = node;
-        this._element = DOM.Node_.element(node).fromMaybeThrow();
+        this._element = DOM.Node_.element(node).fromMaybeErr();
     }
     get attrs() {
         return DOM.Elem.attributes(this._element);

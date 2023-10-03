@@ -1,7 +1,7 @@
 class ArethusaDoc {
     constructor(node) {
         this._node = node;
-        this._element = this._element = DOM.Node_.element(node).fromMaybeThrow();
+        this._element = this._element = DOM.Node_.element(node).fromMaybeErr();
     }
     static appendEmptyWord(a) {
         return ArethusaDoc

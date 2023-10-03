@@ -4,7 +4,7 @@ class ArethusaToken implements HasText {
 
     constructor(node: Node) {
         this._node = node
-        this._element = DOM.Node_.element(node).fromMaybeThrow()
+        this._element = DOM.Node_.element(node).fromMaybeErr()
     }
 
     get attrs(): NamedNodeMap {

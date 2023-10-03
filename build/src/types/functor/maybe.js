@@ -59,7 +59,7 @@ class Just {
     fromMaybe(def) {
         return this._value;
     }
-    fromMaybeThrow() {
+    fromMaybeErr() {
         return this._value;
     }
     get value() {
@@ -125,7 +125,7 @@ class Nothing {
     fromMaybe(def) {
         return def;
     }
-    fromMaybeThrow() {
+    fromMaybeErr() {
         throw "Value cannot be Nothing.";
     }
     get value() {

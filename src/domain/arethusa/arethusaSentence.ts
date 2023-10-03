@@ -5,7 +5,7 @@ class ArethusaSentence implements Word, HasToken, HasText  {
 
     constructor(node: Node) {
         this._node = node
-        this._element = DOM.Node_.element(node).fromMaybeThrow()
+        this._element = DOM.Node_.element(node).fromMaybeErr()
     }
 
     static appendArtificialToSentenceFromAttrs = 

@@ -10,7 +10,7 @@ class EpiDoc implements TEIEditionable, HasToken {
 
     constructor(epidocXML: string) {
         this._node = XML.fromXMLStr(epidocXML).documentElement
-        this._element = DOM.Node_.element(this._node).fromMaybeThrow()
+        this._element = DOM.Node_.element(this._node).fromMaybeErr()
     }
 
     get attrs(): NamedNodeMap {

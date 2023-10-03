@@ -22,7 +22,7 @@ class HasTokensT {
 class Word {
     constructor(node) {
         this._node = node;
-        this._element = DOM.Node_.element(this._node).fromMaybeThrow();
+        this._element = DOM.Node_.element(this._node).fromMaybeErr();
     }
     get attrs() {
         return DOM.Elem.attributes(this._element);
@@ -40,7 +40,7 @@ class Word {
 class Multiword {
     constructor(node) {
         this._node = node;
-        this._element = DOM.Node_.element(this._node).fromMaybeThrow();
+        this._element = DOM.Node_.element(this._node).fromMaybeErr();
     }
     get attrs() {
         return DOM.Elem.attributes(this._element);

@@ -4,7 +4,7 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
 
     constructor(node: Node) {
         this._node = node
-        this._element = this._element = DOM.Node_.element(node).fromMaybeThrow()
+        this._element = this._element = DOM.Node_.element(node).fromMaybeErr()
     }
 
     static appendArtificial = 
