@@ -202,6 +202,7 @@ class Frontend {
         const arethusa = MaybeT
             .of(arethusaStr)
             .bind(ArethusaDoc.fromXMLStr)
+            .bind(ArethusaDoc.renumberTokenIds(true))
 
         const textstate = TextState.of(
             arethusa.fmap(ViewState.of("1")("1")),

@@ -198,7 +198,7 @@ ArethusaDoc.fromPlainTextStr = (plainText) => {
     return arethusaXMLNodeWithChildren
         .bind(ArethusaDoc.fromNode)
         .bind(ArethusaDoc.reorderSentenceIds)
-        .bind(ArethusaDoc.reorderTokenIds);
+        .bind(ArethusaDoc.renumberTokenIds(false));
 };
 ArethusaDoc.fromXMLStr = (arethusaXML) => {
     return MaybeT.of(arethusaXML)
@@ -395,11 +395,17 @@ ArethusaDoc.reorderSentenceIds = (a) => {
         .bindErr("No Arethusa", ArethusaDoc.removeSentences)
         .bindErr("No Arethusa with no sentences.", ArethusaDoc.appendSentences(sentences));
 };
-ArethusaDoc.reorderTokenIds = (a) => {
+/**
+ * Renumbers token ids in the treebank from 1 to the final token;
+ * also renumbers head ids if 'renumberHeads' is set to true
+ * @param a
+ * @returns
+ */
+ArethusaDoc.renumberTokenIds = (renumberHeads) => (a) => {
     const maybeWords = MaybeT.of(a)
         .bindErr("No Arethusa.", ArethusaDoc.deepcopy)
         .fmapErr("No words in Arethusa.", ArethusaDoc.tokens)
-        .fromMaybe([])
+        .unpack([])
         .map((w, idx) => MaybeT.ofThrow("Could not create Maybe<Word>.", DXML.node(w))
         .fmapErr("Could not make word node.", XML.setId(Str.fromNum(idx + 1)))
         .fmapErr("Could not set ID.", ArethusaToken.fromXMLNode));
