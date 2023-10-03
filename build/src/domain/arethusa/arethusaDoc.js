@@ -451,7 +451,7 @@ ArethusaDoc.renumberTokenIds = (renumberHeads) => (a) => {
         }).unpack("");
         // If current head is root, or if renumberHeads is set to false
         // do not renumber
-        const newHeadIdStr = renumberHeads === true && currentHeadIdInt !== 0 && Number.isNaN(currentHeadIdInt) === false
+        const newHeadIdStr = renumberHeads === true && currentHeadIdInt > 0 && Number.isNaN(currentHeadIdInt) === false
             ? Str.fromNum(currentHeadIdInt + offset)
             : currentHeadIdStr;
         // Renumber token and head ids
