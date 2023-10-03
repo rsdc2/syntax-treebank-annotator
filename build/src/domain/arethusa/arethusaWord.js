@@ -35,7 +35,8 @@ ArethusaWord.createAttrs = (form) => {
         "postag": "",
         "relation": "",
         "head": "",
-        "secdeps": ""
+        "secdeps": "",
+        "corpusId": ""
     };
 };
 ArethusaWord.matchId = (id) => (word) => {

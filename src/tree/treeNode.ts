@@ -329,9 +329,12 @@ namespace TreeNode {
                     relation="${node.relation}" 
                     head="${node.headTokenId}" 
                     secdeps="${TreeNode.slashesToStr(node)}"
-                    "${node.corpusId === undefined ? "" : " corpusId=" + node.corpusId}"/>`
+                    corpusId="${node.corpusId === undefined ? "" : node.corpusId}"
+                    />`
+                    // "${node.corpusId === undefined ? "" : " corpusId=" + node.corpusId}"/>
+                    // corpusId=""
         }
-
+        // console.log(`${node.corpusId === undefined ? "" : 'corpusId="' + node.corpusId}"`)
         return `<word id="${node.arethusaTokenId}" 
                 form="${node.name}" 
                 lemma="${node.lemma}" 
@@ -339,7 +342,9 @@ namespace TreeNode {
                 relation="${node.relation}" 
                 head="${node.headTokenId}" 
                 secdeps="${TreeNode.slashesToStr(node)}"
-                "${node.corpusId === undefined ? "" : 'corpusId=' + node.corpusId}"/>`
+                corpusId="${node.corpusId === undefined ? "" : node.corpusId}"
+                />`
+                // "${node.corpusId === undefined ? "" : 'corpusId=' + node.corpusId}"
     }
 
     export const toXMLNode = (node: ITreeNode) => {

@@ -29,7 +29,8 @@ class ArethusaWord implements HasText {
             "postag": "",
             "relation": "",
             "head": "",
-            "secdeps": ""
+            "secdeps": "",
+            "corpusId": ""
         }
     }
 
