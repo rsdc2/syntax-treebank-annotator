@@ -72,9 +72,6 @@ class Just<T> implements IMaybe<T> {
     fmapDefault <U>(def: Maybe<U>, f: (a: T) => U): Maybe<U> {
         return MaybeT.of<U>(f(this._value))
     }
-    // fmapArr<U>(f: (a: T) => Array<U>): Array<U> {
-    //     return f(this._value).unpackT([])
-    // }
 
     flatMap<U>(f: (a: T) => Maybe<U>): Maybe<U> {
         return f(this._value)

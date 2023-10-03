@@ -806,25 +806,13 @@ class TextStateIO {
             .fmap(TextState.outputArethusaSentenceIds)
             .fromMaybe([])
 
-        // console.log("calling new sentence view state")
-
         if (ts.bind(TextState.sentenceVS).isNothing) {
             if (sentenceIds.length > 0) {
-                // console.log("new sentence view state")
-                // if (tsio.currentStateIdx.unpackT(0) > 0) {
-                //     console.log("copying")
-                //     const x = ts.fmap(TextState
-                //         .setSentenceVS(
-                //             tsio.prevState.bind(TextState.sentenceVSDeep)
-                //         ))
-                // }
-                // else {
-                    ts.fmap(TextState
-                        .setSentenceVS(
-                            MaybeT.of(new SentenceViewState(sentenceIds))
-                        )   
-                    )
-                // }
+                ts.fmap(TextState
+                    .setSentenceVS(
+                        MaybeT.of(new SentenceViewState(sentenceIds))
+                    )   
+                )
             }
         }
     }

@@ -35,9 +35,6 @@ class Just {
     fmapDefault(def, f) {
         return MaybeT.of(f(this._value));
     }
-    // fmapArr<U>(f: (a: T) => Array<U>): Array<U> {
-    //     return f(this._value).unpackT([])
-    // }
     flatMap(f) {
         return f(this._value);
     }
