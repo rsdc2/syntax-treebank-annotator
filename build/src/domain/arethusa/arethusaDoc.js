@@ -411,10 +411,10 @@ ArethusaDoc.renumberTokenIds = (renumberHeads) => (a) => {
             .bind(XML.textContent) // TODO: use a better function for this
             .fmap(Str.toNum)
             .unpack(idx);
-        const currentHeadId = XML.attr("head")(DXML.node(w))
-            .bind(XML.textContent) // TODO: use a better function for this
-            .fmap(Str.toNum)
-            .unpack(-1);
+        const currentHeadIdStr = XML.attr("head")(DXML.node(w))
+            .bind(XML.textContent)
+            .unpack("");
+        const currentHeadIdInt = Str.toNum(currentHeadIdStr);
         const newId = idx + 1;
         const offset = newId - currentId;
         const newSecDeps = XML.attr("secdeps")(DXML.node(w))
@@ -451,11 +451,13 @@ ArethusaDoc.renumberTokenIds = (renumberHeads) => (a) => {
         }).unpack("");
         // If current head is root, or if renumberHeads is set to false
         // do not renumber
-        const newHeadId = renumberHeads === true && currentHeadId !== 0 ? currentHeadId + offset : currentHeadId;
+        const newHeadIdStr = renumberHeads === true && currentHeadIdInt !== 0 && Number.isNaN(currentHeadIdInt) === false
+            ? Str.fromNum(currentHeadIdInt + offset)
+            : currentHeadIdStr;
         // Renumber token and head ids
         const newToken = MaybeT.ofThrow("Could not create Maybe<Word>.", DXML.node(w))
             .fmapErr("Could not make word node.", XML.setId(Str.fromNum(newId)))
-            .fmapErr("Could not set head ID.", XML.setAttr("head")(Str.fromNum(newHeadId)))
+            .fmapErr("Could not set head ID.", XML.setAttr("head")(newHeadIdStr))
             .fmapErr("Could not set secdeps.", XML.setAttr("secdeps")(newSecDeps))
             .fmapErr("Could not set ID.", ArethusaToken.fromXMLNode);
         return newToken;

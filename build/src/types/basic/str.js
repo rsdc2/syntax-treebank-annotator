@@ -9,7 +9,11 @@ class Str {
         return Str.fromNum(parseInt(s) + 1);
     }
     static toNum(s) {
-        return parseInt(s);
+        const num = parseInt(s);
+        // if (Number.isNaN(num)) {
+        //     console.error("Not a number")
+        // }
+        return num;
     }
     static toMaybeNum(s) {
         const x = parseInt(s);

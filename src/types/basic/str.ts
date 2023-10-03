@@ -112,7 +112,11 @@ class Str {
     }
 
     static toNum (s: string) {
-        return parseInt(s)
+        const num = parseInt(s)
+        // if (Number.isNaN(num)) {
+        //     console.error("Not a number")
+        // }
+        return num
     }
 
     static toMaybeNum (s: string) {
