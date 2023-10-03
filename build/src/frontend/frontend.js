@@ -430,7 +430,8 @@ Frontend.processArethusa = (arethusaStr) => {
     Frontend.saveCurrentState();
     const arethusa = MaybeT
         .of(arethusaStr)
-        .bind(ArethusaDoc.fromXMLStr);
+        .bind(ArethusaDoc.fromXMLStr)
+        .bind(ArethusaDoc.renumberTokenIds(true));
     const textstate = TextState.of(arethusa.fmap(ViewState.of("1")("1")), Nothing.of(), Nothing.of(), Nothing.of(), arethusa, arethusa, Nothing.of());
     globalState
         .textStateIO

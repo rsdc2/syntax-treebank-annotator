@@ -194,7 +194,7 @@ ArethusaDoc.fromPlainTextStr = (plainText) => {
     return arethusaXMLNodeWithChildren
         .bind(ArethusaDoc.fromNode)
         .bind(ArethusaDoc.reorderSentenceIds)
-        .bind(ArethusaDoc.reorderTokenIds);
+        .bind(ArethusaDoc.renumberTokenIds(false));
 };
 ArethusaDoc.fromXMLStr = (arethusaXML) => {
     return MaybeT.of(arethusaXML)
@@ -391,14 +391,36 @@ ArethusaDoc.reorderSentenceIds = (a) => {
         .bindErr("No Arethusa", ArethusaDoc.removeSentences)
         .bindErr("No Arethusa with no sentences.", ArethusaDoc.appendSentences(sentences));
 };
-ArethusaDoc.reorderTokenIds = (a) => {
+/**
+ * Renumbers token ids in the treebank from 1 to the final token;
+ * also renumbers head ids if 'renumberHeads' is set to true
+ * @param a
+ * @returns
+ */
+ArethusaDoc.renumberTokenIds = (renumberHeads) => (a) => {
     const maybeWords = MaybeT.of(a)
         .bindErr("No Arethusa.", ArethusaDoc.deepcopy)
         .fmapErr("No words in Arethusa.", ArethusaDoc.tokens)
         .unpackT([])
-        .map((w, idx) => MaybeT.ofThrow("Could not create Maybe<Word>.", DXML.node(w))
-        .fmapErr("Could not make word node.", XML.setId(Str.fromNum(idx + 1)))
-        .fmapErr("Could not set ID.", ArethusaToken.fromXMLNode));
+        .map((w, idx) => {
+        const currentId = XML.attr("id")(DXML.node(w))
+            .bind(XML.textContent) // TODO: use a better function for this
+            .fmap(Str.toNum).unpack(idx);
+        const currentHeadId = XML.attr("head")(DXML.node(w))
+            .bind(XML.textContent) // TODO: use a better function for this
+            .fmap(Str.toNum).unpack(-1);
+        const newId = idx + 1;
+        const offset = newId - currentId;
+        // If current head is root, or if renumberHeads is set to false
+        // do not renumber
+        const newHeadId = renumberHeads === true && currentHeadId !== 0 ? currentHeadId + offset : currentHeadId;
+        // Renumber token and head ids
+        const newToken = MaybeT.ofThrow("Could not create Maybe<Word>.", DXML.node(w))
+            .fmapErr("Could not make word node.", XML.setId(Str.fromNum(newId)))
+            .fmapErr("Could not set head ID.", XML.setAttr("head")(Str.fromNum(newHeadId)))
+            .fmapErr("Could not set ID.", ArethusaToken.fromXMLNode);
+        return newToken;
+    });
     const words = Arr.removeNothings(maybeWords);
     return Arr.head(words)
         .fmapErr("No first node.", DXML.node)
