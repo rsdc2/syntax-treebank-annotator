@@ -245,7 +245,8 @@ namespace TreeNode {
     export const slashesToStr = (node: ITreeNode) => {
         const s = node
                 .secondaryDeps
-                .map(SecondaryDep.toStr).join(";")
+                .map(SecondaryDep.toStr)
+                .join(";")
         
         // If secondary deps have no string representation, 
         // can end up with empty strings at the start

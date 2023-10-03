@@ -589,14 +589,46 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
             .map( (w: ArethusaWord, idx: number) => {
                 const currentId = XML.attr("id")(DXML.node(w))
                                     .bind(XML.textContent)  // TODO: use a better function for this
-                                    .fmap(Str.toNum).unpack(idx)
+                                    .fmap(Str.toNum)
+                                    .unpack(idx)
 
                 const currentHeadId = XML.attr("head")(DXML.node(w))
                                     .bind(XML.textContent) // TODO: use a better function for this
-                                    .fmap(Str.toNum).unpack(-1)
+                                    .fmap(Str.toNum)
+                                    .unpack(-1)
 
                 const newId = idx + 1
                 const offset = newId - currentId
+
+                const newSecDeps = XML.attr("secdeps")(DXML.node(w))
+                                    .bind(XML.textContent) // TODO: use a better function for this
+                                    .fmap( (s1:string) => {
+
+                                        if (renumberHeads === false) {return s1}
+                                        if (s1.trim() === "" || s1.trim () === "_") {return s1}
+                                        if (s1.trim() === "_") {return "_"}
+
+                                        return Str.split(";")(s1).map( (s2:string) => {
+
+                                            const head_rel = Str.split(":")(s2)
+                                            if (head_rel.length === 0) {
+                                                return s2
+                                            } else if (head_rel.length <= 1) {
+                                                console.error("Head-rel string has too few elements")
+                                            } else if (head_rel.length > 2) {
+                                                console.error("Head-rel string has too many elements")
+                                            }
+                                            const head = Str.toNum(head_rel[0])
+                                            const rel = head_rel[1]
+                                            
+                                            if (head === 0) {
+                                                return s2
+                                            }
+
+                                            return `${Str.fromNum(head + offset)}:${rel}`
+                                        } )
+                                        .join(";")
+                                    }).unpack("")
 
                 // If current head is root, or if renumberHeads is set to false
                 // do not renumber
@@ -606,6 +638,7 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
                 const newToken = MaybeT.ofThrow("Could not create Maybe<Word>.", DXML.node(w))
                     .fmapErr("Could not make word node.", XML.setId(Str.fromNum(newId)))
                     .fmapErr("Could not set head ID.", XML.setAttr("head")(Str.fromNum(newHeadId)))
+                    .fmapErr("Could not set secdeps.", XML.setAttr("secdeps")(newSecDeps))
                     .fmapErr("Could not set ID.", ArethusaToken.fromXMLNode)
 
                 return newToken
