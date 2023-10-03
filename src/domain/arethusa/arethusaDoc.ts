@@ -633,7 +633,6 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
 
                 // If current head is root, or if renumberHeads is set to false
                 // do not renumber
-
                 const newHeadIdStr = renumberHeads === true && currentHeadIdInt !== 0 && Number.isNaN(currentHeadIdInt) === false 
                     ? Str.fromNum(currentHeadIdInt + offset) 
                     : currentHeadIdStr
