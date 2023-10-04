@@ -230,7 +230,7 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
 
         return arethusaXMLNodeWithChildren
             .bind(ArethusaDoc.fromNode)
-            .bind(ArethusaDoc.reorderSentenceIds)
+            .bind(ArethusaDoc.renumberSentenceIds)
             .bind(ArethusaDoc.renumberTokenIds(false))
     }
 
@@ -283,7 +283,7 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
             .bind(XML.documentElement)
             .bind(ArethusaDoc.fromNode)
 
-        return newArethusa.bind(ArethusaDoc.reorderSentenceIds)    
+        return newArethusa.bind(ArethusaDoc.renumberSentenceIds)    
     }
 
     static insertSentenceAfter = 
@@ -554,7 +554,7 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
             .bind(ArethusaDoc._removeTokenOrSentence (wordId) (a))
     }
 
-    static reorderSentenceIds = (a: ArethusaDoc): Maybe<ArethusaDoc> => {
+    static renumberSentenceIds = (a: ArethusaDoc): Maybe<ArethusaDoc> => {
 
         const maybeSentences = MaybeT.of(a)
             .bind(ArethusaDoc.deepcopy)

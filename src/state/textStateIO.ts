@@ -760,7 +760,7 @@ class TextStateIO {
             .outputArethusaP
             .applyBind(removeSentence)
             .bind(ArethusaDoc.renumberTokenIds(true))
-            .bind(ArethusaDoc.reorderSentenceIds)
+            .bind(ArethusaDoc.renumberSentenceIds)
 
         s.pushOutputArethusa 
             (false)
