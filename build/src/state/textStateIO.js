@@ -543,7 +543,8 @@ TextStateIO.removeArethusaToken = (s) => {
         .fmap(ArethusaDoc.removeTokenByTokenAndSentenceId));
     const newArethusa = s
         .outputArethusaP
-        .applyBind(removeWord);
+        .applyBind(removeWord)
+        .bind(ArethusaDoc.renumberTokenIds(true));
     s.pushOutputArethusa(false)(new ViewState(Nothing.of(), Nothing.of(), newArethusa))(s.treeState)(newArethusa);
 };
 TextStateIO.sentenceViewState = (tsio) => {

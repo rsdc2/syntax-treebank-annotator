@@ -779,6 +779,7 @@ class TextStateIO {
         const newArethusa = s
             .outputArethusaP
             .applyBind(removeWord)
+            .bind(ArethusaDoc.renumberTokenIds(true))
 
         s.pushOutputArethusa 
             (false)
