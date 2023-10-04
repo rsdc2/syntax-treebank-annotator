@@ -59,7 +59,10 @@ class TextStateIO {
                 .applyBind(getSentence);
             const newArethusa = sentence
                 .applyBind(moveToken);
-            this.pushOutputArethusa(false)(new ViewState(this.currentTokenId, this.currentSentenceId, newArethusa))(this.treeState)(newArethusa);
+            // .bind(ArethusaDoc.renumberTokenIds(true))
+            this.pushOutputArethusa(false)(new ViewState(this.currentTokenId
+            // .fmap(Str.increment)
+            , this.currentSentenceId, newArethusa))(this.treeState)(newArethusa);
         };
         this.moveWordToNextSentence = () => {
             TextStateIO.moveTokenToNextSentence(this);
