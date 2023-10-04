@@ -437,6 +437,7 @@ Frontend.processArethusa = (arethusaStr) => {
         .textStateIO
         .fmapErr("No textStateIO", TextStateIO.appendNewState(false)(textstate));
     globalState.createTreeStateIO();
+    // console.log(globalState.treeStateIO.value?.currentTreeState.slashes)
     globalState.graph();
 };
 Frontend.processText = (textStr) => {

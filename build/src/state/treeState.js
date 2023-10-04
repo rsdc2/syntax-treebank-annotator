@@ -20,7 +20,7 @@ class TreeState {
                 .find((slash) => {
                 return SecondaryDep
                     .ofInterface(slash)
-                    .slashIdFromTokenIds === slashId;
+                    .slashIdFromTreeNodeIds(this).unpack("") === slashId;
             }));
         };
         this.tokenIdToTreeNodeId = (tokenId) => {

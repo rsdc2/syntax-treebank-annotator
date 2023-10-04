@@ -93,7 +93,6 @@ class TreeStateIO {
                     const f = newRel.fmap(TreeStateIO.changeSlashRel);
                     const x = slashId.applyFmap(f);
                     const y = MaybeT.of(this).applyFmap(x);
-                    console.log("Updated slash");
                     break;
             }
         };
@@ -218,7 +217,6 @@ TreeStateIO.changeNodeValue = (nodeField) => (nodeValue) => (treeNodeId) => (sta
     }
 };
 TreeStateIO.changeSlashRel = (newRel) => (slashId) => (state) => {
-    console.log("Slashes: ", state.slashes);
     const currentSlash = state
         .currentTreeState
         .slashBySlashId(slashId);
@@ -228,7 +226,7 @@ TreeStateIO.changeSlashRel = (newRel) => (slashId) => (state) => {
     switch (changed) {
         case (true):
             const newSlash = currentSlash
-                .fmap(SecondaryDep.changeRel(newRel))
+                .fmapErr(`Could not find current slash (looking for Id ${slashId}).`, SecondaryDep.changeRel(newRel))
                 .fmap(SecondaryDep.ofInterface);
             const getNode = state
                 .currentTreeState
@@ -239,13 +237,13 @@ TreeStateIO.changeSlashRel = (newRel) => (slashId) => (state) => {
                 .bind(getNode);
             const changeSlash = newSlash.fmap(TreeNode.changeSlash);
             const newParentNode = parentNode.applyFmap(changeSlash);
+            // This is where the node gets changed in the overall state
             newParentNode.fmap(state.changeNode);
             break;
         case (false):
             Graph.unclickAll();
             break;
     }
-    console.log("Slashes after update", state.slashes);
 };
 TreeStateIO.currentStateId = (state) => {
     return state.currentTreeState._state_id;

@@ -93,7 +93,7 @@ class ArethusaArtificial implements HasText {
         return rel
     }
 
-    static secondaryDeps = (w: ArethusaArtificial) => {
+    static secondaryDeps = (w: ArethusaArtificial): ISecondaryDep[] => {
         const slashStr = XML.attr ("secdeps") (w._node)
             .bind(XML.nodeValue)
             .fromMaybe("")

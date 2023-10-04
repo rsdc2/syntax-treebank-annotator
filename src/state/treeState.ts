@@ -214,7 +214,7 @@ class TreeState implements ITreeState {
         )
     }
 
-    get slashes ()  {
+    get slashes (): SecondaryDep[]  {
         return this.nodes
             .reduce ( (acc: SecondaryDep[], node:ITreeNode) => {
                 return Arr.concat
@@ -227,14 +227,14 @@ class TreeState implements ITreeState {
             , [])
     }
 
-    slashBySlashId = (slashId: string) => {
+    slashBySlashId = (slashId: string): Maybe<SecondaryDep> => {
         return MaybeT.of(this
             .slashes
             .find (
                 (slash: ISecondaryDep) => {
                     return SecondaryDep
                         .ofInterface(slash)
-                        .slashIdFromTokenIds === slashId
+                        .slashIdFromTreeNodeIds(this).unpack("") === slashId
                 }
             ))
     }

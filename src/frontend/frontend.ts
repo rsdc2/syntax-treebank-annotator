@@ -213,15 +213,17 @@ class Frontend {
             arethusa,
             Nothing.of()
         )
-
+                
         globalState
             .textStateIO
             .fmapErr(
                 "No textStateIO",
                 TextStateIO.appendNewState(false)(textstate)
             )    
+            
 
         globalState.createTreeStateIO()
+        // console.log(globalState.treeStateIO.value?.currentTreeState.slashes)
         globalState.graph()
     }
 

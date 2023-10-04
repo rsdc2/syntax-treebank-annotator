@@ -203,7 +203,6 @@ class TreeStateIO {
                 const f = newRel.fmap(TreeStateIO.changeSlashRel)
                 const x = slashId.applyFmap(f)
                 const y = MaybeT.of(this).applyFmap(x)
-                console.log("Updated slash")
                 break
         }
 
@@ -215,7 +214,6 @@ class TreeStateIO {
         (state: TreeStateIO) => 
 
         {
-            console.log("Slashes: ", state.slashes)
             const currentSlash = state
                 .currentTreeState
                 .slashBySlashId(slashId)
@@ -228,7 +226,7 @@ class TreeStateIO {
             switch (changed) {
                 case (true):
                     const newSlash = currentSlash
-                        .fmap(SecondaryDep.changeRel(newRel))
+                        .fmapErr(`Could not find current slash (looking for Id ${slashId}).`, SecondaryDep.changeRel(newRel))
                         .fmap(SecondaryDep.ofInterface)
         
                     const getNode = state
@@ -252,9 +250,6 @@ class TreeStateIO {
                     Graph.unclickAll()
                     break
             }
-            console.log("Slashes after update", state.slashes)
-
-
         }
 
     changeSlashRel = 
