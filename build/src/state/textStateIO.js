@@ -537,7 +537,7 @@ TextStateIO.removeSentence = (s) => {
         .outputArethusaP
         .applyBind(removeSentence)
         .bind(ArethusaDoc.renumberTokenIds(true))
-        .bind(ArethusaDoc.reorderSentenceIds);
+        .bind(ArethusaDoc.renumberSentenceIds);
     s.pushOutputArethusa(false)(new ViewState(Nothing.of(), Nothing.of(), newArethusa))(s.treeState)(newArethusa);
 };
 TextStateIO.removeArethusaToken = (s) => {

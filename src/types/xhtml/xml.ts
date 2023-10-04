@@ -486,8 +486,6 @@ class XML {
         return MaybeT.of(node.lastChild)
     }
 
-
-
     static nextSibling = (node: Node) => {
         return Arr.head (XML.xpathMaybeC("following-sibling::*") (MaybeT.of(node)).fromMaybe([]))
     }
@@ -553,7 +551,8 @@ class XML {
     }
 
     static previousSibling = (node: Node) => {
-        return Arr.head (XML.xpathMaybeC("preceding-sibling::*") (MaybeT.of(node)).fromMaybe([]))
+        const sib = Arr.last (XML.xpathMaybeC("preceding-sibling::*") (MaybeT.of(node)).fromMaybe([]))
+        return sib
     }
 
     static previousSiblings = (node: Node) => {

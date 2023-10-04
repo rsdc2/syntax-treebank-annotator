@@ -436,7 +436,8 @@ XML.previous = (node) => {
     return (XML.xpathMaybeC("preceding::*")(MaybeT.of(node)).fromMaybe([]));
 };
 XML.previousSibling = (node) => {
-    return Arr.head(XML.xpathMaybeC("preceding-sibling::*")(MaybeT.of(node)).fromMaybe([]));
+    const sib = Arr.last(XML.xpathMaybeC("preceding-sibling::*")(MaybeT.of(node)).fromMaybe([]));
+    return sib;
 };
 XML.previousSiblings = (node) => {
     return (XML.xpathMaybeC("preceding-sibling::*")(MaybeT.of(node)).fromMaybe([]));

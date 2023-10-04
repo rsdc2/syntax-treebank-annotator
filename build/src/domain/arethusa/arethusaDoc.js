@@ -197,7 +197,7 @@ ArethusaDoc.fromPlainTextStr = (plainText) => {
         .bind(XML.appendChildrenToNode(sentenceElemsNoNothings));
     return arethusaXMLNodeWithChildren
         .bind(ArethusaDoc.fromNode)
-        .bind(ArethusaDoc.reorderSentenceIds)
+        .bind(ArethusaDoc.renumberSentenceIds)
         .bind(ArethusaDoc.renumberTokenIds(false));
 };
 ArethusaDoc.fromXMLStr = (arethusaXML) => {
@@ -232,7 +232,7 @@ ArethusaDoc.insertSentence = (insertFunc) => (refSentenceId) => (a) => {
         .bind(XML.ownerDocument)
         .bind(XML.documentElement)
         .bind(ArethusaDoc.fromNode);
-    return newArethusa.bind(ArethusaDoc.reorderSentenceIds);
+    return newArethusa.bind(ArethusaDoc.renumberSentenceIds);
 };
 ArethusaDoc.insertSentenceAfter = (refSentenceId) => (a) => {
     return ArethusaDoc.insertSentence(XML.insertAfter)(refSentenceId)(a);
@@ -381,7 +381,7 @@ ArethusaDoc.removeTokenByTokenAndSentenceId = (wordId) => (sentenceId) => (a) =>
         .tokenByTokenAndSentenceId(wordId)(sentenceId)(a)
         .bind(ArethusaDoc._removeTokenOrSentence(wordId)(a));
 };
-ArethusaDoc.reorderSentenceIds = (a) => {
+ArethusaDoc.renumberSentenceIds = (a) => {
     const maybeSentences = MaybeT.of(a)
         .bind(ArethusaDoc.deepcopy)
         .fmap(ArethusaDoc.sentences)
