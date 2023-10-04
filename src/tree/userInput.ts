@@ -75,8 +75,7 @@ namespace UserInput {
         const treeNodeId = HTML.Elem.getAttr ("treenode-id") (this)
 
         if (globalState.treeStateIO.bind(TreeStateIO.lastClickedId).value === treeNodeId.value) {
-            globalState.treeStateIO
-                .fmap(TreeStateIO.changeClickState( ClickState.none() ))
+            globalState.treeStateIO.fmap(TreeStateIO.changeClickState( ClickState.none() ))
             return
         }
 

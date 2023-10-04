@@ -98,6 +98,7 @@ class TreeStateIO {
             }
         )
         if (nodeIdx) {
+
             if (newState._nodes) {
                 newState._nodes[nodeIdx] = newNode
             }
@@ -177,9 +178,7 @@ class TreeStateIO {
         switch (linkType) {
             case (LinkType.Head):
 
-                const depIdx = HTML.Elem.getAttr 
-                    ("dep-id") 
-                    (elem)
+                const depIdx = HTML.Elem.getAttr("dep-id")(elem)
 
                 const currentRel = depIdx
                     .bind(this.currentTreeState.nodeByTreeNodeId)
@@ -192,9 +191,8 @@ class TreeStateIO {
                         Graph.unclickAll()
                         break
                     case (true):
-                        depIdx.applyFmap(
-                            newRel.fmap(
-                                this.changeNodeValue("relation")))   
+                        const x = depIdx.applyFmap(newRel.fmap(TreeStateIO.changeNodeValue("relation")))  
+                        const y = MaybeT.of(this).applyFmap(x) 
                         break
                 }
      
@@ -202,9 +200,10 @@ class TreeStateIO {
 
             case (LinkType.Slash):
                 const slashId = HTML.Elem.getAttr ("slash-id") (elem)
-                slashId
-                    .applyFmap(newRel.fmap(this.changeSlashRel))
-
+                const f = newRel.fmap(TreeStateIO.changeSlashRel)
+                const x = slashId.applyFmap(f)
+                const y = MaybeT.of(this).applyFmap(x)
+                console.log("Updated slash")
                 break
         }
 
@@ -216,6 +215,7 @@ class TreeStateIO {
         (state: TreeStateIO) => 
 
         {
+            console.log("Slashes: ", state.slashes)
             const currentSlash = state
                 .currentTreeState
                 .slashBySlashId(slashId)
@@ -242,9 +242,9 @@ class TreeStateIO {
         
                     const changeSlash = newSlash.fmap(TreeNode.changeSlash)
         
-                    const newParentNode = parentNode
-                        .applyFmap(changeSlash)
-                        
+                    const newParentNode = parentNode.applyFmap(changeSlash)
+                    
+                    // This is where the node gets changed in the overall state
                     newParentNode.fmap(state.changeNode)    
                     break
                 
@@ -252,6 +252,7 @@ class TreeStateIO {
                     Graph.unclickAll()
                     break
             }
+            console.log("Slashes after update", state.slashes)
 
 
         }

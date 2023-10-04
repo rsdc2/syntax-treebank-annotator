@@ -83,14 +83,17 @@ class TreeStateIO {
                             Graph.unclickAll();
                             break;
                         case (true):
-                            depIdx.applyFmap(newRel.fmap(this.changeNodeValue("relation")));
+                            const x = depIdx.applyFmap(newRel.fmap(TreeStateIO.changeNodeValue("relation")));
+                            const y = MaybeT.of(this).applyFmap(x);
                             break;
                     }
                     break;
                 case (LinkType.Slash):
                     const slashId = HTML.Elem.getAttr("slash-id")(elem);
-                    slashId
-                        .applyFmap(newRel.fmap(this.changeSlashRel));
+                    const f = newRel.fmap(TreeStateIO.changeSlashRel);
+                    const x = slashId.applyFmap(f);
+                    const y = MaybeT.of(this).applyFmap(x);
+                    console.log("Updated slash");
                     break;
             }
         };
@@ -215,6 +218,7 @@ TreeStateIO.changeNodeValue = (nodeField) => (nodeValue) => (treeNodeId) => (sta
     }
 };
 TreeStateIO.changeSlashRel = (newRel) => (slashId) => (state) => {
+    console.log("Slashes: ", state.slashes);
     const currentSlash = state
         .currentTreeState
         .slashBySlashId(slashId);
@@ -234,14 +238,14 @@ TreeStateIO.changeSlashRel = (newRel) => (slashId) => (state) => {
                 .fmap(Str.fromNum)
                 .bind(getNode);
             const changeSlash = newSlash.fmap(TreeNode.changeSlash);
-            const newParentNode = parentNode
-                .applyFmap(changeSlash);
+            const newParentNode = parentNode.applyFmap(changeSlash);
             newParentNode.fmap(state.changeNode);
             break;
         case (false):
             Graph.unclickAll();
             break;
     }
+    console.log("Slashes after update", state.slashes);
 };
 TreeStateIO.currentStateId = (state) => {
     return state.currentTreeState._state_id;
