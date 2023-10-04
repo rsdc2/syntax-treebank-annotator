@@ -147,11 +147,14 @@ class TextStateIO {
             newArethusa
         )
     
+        const finalArethusa = newArethusa
+            .bind(ArethusaDoc.renumberTokenIds(true))
+
         s.pushOutputArethusa 
             (false) 
             (newViewState) 
             (s.treeState) 
-            (newArethusa)
+            (finalArethusa)
     } 
 
     get outputArethusaP () {
@@ -756,6 +759,8 @@ class TextStateIO {
         const newArethusa = s
             .outputArethusaP
             .applyBind(removeSentence)
+            .bind(ArethusaDoc.renumberTokenIds(true))
+            .bind(ArethusaDoc.reorderSentenceIds)
 
         s.pushOutputArethusa 
             (false)
