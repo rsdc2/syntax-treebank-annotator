@@ -223,7 +223,6 @@ class Frontend {
             
 
         globalState.createTreeStateIO()
-        // console.log(globalState.treeStateIO.value?.currentTreeState.slashes)
         globalState.graph()
     }
 

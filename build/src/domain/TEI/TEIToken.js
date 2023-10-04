@@ -49,10 +49,11 @@ var TextNode;
 (function (TextNode) {
     TextNode.filterByNotAncestor = (tagNames) => (text) => {
         const ancestorXpaths = tagNames.reduce((ancestors, tagName) => {
-            return ancestors.concat(`[not(ancestor::t:${tagName})]`);
+            return ancestors.concat(`local-name()="${tagName}" or `);
         }, '');
-        const xpathStr = Str.concat(ancestorXpaths)("descendant::text()");
-        return XML.xpath(xpathStr)(text).unpack([]).length !== 0;
+        const xpathStr = Str.concat(ancestorXpaths)("parent::*[descendant::text()[not(ancestor::*[");
+        const xpathStr_ = Str.substring(0)(xpathStr.length - 4)(xpathStr) + "])]]/descendant::text()";
+        return XML.xpath(xpathStr_)(text).unpack([]).length !== 0;
     };
     TextNode.excludeTextNodesWithAncestors = (tagNames) => (token) => {
         const ancestorXpaths = tagNames.reduce((ancestors, tagName) => {

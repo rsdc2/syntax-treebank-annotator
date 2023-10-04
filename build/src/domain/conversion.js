@@ -25,7 +25,7 @@ Conversion.epidocXMLToArethusaXML = (epidocXML) => {
         .flatMap(Edition.getTokens);
     const attrs = tokens.map((token) => {
         const attr = {
-            form: token.text.fromMaybe(""),
+            form: token.normalizedText,
             lemma: "",
             postag: "",
             relation: "",

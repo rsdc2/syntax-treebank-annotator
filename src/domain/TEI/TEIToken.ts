@@ -72,12 +72,14 @@ namespace TextNode {
     {
         const ancestorXpaths = tagNames.reduce(
             (ancestors:string, tagName:string) => {
-                return ancestors.concat(`[not(ancestor::t:${tagName})]`)
+                return ancestors.concat(`local-name()="${tagName}" or `)
             }, ''
         )
-        const xpathStr = Str.concat(ancestorXpaths)("descendant::text()")
+        const xpathStr = Str.concat(ancestorXpaths)("parent::*[descendant::text()[not(ancestor::*[") 
+
+        const xpathStr_ = Str.substring(0)(xpathStr.length - 4)(xpathStr) + "])]]/descendant::text()"
         
-        return XML.xpath(xpathStr)(text).unpack([]).length !== 0
+        return XML.xpath(xpathStr_)(text).unpack([]).length !== 0
     }
 
     export const excludeTextNodesWithAncestors = 
