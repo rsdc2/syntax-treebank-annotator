@@ -75,6 +75,8 @@ namespace TextNode {
                 return ancestors.concat(`local-name()="${tagName}" or `)
             }, ''
         )
+
+        // TODO improve this code
         const xpathStr = Str.concat(ancestorXpaths)("parent::*[descendant::text()[not(ancestor::*[") 
 
         const xpathStr_ = Str.substring(0)(xpathStr.length - 4)(xpathStr) + "])]]/descendant::text()"
