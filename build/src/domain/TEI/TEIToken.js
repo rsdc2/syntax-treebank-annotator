@@ -51,6 +51,7 @@ var TextNode;
         const ancestorXpaths = tagNames.reduce((ancestors, tagName) => {
             return ancestors.concat(`local-name()="${tagName}" or `);
         }, '');
+        // TODO improve this code
         const xpathStr = Str.concat(ancestorXpaths)("parent::*[descendant::text()[not(ancestor::*[");
         const xpathStr_ = Str.substring(0)(xpathStr.length - 4)(xpathStr) + "])]]/descendant::text()";
         return XML.xpath(xpathStr_)(text).unpack([]).length !== 0;
