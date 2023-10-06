@@ -18,11 +18,13 @@ class TEIToken implements Word, HasText {
 
     get normalizedText(): string {
         return this.textNodes
-            .filter(TextNode.filterByNotAncestor(["g", "orig", "am", "sic"]))
+            .filter(TextNode.filterByNotAncestor(["g", "orig", "sic"])) // "am", 
             .map( (textNode: Text) => TextNode.suppliedInBrackets(textNode) )
             .join("")
             .replace("][", "")
             .replace(",", "")
+            .replace(")", "")
+            .replace("(", "")
     }
 
 
