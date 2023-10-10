@@ -582,11 +582,13 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
      */
 
     static renumberTokenIds = (renumberHeads: boolean) => (a: ArethusaDoc): Maybe<ArethusaDoc> => {
+        const changes = new Array()
+
         const maybeWords = MaybeT.of(a)
             .bindErr("No Arethusa.", ArethusaDoc.deepcopy)
             .fmapErr("No words in Arethusa.", ArethusaDoc.tokens)
             .unpack([])
-            .map( (w: ArethusaWord, idx: number) => {
+            .map( (w: ArethusaToken, idx: number) => {
                 const currentId = XML.attr("id")(DXML.node(w))
                                     .bind(XML.textContent)  // TODO: use a better function for this
                                     .fmap(Str.toNum)
@@ -633,14 +635,16 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
 
                 // If current head is root, or if renumberHeads is set to false
                 // do not renumber
-                const newHeadIdStr = renumberHeads === true && currentHeadIdInt > 0 && Number.isNaN(currentHeadIdInt) === false 
-                    ? Str.fromNum(currentHeadIdInt + offset) 
-                    : currentHeadIdStr
+                // const newHeadIdStr = renumberHeads === true && currentHeadIdInt > 0 && Number.isNaN(currentHeadIdInt) === false 
+                //     ? Str.fromNum(currentHeadIdInt + offset) 
+                //     : currentHeadIdStr
+
+                changes.push([Str.fromNum(currentId), Str.fromNum(newId)])
 
                 // Renumber token and head ids
                 const newToken = MaybeT.ofThrow("Could not create Maybe<Word>.", DXML.node(w))
                     .fmapErr("Could not make word node.", XML.setId(Str.fromNum(newId)))
-                    .fmapErr("Could not set head ID.", XML.setAttr("head")(newHeadIdStr))
+                    // .fmapErr("Could not set head ID.", XML.setAttr("head")(newHeadIdStr))
                     .fmapErr("Could not set secdeps.", XML.setAttr("secdeps")(newSecDeps))
                     .fmapErr("Could not set ID.", ArethusaToken.fromXMLNode)
 
@@ -649,11 +653,39 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
             )
 
         const words = Arr.removeNothings(maybeWords)
-        return Arr.head(words)
+        console.log(changes)
+
+        let words_
+        if (renumberHeads) {
+            words_ = words.map( (w: ArethusaToken): ArethusaToken => {
+                const wordHead = XML.attr("head")(DXML.node(w))                                    
+                                    .bind(XML.textContent)  // TODO: use a better function for this
+                                    .unpack("")
+                
+                let w_
+
+                changes.forEach( ([oldId, newId]: [string, string]) => {
+
+                    if (wordHead == oldId && wordHead !== "0") {
+                        const newNode = DXML.node(w) as HasXMLNode
+                        newNode.setAttribute("head", newId)
+                        w_ = ArethusaToken.fromXMLNode(newNode)
+                    } else { w_ = w }
+                })
+                
+                return w_
+            })
+        } else {
+            words_ = words
+        }
+
+
+        return Arr.head(words_)
             .fmapErr("No first node.", DXML.node)
             .bindErr("No node.", XML.ownerDocument)
             .bindErr("No owner document", XML.documentElement)
             .bindErr("No document element.", ArethusaDoc.fromNode)
+
     }
 
     static replaceSentence = (a: ArethusaDoc) => (newSentence: ArethusaSentence) => {
