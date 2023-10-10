@@ -402,6 +402,7 @@ ArethusaDoc.renumberSentenceIds = (a) => {
  * @returns
  */
 ArethusaDoc.renumberTokenIds = (renumberHeads) => (a) => {
+    const changes = new Array();
     const maybeWords = MaybeT.of(a)
         .bindErr("No Arethusa.", ArethusaDoc.deepcopy)
         .fmapErr("No words in Arethusa.", ArethusaDoc.tokens)
@@ -417,53 +418,74 @@ ArethusaDoc.renumberTokenIds = (renumberHeads) => (a) => {
         const currentHeadIdInt = Str.toNum(currentHeadIdStr);
         const newId = idx + 1;
         const offset = newId - currentId;
-        const newSecDeps = XML.attr("secdeps")(DXML.node(w))
-            .bind(XML.textContent) // TODO: use a better function for this
-            .fmap((s1) => {
-            if (renumberHeads === false) {
-                return s1;
-            }
-            if (s1.trim() === "" || s1.trim() === "_") {
-                return s1;
-            }
-            if (s1.trim() === "_") {
-                return "_";
-            }
-            return Str.split(";")(s1).map((s2) => {
-                const head_rel = Str.split(":")(s2);
-                if (head_rel.length === 0) {
-                    return s2;
-                }
-                else if (head_rel.length <= 1) {
-                    console.error("Head-rel string has too few elements");
-                }
-                else if (head_rel.length > 2) {
-                    console.error("Head-rel string has too many elements");
-                }
-                const head = Str.toNum(head_rel[0]);
-                const rel = head_rel[1];
-                if (head === 0) {
-                    return s2;
-                }
-                return `${Str.fromNum(head + offset)}:${rel}`;
-            })
-                .join(";");
-        }).unpack("");
-        // If current head is root, or if renumberHeads is set to false
-        // do not renumber
-        const newHeadIdStr = renumberHeads === true && currentHeadIdInt > 0 && Number.isNaN(currentHeadIdInt) === false
-            ? Str.fromNum(currentHeadIdInt + offset)
-            : currentHeadIdStr;
+        changes.push([Str.fromNum(currentId), Str.fromNum(newId)]);
         // Renumber token and head ids
         const newToken = MaybeT.ofThrow("Could not create Maybe<Word>.", DXML.node(w))
             .fmapErr("Could not make word node.", XML.setId(Str.fromNum(newId)))
-            .fmapErr("Could not set head ID.", XML.setAttr("head")(newHeadIdStr))
-            .fmapErr("Could not set secdeps.", XML.setAttr("secdeps")(newSecDeps))
+            // .fmapErr("Could not set secdeps.", XML.setAttr("secdeps")(newSecDeps))
             .fmapErr("Could not set ID.", ArethusaToken.fromXMLNode);
         return newToken;
     });
     const words = Arr.removeNothings(maybeWords);
-    return Arr.head(words)
+    let words_ = words;
+    if (renumberHeads) {
+        words_ = words.map((w) => {
+            const wordHead = XML.attr("head")(DXML.node(w))
+                .bind(XML.textContent) // TODO: use a better function for this
+                .unpack("");
+            let w_;
+            changes.forEach(([oldId, newId]) => {
+                const newSecDeps = XML.attr("secdeps")(DXML.node(w))
+                    .bind(XML.textContent) // TODO: use a better function for this
+                    .fmap((s1) => {
+                    if (s1.trim() === "" || s1.trim() === "_") {
+                        return s1;
+                    }
+                    if (s1.trim() === "_") {
+                        return "_";
+                    }
+                    return Str.split(";")(s1)
+                        .map((s2) => {
+                        const head_rel = Str.split(":")(s2);
+                        if (head_rel.length === 0) {
+                            return s2;
+                        }
+                        else if (head_rel.length <= 1) {
+                            console.error("Head-rel string has too few elements");
+                        }
+                        else if (head_rel.length > 2) {
+                            console.error("Head-rel string has too many elements");
+                        }
+                        const head = head_rel[0];
+                        const rel = head_rel[1];
+                        if (head === "0" || head !== oldId) {
+                            return s2;
+                        }
+                        return `£${newId}:${rel}`;
+                    })
+                        .join(";");
+                }).unpack("");
+                let newHeadId;
+                const newNode = DXML.node(w);
+                if (wordHead === oldId && wordHead !== "0") {
+                    newHeadId = newId;
+                    newNode.setAttribute("head", newHeadId);
+                }
+                // const newHead = wordHead === oldId && wordHead !== "0" ?
+                //     newId : wordHead
+                newNode.setAttribute("secdeps", newSecDeps);
+                w_ = ArethusaToken.fromXMLNode(newNode);
+            });
+            return w_;
+        });
+    }
+    const words__ = words_.map((w) => {
+        const node = DXML.node(w);
+        const headId = XML.attr("secdeps")(node).bind(XML.textContent).unpack("").replace(/£/g, "");
+        const newNode = XML.setAttr("secdeps")(headId)(node);
+        return ArethusaToken.fromXMLNode(newNode);
+    });
+    return Arr.head(words__)
         .fmapErr("No first node.", DXML.node)
         .bindErr("No node.", XML.ownerDocument)
         .bindErr("No owner document", XML.documentElement)

@@ -603,49 +603,12 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
                 const newId = idx + 1
                 const offset = newId - currentId
 
-                const newSecDeps = XML.attr("secdeps")(DXML.node(w))
-                                    .bind(XML.textContent) // TODO: use a better function for this
-                                    .fmap( (s1:string) => {
-
-                                        if (renumberHeads === false) {return s1}
-                                        if (s1.trim() === "" || s1.trim () === "_") {return s1}
-                                        if (s1.trim() === "_") {return "_"}
-
-                                        return Str.split(";")(s1).map( (s2:string) => {
-
-                                            const head_rel = Str.split(":")(s2)
-                                            if (head_rel.length === 0) {
-                                                return s2
-                                            } else if (head_rel.length <= 1) {
-                                                console.error("Head-rel string has too few elements")
-                                            } else if (head_rel.length > 2) {
-                                                console.error("Head-rel string has too many elements")
-                                            }
-                                            const head = Str.toNum(head_rel[0])
-                                            const rel = head_rel[1]
-                                            
-                                            if (head === 0) {
-                                                return s2
-                                            }
-
-                                            return `${Str.fromNum(head + offset)}:${rel}`
-                                        } )
-                                        .join(";")
-                                    }).unpack("")
-
-                // If current head is root, or if renumberHeads is set to false
-                // do not renumber
-                // const newHeadIdStr = renumberHeads === true && currentHeadIdInt > 0 && Number.isNaN(currentHeadIdInt) === false 
-                //     ? Str.fromNum(currentHeadIdInt + offset) 
-                //     : currentHeadIdStr
-
                 changes.push([Str.fromNum(currentId), Str.fromNum(newId)])
 
                 // Renumber token and head ids
                 const newToken = MaybeT.ofThrow("Could not create Maybe<Word>.", DXML.node(w))
                     .fmapErr("Could not make word node.", XML.setId(Str.fromNum(newId)))
-                    // .fmapErr("Could not set head ID.", XML.setAttr("head")(newHeadIdStr))
-                    .fmapErr("Could not set secdeps.", XML.setAttr("secdeps")(newSecDeps))
+                    // .fmapErr("Could not set secdeps.", XML.setAttr("secdeps")(newSecDeps))
                     .fmapErr("Could not set ID.", ArethusaToken.fromXMLNode)
 
                 return newToken
@@ -653,9 +616,9 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
             )
 
         const words = Arr.removeNothings(maybeWords)
-        console.log(changes)
 
-        let words_
+        let words_ = words
+
         if (renumberHeads) {
             words_ = words.map( (w: ArethusaToken): ArethusaToken => {
                 const wordHead = XML.attr("head")(DXML.node(w))                                    
@@ -666,21 +629,63 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
 
                 changes.forEach( ([oldId, newId]: [string, string]) => {
 
-                    if (wordHead == oldId && wordHead !== "0") {
-                        const newNode = DXML.node(w) as HasXMLNode
-                        newNode.setAttribute("head", newId)
-                        w_ = ArethusaToken.fromXMLNode(newNode)
-                    } else { w_ = w }
+                    const newSecDeps = XML.attr("secdeps")(DXML.node(w))
+                        .bind(XML.textContent) // TODO: use a better function for this
+                        .fmap( (s1:string) => {
+                            if (s1.trim() === "" || s1.trim () === "_") {return s1}
+                            if (s1.trim() === "_") {return "_"}
+
+                            return Str.split(";")(s1)
+                                .map( (s2:string) => {
+
+                                const head_rel = Str.split(":")(s2)
+                                if (head_rel.length === 0) {
+                                    return s2
+                                } else if (head_rel.length <= 1) {
+                                    console.error("Head-rel string has too few elements")
+                                } else if (head_rel.length > 2) {
+                                    console.error("Head-rel string has too many elements")
+                                }
+                                const head = head_rel[0]
+                                const rel = head_rel[1]
+                                
+                                if (head === "0" || head !== oldId) {
+                                    return s2
+                                } 
+
+                                return `£${newId}:${rel}`
+                            } )
+                            .join(";")
+
+                    }).unpack("")
+
+                    let newHeadId 
+
+                    const newNode = DXML.node(w) as HasXMLNode
+
+                    if (wordHead === oldId && wordHead !== "0") {
+                        newHeadId = newId
+                        newNode.setAttribute("head", newHeadId)
+                    }
+
+                    
+                    newNode.setAttribute("secdeps", newSecDeps)
+                    w_ = ArethusaToken.fromXMLNode(newNode)
+
                 })
                 
                 return w_
             })
-        } else {
-            words_ = words
         }
 
-
-        return Arr.head(words_)
+        // Replace marker text in secdeps
+        const words__ = words_.map( (w: ArethusaToken) => {
+            const node = DXML.node(w) as HasXMLNode
+            const headId = XML.attr("secdeps")(node).bind(XML.textContent).unpack("").replace(/£/g, "")
+            const newNode = XML.setAttr("secdeps")(headId)(node)
+            return ArethusaToken.fromXMLNode(newNode)
+        })
+        return Arr.head(words__)
             .fmapErr("No first node.", DXML.node)
             .bindErr("No node.", XML.ownerDocument)
             .bindErr("No owner document", XML.documentElement)
