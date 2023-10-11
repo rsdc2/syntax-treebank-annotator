@@ -24,7 +24,7 @@ class ArethusaDiv {
             .fmap(
                 TextStateIO.changeView
                     (Nothing.of()) 
-                    (AthDivCurs.nextSentenceId)
+                    (MaybeT.of(AthDivCurs.nextSentenceId))
             )
 
     }
@@ -36,7 +36,7 @@ class ArethusaDiv {
             .fmap(
                 TextStateIO.changeView
                     (Nothing.of()) 
-                    (AthDivCurs.prevSentenceId)
+                    (MaybeT.of(AthDivCurs.prevSentenceId))
             )
 
     }

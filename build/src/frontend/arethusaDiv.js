@@ -32,13 +32,13 @@ ArethusaDiv.nextSentence = () => {
     TextStateIO;
     globalState
         .textStateIO
-        .fmap(TextStateIO.changeView(Nothing.of())(AthDivCurs.nextSentenceId));
+        .fmap(TextStateIO.changeView(Nothing.of())(MaybeT.of(AthDivCurs.nextSentenceId)));
 };
 ArethusaDiv.prevSentence = () => {
     TextStateIO;
     globalState
         .textStateIO
-        .fmap(TextStateIO.changeView(Nothing.of())(AthDivCurs.prevSentenceId));
+        .fmap(TextStateIO.changeView(Nothing.of())(MaybeT.of(AthDivCurs.prevSentenceId)));
 };
 ArethusaDiv.formatXMLForDiv = (xml) => {
     return xml

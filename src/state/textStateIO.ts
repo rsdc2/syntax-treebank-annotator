@@ -257,7 +257,7 @@ class TextStateIO {
         return TextStateIO.currentState(this)
     }
 
-    static currentState = (s: TextStateIO) => {
+    static currentState = (s: TextStateIO): Maybe<TextState> => {
         return MaybeT.of (s.states[s.currentStateIdx.fromMaybe(-1)])
     }
 

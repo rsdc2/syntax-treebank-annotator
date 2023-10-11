@@ -115,21 +115,59 @@ class AthDivCurs {
         }
     }
 
-    static get nextSentenceId() {
-        // const lastSentId = globalState.textStateIO
-        //     .bind(TextStateIO.sentences)
-        //     .fmap(Str.increment)
+    
+    // Return the ID of the next sentence
+    // unless it is the last sentence, 
+    // then return ID of the currently 
+    // selected sentence
+    static get nextSentenceId(): string {
 
-        return globalState.textStateIO
+        const tsio = globalState.textStateIO
+
+        const lastSentenceId = tsio
+            .bind(TextStateIO.currentState)
+            .bind(TextState.outputArethusa)
+            .bind(ArethusaDoc.lastSentence)
+            .bind(ArethusaSentence.id)
+            .unpack("")
+
+        const currentSentenceId = tsio
             .bind(TextStateIO.currentSentenceId)
-            .fmap(Str.increment)
+            .unpack("")
+
+        if (parseInt(currentSentenceId) < parseInt(lastSentenceId)) {
+            return tsio
+                .bind(TextStateIO.currentSentenceId)
+                .fmap(Str.increment)
+                .unpack("")
+        }
+
+        return currentSentenceId
 
     }
 
     static get prevSentenceId() {
-        return globalState.textStateIO
+        const tsio = globalState.textStateIO
+    
+        const firstSentenceId = tsio
+            .bind(TextStateIO.currentState)
+            .bind(TextState.outputArethusa)
+            .bind(ArethusaDoc.firstSentence)
+            .bind(ArethusaSentence.id)
+            .unpack("")
+        
+        const currentSentenceId = tsio
             .bind(TextStateIO.currentSentenceId)
-            .fmap(Str.decrement)
+            .unpack("")
+
+        if (parseInt(currentSentenceId) > parseInt(firstSentenceId)) {
+            return tsio
+                .bind(TextStateIO.currentSentenceId)
+                .fmap(Str.decrement)
+                .unpack("")
+        }
+
+        return currentSentenceId
     }
 
     static get currentXMLTagPosition() {
