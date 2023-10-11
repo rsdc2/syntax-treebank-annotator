@@ -672,10 +672,9 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
             })
         }
 
+        // Replace marker text in secdeps
         const words__ = words_.map( (w: ArethusaToken) => {
             const node = DXML.node(w) as HasXMLNode
-    
-            // Replace marker text in secdeps
             const headId = XML.attr("secdeps")(node).bind(XML.textContent).unpack("").replace(/£/g, "")
             const newNode = XML.setAttr("secdeps")(headId)(node)
             return ArethusaToken.fromXMLNode(newNode)
