@@ -402,10 +402,11 @@ ArethusaDoc.renumberSentenceIds = (a) => {
  * @returns
  */
 ArethusaDoc.renumberTokenIdsUniversal = (renumberHeads) => (a) => {
-    const maybeWords = MaybeT.of(a)
+    const tokens = MaybeT.of(a)
         .bindErr("No Arethusa.", ArethusaDoc.deepcopy)
         .fmapErr("No words in Arethusa.", ArethusaDoc.tokens)
-        .unpack([])
+        .unpack([]);
+    const newTokens = tokens
         .map((w, idx) => {
         const currentId = XML.attr("id")(DXML.node(w))
             .bind(XML.textContent) // TODO: use a better function for this
@@ -462,7 +463,7 @@ ArethusaDoc.renumberTokenIdsUniversal = (renumberHeads) => (a) => {
             .fmapErr("Could not set ID.", ArethusaToken.fromXMLNode);
         return newToken;
     });
-    const words = Arr.removeNothings(maybeWords);
+    const words = Arr.removeNothings(newTokens);
     return Arr.head(words)
         .fmapErr("No first node.", DXML.node)
         .bindErr("No node.", XML.ownerDocument)
@@ -488,7 +489,14 @@ ArethusaDoc.renumberTokenIdsIndividualChange = (renumberHeads) => (a) => {
             .unpack(idx);
         const newId = idx + 1;
         // Push change to array of changes
-        changes.push([Str.fromNum(currentId), Str.fromNum(newId)]);
+        const tokenSentenceId = MaybeT.of(w)
+            .fmap(DXML.node)
+            .bind(XML.parent)
+            .bind(XML.attr("id"))
+            .bind(XML.nodeValue)
+            .unpack("");
+        changes.push([tokenSentenceId, Str.fromNum(currentId), Str.fromNum(newId)]);
+        console.log(changes);
         // Renumber token ids
         const newToken = MaybeT.ofThrow("Could not create Maybe<Word>.", DXML.node(w))
             .fmapErr("Could not make word node.", XML.setId(Str.fromNum(newId)))
@@ -502,10 +510,16 @@ ArethusaDoc.renumberTokenIdsIndividualChange = (renumberHeads) => (a) => {
             const wordHead = XML.attr("head")(DXML.node(w))
                 .bind(XML.textContent) // TODO: use a better function for this
                 .unpack("");
+            const tokenSentenceId = MaybeT.of(w)
+                .fmap(DXML.node)
+                .bind(XML.parent)
+                .bind(XML.attr("id"))
+                .bind(XML.nodeValue)
+                .unpack("");
             let w_;
             // Loop through array of changes and change heads 
             // and secondary deps accordingly
-            changes.forEach(([oldId, newId]) => {
+            changes.forEach(([sentId, oldId, newId]) => {
                 const newSecDeps = XML.attr("secdeps")(DXML.node(w))
                     .bind(XML.textContent) // TODO: use a better function for this
                     .fmap((s1) => {
@@ -529,19 +543,22 @@ ArethusaDoc.renumberTokenIdsIndividualChange = (renumberHeads) => (a) => {
                         }
                         const head = head_rel[0];
                         const rel = head_rel[1];
-                        if (head === "0" || head !== oldId) {
+                        if (head === "0" || head !== oldId || tokenSentenceId !== sentId) {
                             return s2;
                         }
                         return `£${newId}:${rel}`; // include '£' marker to stop matches once change made
                     })
                         .join(";");
                 }).unpack("");
-                let newHeadId;
                 const newNode = DXML.node(w); // TODO: render the type definition unnecessary
-                if (wordHead === oldId && wordHead !== "0") {
-                    newHeadId = newId;
-                    newNode.setAttribute("head", newHeadId);
+                if (wordHead === oldId && wordHead !== "0" && tokenSentenceId === sentId) {
+                    newNode.setAttribute("head", newId);
                 }
+                // else {
+                //     if (wordHead === "6") {
+                //         console.log("hello")
+                //     }
+                // }
                 newNode.setAttribute("secdeps", newSecDeps);
                 w_ = ArethusaToken.fromXMLNode(newNode);
             });

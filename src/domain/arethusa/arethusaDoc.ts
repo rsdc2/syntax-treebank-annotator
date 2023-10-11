@@ -683,7 +683,16 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
                 const newId = idx + 1
 
                 // Push change to array of changes
-                changes.push([Str.fromNum(currentId), Str.fromNum(newId)])
+                const tokenSentenceId = MaybeT.of(w)
+                    .fmap(DXML.node)
+                    .bind(XML.parent)
+                    .bind(XML.attr("id"))
+                    .bind(XML.nodeValue)
+                    .unpack("")
+
+                changes.push([tokenSentenceId, Str.fromNum(currentId), Str.fromNum(newId)])
+
+                console.log(changes)
 
                 // Renumber token ids
                 const newToken = MaybeT.ofThrow("Could not create Maybe<Word>.", DXML.node(w))
@@ -704,11 +713,19 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
                                     .bind(XML.textContent)  // TODO: use a better function for this
                                     .unpack("")
                 
+                const tokenSentenceId = MaybeT.of(w)
+                    .fmap(DXML.node)
+                    .bind(XML.parent)
+                    .bind(XML.attr("id"))
+                    .bind(XML.nodeValue)
+                    .unpack("")
+                
+
                 let w_
                 
                 // Loop through array of changes and change heads 
                 // and secondary deps accordingly
-                changes.forEach( ([oldId, newId]: [string, string]) => {
+                changes.forEach( ([sentId, oldId, newId]: [string, string, string]) => {
 
                     const newSecDeps = XML.attr("secdeps")(DXML.node(w))
                         .bind(XML.textContent) // TODO: use a better function for this
@@ -730,7 +747,7 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
                                 const head = head_rel[0]
                                 const rel = head_rel[1]
                                 
-                                if (head === "0" || head !== oldId) {
+                                if (head === "0" || head !== oldId || tokenSentenceId !== sentId) {
                                     return s2
                                 } 
 
@@ -740,14 +757,12 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
 
                     }).unpack("")
 
-                    let newHeadId 
 
                     const newNode = DXML.node(w) as HasXMLNode // TODO: render the type definition unnecessary
 
-                    if (wordHead === oldId && wordHead !== "0") {
-                        newHeadId = newId
-                        newNode.setAttribute("head", newHeadId)
-                    }
+                    if (wordHead === oldId && wordHead !== "0" && tokenSentenceId === sentId) {
+                        newNode.setAttribute("head", newId)
+                    } 
 
                     newNode.setAttribute("secdeps", newSecDeps)
                     w_ = ArethusaToken.fromXMLNode(newNode)
