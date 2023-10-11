@@ -14,7 +14,8 @@ class TEIToken {
             .replace("][", "")
             .replace(",", "")
             .replace(")", "")
-            .replace("(", "");
+            .replace("(", "")
+            .replace("·", "");
     }
     get text() {
         return MaybeT.of(this._node.textContent);

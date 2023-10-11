@@ -25,6 +25,7 @@ class TEIToken implements Word, HasText {
             .replace(",", "")
             .replace(")", "")
             .replace("(", "")
+            .replace("·", "")
     }
 
 

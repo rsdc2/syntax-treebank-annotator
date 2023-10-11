@@ -25,6 +25,7 @@ class TEIName implements TEIToken {
             .replace(",", "")
             .replace(")", "")
             .replace("(", "")
+            .replace("·", "")
     }
 
     static of(node: Node) {
