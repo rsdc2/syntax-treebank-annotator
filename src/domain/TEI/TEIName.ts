@@ -18,11 +18,13 @@ class TEIName implements TEIToken {
 
     get normalizedText(): string {
         return this.textNodes
-            .filter(TextNode.filterByNotAncestor(["g", "orig", "am", "sic"]))
+            .filter(TextNode.filterByNotAncestor(["g", "orig", "sic", "del"])) // "am"
             .map( (textNode: Text) => TextNode.suppliedInBrackets(textNode) )
             .join("")
             .replace("][", "")
             .replace(",", "")
+            .replace(")", "")
+            .replace("(", "")
     }
 
     static of(node: Node) {

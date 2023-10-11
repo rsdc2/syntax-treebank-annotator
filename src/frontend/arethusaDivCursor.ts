@@ -116,7 +116,9 @@ class AthDivCurs {
     }
 
     
-    // Return the ID of the next sentence
+    // Return the ID of the sentence 
+    // after the currently selected 
+    // sentence
     // unless it is the last sentence, 
     // then return ID of the currently 
     // selected sentence
@@ -146,7 +148,12 @@ class AthDivCurs {
 
     }
 
-    static get prevSentenceId() {
+    // Return the ID of the sentence previous
+    // to the currently selected sentence
+    // unless it is the first sentence, 
+    // then return ID of the currently 
+    // selected sentence
+    static get prevSentenceId(): string {
         const tsio = globalState.textStateIO
     
         const firstSentenceId = tsio

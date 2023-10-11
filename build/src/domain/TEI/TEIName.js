@@ -8,7 +8,7 @@ class TEIName {
     }
     get normalizedText() {
         return this.textNodes
-            .filter(TextNode.filterByNotAncestor(["g", "orig", "am", "sic"]))
+            .filter(TextNode.filterByNotAncestor(["g", "orig", "sic", "del"])) // "am"
             .map((textNode) => TextNode.suppliedInBrackets(textNode))
             .join("")
             .replace("][", "")
