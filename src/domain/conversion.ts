@@ -34,7 +34,6 @@ class Conversion {
             .fromMaybe([])
             .flatMap(Edition.getTokens)
         
-
         const attrs = tokens.reduce ( (acc: IArethusaWord[], token: TEIToken): IArethusaWord[] => {
             const attr = {
                 form: token.normalizedText,
@@ -46,12 +45,12 @@ class Conversion {
                 corpusId: XML.getAttrVal("http://www.w3.org/XML/1998/namespace")("id")(token).fromMaybe("")
             }
 
-            if (attr.form === "") {
-                return acc
-            } 
+            // if (attr.form === "") {
+            //     return acc
+            // } 
 
             return [...acc, attr]
-            
+
         }, new Array<IArethusaWord>()             
         )
     
