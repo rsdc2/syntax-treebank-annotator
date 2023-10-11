@@ -231,7 +231,7 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
         return arethusaXMLNodeWithChildren
             .bind(ArethusaDoc.fromNode)
             .bind(ArethusaDoc.renumberSentenceIds)
-            .bind(ArethusaDoc.renumberTokenIdsIndividualChange(false))
+            .bind(ArethusaDoc.renumberTokenIds(false))
     }
 
     static fromXMLStr = (arethusaXML: string) => {
@@ -574,91 +574,6 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
             .bindErr("No Arethusa with no sentences.", ArethusaDoc.appendSentences(sentences))
     }
 
-    /**
-     * Renumbers token ids in the treebank from 1 to the final token;
-     * also renumbers head ids if 'renumberHeads' is set to true
-     * @param a 
-     * @returns 
-     */
-
-    static renumberTokenIdsUniversal = (renumberHeads: boolean) => (a: ArethusaDoc): Maybe<ArethusaDoc> => {
-        const tokens = MaybeT.of(a)
-            .bindErr("No Arethusa.", ArethusaDoc.deepcopy)
-            .fmapErr("No words in Arethusa.", ArethusaDoc.tokens)
-            .unpack([])
-        
-        const newTokens = tokens
-            .map( (w: ArethusaWord, idx: number) => {
-
-                const currentId = XML.attr("id")(DXML.node(w))
-                                    .bind(XML.textContent)  // TODO: use a better function for this
-                                    .fmap(Str.toNum)
-                                    .unpack(idx)
-
-                const currentHeadIdStr = XML.attr("head")(DXML.node(w))
-                                        .bind(XML.textContent)
-                                        .unpack("")
-
-                const currentHeadIdInt = Str.toNum(currentHeadIdStr)
-
-                const newId = idx + 1
-                const offset = newId - currentId
-
-                const newSecDeps = XML.attr("secdeps")(DXML.node(w))
-                                    .bind(XML.textContent) // TODO: use a better function for this
-                                    .fmap( (s1:string) => {
-
-                                        if (renumberHeads === false) {return s1}
-                                        if (s1.trim() === "" || s1.trim () === "_") {return s1}
-                                        if (s1.trim() === "_") {return "_"}
-
-                                        return Str.split(";")(s1).map( (s2:string) => {
-
-                                            const head_rel = Str.split(":")(s2)
-                                            if (head_rel.length === 0) {
-                                                return s2
-                                            } else if (head_rel.length <= 1) {
-                                                console.error("Head-rel string has too few elements")
-                                            } else if (head_rel.length > 2) {
-                                                console.error("Head-rel string has too many elements")
-                                            }
-                                            const head = Str.toNum(head_rel[0])
-                                            const rel = head_rel[1]
-                                            
-                                            if (head === 0) {
-                                                return s2
-                                            }
-
-                                            return `${Str.fromNum(head + offset)}:${rel}`
-                                        } )
-                                        .join(";")
-                                    }).unpack("")
-
-                // If current head is root, or if renumberHeads is set to false
-                // do not renumber
-                const newHeadIdStr = renumberHeads === true && currentHeadIdInt > 0 && Number.isNaN(currentHeadIdInt) === false 
-                    ? Str.fromNum(currentHeadIdInt + offset) 
-                    : currentHeadIdStr
-
-                // Renumber token and head ids
-                const newToken = MaybeT.ofThrow("Could not create Maybe<Word>.", DXML.node(w))
-                    .fmapErr("Could not make word node.", XML.setId(Str.fromNum(newId)))
-                    .fmapErr("Could not set head ID.", XML.setAttr("head")(newHeadIdStr))
-                    .fmapErr("Could not set secdeps.", XML.setAttr("secdeps")(newSecDeps))
-                    .fmapErr("Could not set ID.", ArethusaToken.fromXMLNode)
-
-                return newToken
-            }    
-            )
-
-        const words = Arr.removeNothings(newTokens)
-        return Arr.head(words)
-            .fmapErr("No first node.", DXML.node)
-            .bindErr("No node.", XML.ownerDocument)
-            .bindErr("No owner document", XML.documentElement)
-            .bindErr("No document element.", ArethusaDoc.fromNode)
-    }
-
 
     /**
      * Renumbers token ids in the treebank from 1 to the final token;
@@ -667,7 +582,7 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
      * @returns 
      */
 
-    static renumberTokenIdsIndividualChange = (renumberHeads: boolean) => (a: ArethusaDoc): Maybe<ArethusaDoc> => {
+    static renumberTokenIds = (renumberHeads: boolean) => (a: ArethusaDoc): Maybe<ArethusaDoc> => {
         const changes = new Array() // Stores a map of id changes from old to new
 
         const maybeWords = MaybeT.of(a)
@@ -713,14 +628,13 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
                                     .bind(XML.textContent)  // TODO: use a better function for this
                                     .unpack("")
                 
-                const tokenSentenceId = MaybeT.of(w)
+                const tokenSentenceId = MaybeT.of(w) // TODO: make general version of this function
                     .fmap(DXML.node)
                     .bind(XML.parent)
                     .bind(XML.attr("id"))
                     .bind(XML.nodeValue)
                     .unpack("")
                 
-
                 let w_
                 
                 // Loop through array of changes and change heads 

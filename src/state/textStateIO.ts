@@ -100,7 +100,7 @@ class TextStateIO {
         const newArethusa = s
             .outputArethusaP
             .applyBind(appendArtificial)
-            .bind(ArethusaDoc.renumberTokenIdsIndividualChange(true))
+            .bind(ArethusaDoc.renumberTokenIds(true))
 
         const getSentence = s
             .currentSentenceId
@@ -148,7 +148,7 @@ class TextStateIO {
         )
     
         const finalArethusa = newArethusa
-            .bind(ArethusaDoc.renumberTokenIdsIndividualChange(true))
+            .bind(ArethusaDoc.renumberTokenIds(true))
 
         s.pushOutputArethusa 
             (false) 
@@ -759,7 +759,7 @@ class TextStateIO {
         const newArethusa = s
             .outputArethusaP
             .applyBind(removeSentence)
-            .bind(ArethusaDoc.renumberTokenIdsIndividualChange(true))
+            .bind(ArethusaDoc.renumberTokenIds(true))
             .bind(ArethusaDoc.renumberSentenceIds)
 
         s.pushOutputArethusa 
@@ -784,7 +784,7 @@ class TextStateIO {
         const newArethusa = s
             .outputArethusaP
             .applyBind(removeToken)
-            .bind(ArethusaDoc.renumberTokenIdsIndividualChange(true))
+            .bind(ArethusaDoc.renumberTokenIds(true))
 
         s.pushOutputArethusa 
             (false)
