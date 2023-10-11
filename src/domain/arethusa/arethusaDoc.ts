@@ -656,7 +656,7 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
 
                     let newHeadId 
 
-                    const newNode = DXML.node(w) as HasXMLNode
+                    const newNode = DXML.node(w) as HasXMLNode // TODO: render the type definition unnecessary
 
                     if (wordHead === oldId && wordHead !== "0") {
                         newHeadId = newId
@@ -673,9 +673,12 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
         }
 
         // Replace marker text in secdeps
-        const words__ = words_.map( (w: ArethusaToken) => {
+        const words__ = words_.map( (w: ArethusaToken): ArethusaToken => {
             const node = DXML.node(w) as HasXMLNode
-            const headId = XML.attr("secdeps")(node).bind(XML.textContent).unpack("").replace(/£/g, "")
+            const headId = XML.attr("secdeps")(node)
+                            .bind(XML.textContent)
+                            .unpack("")
+                            .replace(/£/g, "")
             const newNode = XML.setAttr("secdeps")(headId)(node)
             return ArethusaToken.fromXMLNode(newNode)
         })
