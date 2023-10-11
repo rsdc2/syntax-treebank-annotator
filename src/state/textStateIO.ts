@@ -774,7 +774,7 @@ class TextStateIO {
     }
 
     static removeArethusaToken = (s: TextStateIO) => {
-        const removeWord = s
+        const removeToken = s
             .currentSentenceId
             .applyFmap(
                 s.currentTokenId
@@ -783,12 +783,12 @@ class TextStateIO {
         
         const newArethusa = s
             .outputArethusaP
-            .applyBind(removeWord)
+            .applyBind(removeToken)
             .bind(ArethusaDoc.renumberTokenIds(true))
 
         s.pushOutputArethusa 
             (false)
-            (new ViewState(Nothing.of(), Nothing.of(), newArethusa)) 
+            (new ViewState(Nothing.of(), s.currentSentenceId, newArethusa)) 
             (s.treeState)
             (newArethusa)
     }

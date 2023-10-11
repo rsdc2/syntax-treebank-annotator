@@ -541,15 +541,15 @@ TextStateIO.removeSentence = (s) => {
     s.pushOutputArethusa(false)(new ViewState(Nothing.of(), Nothing.of(), newArethusa))(s.treeState)(newArethusa);
 };
 TextStateIO.removeArethusaToken = (s) => {
-    const removeWord = s
+    const removeToken = s
         .currentSentenceId
         .applyFmap(s.currentTokenId
         .fmap(ArethusaDoc.removeTokenByTokenAndSentenceId));
     const newArethusa = s
         .outputArethusaP
-        .applyBind(removeWord)
+        .applyBind(removeToken)
         .bind(ArethusaDoc.renumberTokenIds(true));
-    s.pushOutputArethusa(false)(new ViewState(Nothing.of(), Nothing.of(), newArethusa))(s.treeState)(newArethusa);
+    s.pushOutputArethusa(false)(new ViewState(Nothing.of(), s.currentSentenceId, newArethusa))(s.treeState)(newArethusa);
 };
 TextStateIO.sentenceViewState = (tsio) => {
     return tsio.currentState.bind(TextState.sentenceVS);

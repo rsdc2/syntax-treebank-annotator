@@ -463,7 +463,7 @@ ArethusaDoc.renumberTokenIds = (renumberHeads) => (a) => {
                         .join(";");
                 }).unpack("");
                 let newHeadId;
-                const newNode = DXML.node(w);
+                const newNode = DXML.node(w); // TODO: render the type definition unnecessary
                 if (wordHead === oldId && wordHead !== "0") {
                     newHeadId = newId;
                     newNode.setAttribute("head", newHeadId);
@@ -477,7 +477,10 @@ ArethusaDoc.renumberTokenIds = (renumberHeads) => (a) => {
     // Replace marker text in secdeps
     const words__ = words_.map((w) => {
         const node = DXML.node(w);
-        const headId = XML.attr("secdeps")(node).bind(XML.textContent).unpack("").replace(/£/g, "");
+        const headId = XML.attr("secdeps")(node)
+            .bind(XML.textContent)
+            .unpack("")
+            .replace(/£/g, "");
         const newNode = XML.setAttr("secdeps")(headId)(node);
         return ArethusaToken.fromXMLNode(newNode);
     });
