@@ -343,7 +343,7 @@ TextStateIO.appendNewArtificialToSentence = (s) => {
     const newArethusa = s
         .outputArethusaP
         .applyBind(appendArtificial)
-        .bind(ArethusaDoc.renumberTokenIds(true));
+        .bind(ArethusaDoc.renumberTokenIdsIndividualChange(true));
     const getSentence = s
         .currentSentenceId
         .fmap(ArethusaDoc.sentenceById);
@@ -368,7 +368,7 @@ TextStateIO.appendNewWordToSentence = (s) => {
         .bind(ArethusaSentence.lastTokenId);
     const newViewState = new ViewState(nextWordId, s.currentSentenceId, newArethusa);
     const finalArethusa = newArethusa
-        .bind(ArethusaDoc.renumberTokenIds(true));
+        .bind(ArethusaDoc.renumberTokenIdsIndividualChange(true));
     s.pushOutputArethusa(false)(newViewState)(s.treeState)(finalArethusa);
 };
 TextStateIO.outputArethusa = (s) => {
@@ -536,7 +536,7 @@ TextStateIO.removeSentence = (s) => {
     const newArethusa = s
         .outputArethusaP
         .applyBind(removeSentence)
-        .bind(ArethusaDoc.renumberTokenIds(true))
+        .bind(ArethusaDoc.renumberTokenIdsIndividualChange(true))
         .bind(ArethusaDoc.renumberSentenceIds);
     s.pushOutputArethusa(false)(new ViewState(Nothing.of(), Nothing.of(), newArethusa))(s.treeState)(newArethusa);
 };
@@ -548,7 +548,7 @@ TextStateIO.removeArethusaToken = (s) => {
     const newArethusa = s
         .outputArethusaP
         .applyBind(removeToken)
-        .bind(ArethusaDoc.renumberTokenIds(true));
+        .bind(ArethusaDoc.renumberTokenIdsIndividualChange(true));
     s.pushOutputArethusa(false)(new ViewState(Nothing.of(), s.currentSentenceId, newArethusa))(s.treeState)(newArethusa);
 };
 TextStateIO.sentenceViewState = (tsio) => {
