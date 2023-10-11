@@ -402,7 +402,7 @@ ArethusaDoc.renumberSentenceIds = (a) => {
  * @returns
  */
 ArethusaDoc.renumberTokenIds = (renumberHeads) => (a) => {
-    const changes = new Array();
+    const changes = new Array(); // Stores a map of id changes from old to new
     const maybeWords = MaybeT.of(a)
         .bindErr("No Arethusa.", ArethusaDoc.deepcopy)
         .fmapErr("No words in Arethusa.", ArethusaDoc.tokens)
@@ -412,17 +412,12 @@ ArethusaDoc.renumberTokenIds = (renumberHeads) => (a) => {
             .bind(XML.textContent) // TODO: use a better function for this
             .fmap(Str.toNum)
             .unpack(idx);
-        const currentHeadIdStr = XML.attr("head")(DXML.node(w))
-            .bind(XML.textContent)
-            .unpack("");
-        const currentHeadIdInt = Str.toNum(currentHeadIdStr);
         const newId = idx + 1;
-        const offset = newId - currentId;
+        // Push change to array of changes
         changes.push([Str.fromNum(currentId), Str.fromNum(newId)]);
-        // Renumber token and head ids
+        // Renumber token ids
         const newToken = MaybeT.ofThrow("Could not create Maybe<Word>.", DXML.node(w))
             .fmapErr("Could not make word node.", XML.setId(Str.fromNum(newId)))
-            // .fmapErr("Could not set secdeps.", XML.setAttr("secdeps")(newSecDeps))
             .fmapErr("Could not set ID.", ArethusaToken.fromXMLNode);
         return newToken;
     });
@@ -434,6 +429,8 @@ ArethusaDoc.renumberTokenIds = (renumberHeads) => (a) => {
                 .bind(XML.textContent) // TODO: use a better function for this
                 .unpack("");
             let w_;
+            // Loop through array of changes and change heads 
+            // and secondary deps accordingly
             changes.forEach(([oldId, newId]) => {
                 const newSecDeps = XML.attr("secdeps")(DXML.node(w))
                     .bind(XML.textContent) // TODO: use a better function for this
@@ -461,7 +458,7 @@ ArethusaDoc.renumberTokenIds = (renumberHeads) => (a) => {
                         if (head === "0" || head !== oldId) {
                             return s2;
                         }
-                        return `£${newId}:${rel}`;
+                        return `£${newId}:${rel}`; // include '£' marker to stop matches once change made
                     })
                         .join(";");
                 }).unpack("");
@@ -471,8 +468,6 @@ ArethusaDoc.renumberTokenIds = (renumberHeads) => (a) => {
                     newHeadId = newId;
                     newNode.setAttribute("head", newHeadId);
                 }
-                // const newHead = wordHead === oldId && wordHead !== "0" ?
-                //     newId : wordHead
                 newNode.setAttribute("secdeps", newSecDeps);
                 w_ = ArethusaToken.fromXMLNode(newNode);
             });
@@ -481,6 +476,7 @@ ArethusaDoc.renumberTokenIds = (renumberHeads) => (a) => {
     }
     const words__ = words_.map((w) => {
         const node = DXML.node(w);
+        // Replace marker text in secdeps
         const headId = XML.attr("secdeps")(node).bind(XML.textContent).unpack("").replace(/£/g, "");
         const newNode = XML.setAttr("secdeps")(headId)(node);
         return ArethusaToken.fromXMLNode(newNode);

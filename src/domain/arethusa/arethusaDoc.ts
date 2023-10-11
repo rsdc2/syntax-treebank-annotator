@@ -582,7 +582,7 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
      */
 
     static renumberTokenIds = (renumberHeads: boolean) => (a: ArethusaDoc): Maybe<ArethusaDoc> => {
-        const changes = new Array()
+        const changes = new Array() // Stores a map of id changes from old to new
 
         const maybeWords = MaybeT.of(a)
             .bindErr("No Arethusa.", ArethusaDoc.deepcopy)
@@ -594,21 +594,14 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
                                     .fmap(Str.toNum)
                                     .unpack(idx)
 
-                const currentHeadIdStr = XML.attr("head")(DXML.node(w))
-                                        .bind(XML.textContent)
-                                        .unpack("")
-
-                const currentHeadIdInt = Str.toNum(currentHeadIdStr)
-
                 const newId = idx + 1
-                const offset = newId - currentId
 
+                // Push change to array of changes
                 changes.push([Str.fromNum(currentId), Str.fromNum(newId)])
 
-                // Renumber token and head ids
+                // Renumber token ids
                 const newToken = MaybeT.ofThrow("Could not create Maybe<Word>.", DXML.node(w))
                     .fmapErr("Could not make word node.", XML.setId(Str.fromNum(newId)))
-                    // .fmapErr("Could not set secdeps.", XML.setAttr("secdeps")(newSecDeps))
                     .fmapErr("Could not set ID.", ArethusaToken.fromXMLNode)
 
                 return newToken
@@ -626,7 +619,9 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
                                     .unpack("")
                 
                 let w_
-
+                
+                // Loop through array of changes and change heads 
+                // and secondary deps accordingly
                 changes.forEach( ([oldId, newId]: [string, string]) => {
 
                     const newSecDeps = XML.attr("secdeps")(DXML.node(w))
@@ -653,7 +648,7 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
                                     return s2
                                 } 
 
-                                return `£${newId}:${rel}`
+                                return `£${newId}:${rel}` // include '£' marker to stop matches once change made
                             } )
                             .join(";")
 
@@ -668,7 +663,6 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
                         newNode.setAttribute("head", newHeadId)
                     }
 
-                    
                     newNode.setAttribute("secdeps", newSecDeps)
                     w_ = ArethusaToken.fromXMLNode(newNode)
 
@@ -678,13 +672,15 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
             })
         }
 
-        // Replace marker text in secdeps
         const words__ = words_.map( (w: ArethusaToken) => {
             const node = DXML.node(w) as HasXMLNode
+    
+            // Replace marker text in secdeps
             const headId = XML.attr("secdeps")(node).bind(XML.textContent).unpack("").replace(/£/g, "")
             const newNode = XML.setAttr("secdeps")(headId)(node)
             return ArethusaToken.fromXMLNode(newNode)
         })
+
         return Arr.head(words__)
             .fmapErr("No first node.", DXML.node)
             .bindErr("No node.", XML.ownerDocument)
