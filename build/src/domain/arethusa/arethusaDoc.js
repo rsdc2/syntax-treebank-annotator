@@ -554,11 +554,6 @@ ArethusaDoc.renumberTokenIdsIndividualChange = (renumberHeads) => (a) => {
                 if (wordHead === oldId && wordHead !== "0" && tokenSentenceId === sentId) {
                     newNode.setAttribute("head", newId);
                 }
-                // else {
-                //     if (wordHead === "6") {
-                //         console.log("hello")
-                //     }
-                // }
                 newNode.setAttribute("secdeps", newSecDeps);
                 w_ = ArethusaToken.fromXMLNode(newNode);
             });
