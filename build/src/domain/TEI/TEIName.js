@@ -12,7 +12,9 @@ class TEIName {
             .map((textNode) => TextNode.suppliedInBrackets(textNode))
             .join("")
             .replace("][", "")
-            .replace(",", "");
+            .replace(",", "")
+            .replace(")", "")
+            .replace("(", "");
     }
     static of(node) {
         return new TEIName(node);

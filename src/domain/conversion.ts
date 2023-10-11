@@ -12,7 +12,10 @@ class Conversion {
             .bind(ArethusaDoc.fromXMLStr)
     }
 
-    static epidocXMLToArethusaXML = (epidocXML: string) => {
+
+    // Main function for converting EpiDoc XML to 
+    // Arethusa XML
+    static epidocXMLToArethusaXML = (epidocXML: string): Maybe<string> => {
 
         const epidoc = 
             MaybeT.of(
@@ -30,8 +33,9 @@ class Conversion {
             .fmap(EpiDoc.getEditions)
             .fromMaybe([])
             .flatMap(Edition.getTokens)
+        
 
-        const attrs = tokens.map ( (token): IArethusaWord => {
+        const attrs = tokens.reduce ( (acc: IArethusaWord[], token: TEIToken): IArethusaWord[] => {
             const attr = {
                 form: token.normalizedText,
                 lemma: "",
@@ -41,9 +45,14 @@ class Conversion {
                 secdeps: "",
                 corpusId: XML.getAttrVal("http://www.w3.org/XML/1998/namespace")("id")(token).fromMaybe("")
             }
-            return attr
-        } 
+
+            if (attr.form === "") {
+                return acc
+            } 
+
+            return [...acc, attr]
             
+        }, new Array<IArethusaWord>()             
         )
     
         // Create Arethusa from EpiDoc tokens

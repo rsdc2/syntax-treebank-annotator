@@ -6,6 +6,9 @@ class ArethusaToken {
     get attrs() {
         return DOM.Elem.attributes(this._element);
     }
+    get form() {
+        return ArethusaToken.form(this);
+    }
     static of(node) {
         if (XML.hasAttr('artificial')(node)) {
             return ArethusaArtificial.of(node);
@@ -85,6 +88,16 @@ ArethusaToken.relation = (w) => {
         return ""; // Constants.defaultRel
     }
     return rel;
+};
+// Removes tokens with no text
+ArethusaToken.removeEmptyTokens = (tokens) => {
+    return tokens
+        .reduce((acc, token) => {
+        if (token.form.unpack("") === "") {
+            return acc;
+        }
+        return [...acc, token];
+    }, new Array());
 };
 ArethusaToken.secondaryDeps = (w) => {
     const secondaryDepStr = XML.attr("secdeps")(w._node)

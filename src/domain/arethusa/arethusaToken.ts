@@ -21,9 +21,13 @@ class ArethusaToken implements HasText {
         }
     }
 
-    static form = (w: ArethusaToken) => {
+    static form = (w: ArethusaToken): Maybe<string> => {
         return XML.attr ("form") (w._node)
             .bind(XML.nodeValue)
+    }
+
+    get form(): Maybe<string> {
+        return ArethusaToken.form(this)
     }
 
     static id = (w: ArethusaToken) => {
@@ -94,6 +98,17 @@ class ArethusaToken implements HasText {
         }
 
         return rel
+    }
+
+    // Removes tokens with no text
+    static removeEmptyTokens = (tokens: ArethusaToken[]): ArethusaToken[] => {
+        return tokens
+            .reduce( (acc: ArethusaToken[], token: ArethusaToken) => {
+                if (token.form.unpack("") === "") {
+                    return acc
+                }
+                return [...acc, token]
+            }, new Array<ArethusaToken>())   
     }
 
     static secondaryDeps = (w: ArethusaToken) => {

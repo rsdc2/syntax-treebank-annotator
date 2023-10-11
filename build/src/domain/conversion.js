@@ -11,6 +11,8 @@ Conversion.epidocXMLToArethusa = (epidocXML) => {
         .bind(Conversion.epidocXMLToArethusaXML)
         .bind(ArethusaDoc.fromXMLStr);
 };
+// Main function for converting EpiDoc XML to 
+// Arethusa XML
 Conversion.epidocXMLToArethusaXML = (epidocXML) => {
     const epidoc = MaybeT.of(XML.fromXMLStr(epidocXML))
         .fmap(XMLFormatter.deprettifyFromRoot(true))
@@ -23,7 +25,7 @@ Conversion.epidocXMLToArethusaXML = (epidocXML) => {
         .fmap(EpiDoc.getEditions)
         .fromMaybe([])
         .flatMap(Edition.getTokens);
-    const attrs = tokens.map((token) => {
+    const attrs = tokens.reduce((acc, token) => {
         const attr = {
             form: token.normalizedText,
             lemma: "",
@@ -33,8 +35,11 @@ Conversion.epidocXMLToArethusaXML = (epidocXML) => {
             secdeps: "",
             corpusId: XML.getAttrVal("http://www.w3.org/XML/1998/namespace")("id")(token).fromMaybe("")
         };
-        return attr;
-    });
+        if (attr.form === "") {
+            return acc;
+        }
+        return [...acc, attr];
+    }, new Array());
     // Create Arethusa from EpiDoc tokens
     const arethusa = ArethusaDoc
         .fromXMLStr(arethusaTemplate)

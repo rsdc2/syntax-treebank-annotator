@@ -461,7 +461,7 @@ class ArethusaSentence implements Word, HasToken, HasText  {
         (token: ArethusaToken) => 
         (sentence: ArethusaSentence) => 
     {
-        // Not working
+        // NB Not working
 
         const tokenNode = DXML.node(token)
         return MaybeT.of(DXML.node(sentence))
@@ -470,6 +470,14 @@ class ArethusaSentence implements Word, HasToken, HasText  {
             .bind(XML.documentElement)
             .bind(ArethusaDoc.fromNode)
     }
+
+    // static removeTokens = (sentence: ArethusaSentence): ArethusaSentence {
+    //     const children = MaybeT.of(DXML.node(sentence))
+    //         .fmap(XML.childNodes)
+    //         .unpack<Node[]>([])
+        
+        
+    // }
 
     static removeTokenById = 
         (tokenId: string) => 

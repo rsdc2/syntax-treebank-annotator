@@ -6,6 +6,9 @@ class ArethusaWord {
     get attrs() {
         return DOM.Elem.attributes(this._element);
     }
+    get form() {
+        return ArethusaToken.form(this);
+    }
     static of(node) {
         return new ArethusaWord(node);
     }

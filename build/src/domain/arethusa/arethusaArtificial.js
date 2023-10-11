@@ -13,6 +13,9 @@ class ArethusaArtificial {
     get attrs() {
         return DOM.Elem.attributes(this._element);
     }
+    get form() {
+        return ArethusaToken.form(this);
+    }
     static of(node) {
         return new ArethusaArtificial(node);
     }

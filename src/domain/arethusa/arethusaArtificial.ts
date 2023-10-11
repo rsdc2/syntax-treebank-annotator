@@ -29,6 +29,10 @@ class ArethusaArtificial implements HasText {
             .bind(XML.nodeValue)
     }
 
+    get form(): Maybe<string> {
+        return ArethusaToken.form(this)
+    }
+
     static createAttrs = (form: string): IArtificial => {
         return {
             "form": form,

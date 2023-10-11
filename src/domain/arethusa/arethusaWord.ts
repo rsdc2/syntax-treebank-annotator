@@ -22,6 +22,10 @@ class ArethusaWord implements HasText {
             .fmap(Str.replace(/\n/g)(""))
     }
 
+    get form(): Maybe<string> {
+        return ArethusaToken.form(this)
+    }
+
     static createAttrs = (form: string): IArethusaWord => {
         return {
             "form": form,

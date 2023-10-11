@@ -332,7 +332,7 @@ ArethusaSentence.nextTokenIds = (startTokenId) => (s) => {
         .map((item) => item.value);
 };
 ArethusaSentence.removeToken = (token) => (sentence) => {
-    // Not working
+    // NB Not working
     const tokenNode = DXML.node(token);
     return MaybeT.of(DXML.node(sentence))
         .fmap(XML.removeChild(tokenNode))
@@ -340,6 +340,11 @@ ArethusaSentence.removeToken = (token) => (sentence) => {
         .bind(XML.documentElement)
         .bind(ArethusaDoc.fromNode);
 };
+// static removeTokens = (sentence: ArethusaSentence): ArethusaSentence {
+//     const children = MaybeT.of(DXML.node(sentence))
+//         .fmap(XML.childNodes)
+//         .unpack<Node[]>([])
+// }
 ArethusaSentence.removeTokenById = (tokenId) => (s) => {
     const removeChild = ArethusaSentence
         .tokenById(tokenId)(s)
