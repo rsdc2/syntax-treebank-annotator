@@ -582,11 +582,14 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
      */
 
     static renumberTokenIdsUniversal = (renumberHeads: boolean) => (a: ArethusaDoc): Maybe<ArethusaDoc> => {
-        const maybeWords = MaybeT.of(a)
+        const tokens = MaybeT.of(a)
             .bindErr("No Arethusa.", ArethusaDoc.deepcopy)
             .fmapErr("No words in Arethusa.", ArethusaDoc.tokens)
             .unpack([])
+        
+        const newTokens = tokens
             .map( (w: ArethusaWord, idx: number) => {
+
                 const currentId = XML.attr("id")(DXML.node(w))
                                     .bind(XML.textContent)  // TODO: use a better function for this
                                     .fmap(Str.toNum)
@@ -648,7 +651,7 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
             }    
             )
 
-        const words = Arr.removeNothings(maybeWords)
+        const words = Arr.removeNothings(newTokens)
         return Arr.head(words)
             .fmapErr("No first node.", DXML.node)
             .bindErr("No node.", XML.ownerDocument)
