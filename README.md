@@ -40,7 +40,6 @@ The annotator has similar aims to Arethusa.
 However, it differs in the following ways, and 
 is therefore somewhat complementary:
 
-
 ### No server
 Whereas Arethusa has a backend, 
 this annotator runs entirely in the browser. 
@@ -79,6 +78,11 @@ as syntax.
 Currently the annotator only allows for the annotation 
 of syntax 
 (although it should preserve any morphology annotation).
+
+### TEI EpiDoc import
+The annotator can import tokens directly from [TEI EpiDoc](https://epidoc.stoa.org/gl/latest/)
+texts, provided that tokens are enclosed in 
+<w> or <name> tags. 
 
 ## Other points to note
 
