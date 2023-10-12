@@ -82,20 +82,26 @@ of syntax
 
 ## Other points to note
 
-### Word IDs
+### Token IDs
 
-The annotator expects each word in the treebank to have a unique ID. 
-While this may not make a huge amount of sense in the context of a 
-literary document, where the sentence boundaries are established,
-in an inscription sentence boundaries are not necessarily clear.
-Since this annotator is primarily designed for 
-annotating inscriptions, words are given ids according to their
-order in the inscription, which is more stable than their position
-in a given sentence.
+The annotator expects:
+- Each token in the treebank to have a unique ID,
+- Token IDs to be sequential integers starting at 1 (with the first token).
 
-When the annotator imports an Arethusa XML file, the words (and their 
-respective heads) are renumbered according to their position in the document. 
+On load, the annotator will assign IDs to each token meeting these criteria.
+Dependencies (primary and secondary) should be preserved in this process,
+provided that at least within each sentence each token has a unique ID.
 
+## Artificial tokens
+
+It is possible to add artificial tokens using the annotator. 
+By default, these are given the text '0'. At present, the form cannot be 
+changed within the annotator, but can of course be changed by manually
+editing the XML.
+
+At present the annotator does not read the ```@insertion_id``` attribute
+in an Arethusa XML file; the insertion position is simply the linear order
+in the XML file.
 
 ## Acknowledgements
 

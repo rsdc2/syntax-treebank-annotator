@@ -313,7 +313,7 @@ ArethusaSentence.moveTokenUp = (tokenId) => (sentence) => {
     const previousSibNodeId = tokenNode
         .bind(XML.previousSibling)
         .bind(XML.attrVal("id"));
-    console.log("Previous Sibling ID: ", previousSibNodeId.value);
+    // console.log("Previous Sibling ID: ", previousSibNodeId.value)
     const moveNode = previousSibNodeId
         .fmap(ArethusaSentence.moveToken(XML.insertBefore)(tokenId));
     return MaybeT
