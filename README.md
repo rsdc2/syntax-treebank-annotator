@@ -82,7 +82,7 @@ of syntax
 ### TEI EpiDoc import
 The annotator can import tokens directly from [TEI EpiDoc](https://epidoc.stoa.org/gl/latest/)
 texts, provided that tokens are enclosed in 
-<w> or <name> tags. 
+```<w>``` or ```<name>``` tags. 
 
 ## Other points to note
 
