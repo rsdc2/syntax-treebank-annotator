@@ -421,7 +421,7 @@ ArethusaDoc.renumberTokenIds = (renumberHeads) => (a) => {
             .bind(XML.nodeValue)
             .unpack("");
         changes.push([tokenSentenceId, Str.fromNum(currentId), Str.fromNum(newId)]);
-        console.log(changes);
+        // console.log(changes)
         // Renumber token ids
         const newToken = MaybeT.ofThrow("Could not create Maybe<Word>.", DXML.node(w))
             .fmapErr("Could not make word node.", XML.setId(Str.fromNum(newId)))
