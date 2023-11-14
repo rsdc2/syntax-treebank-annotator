@@ -1,11 +1,8 @@
-
 // The approach of using force directed graph to generate a tree was inspired by
 // https://stackoverflow.com/questions/21529242/d3-force-directed-graph-downward-force-simulation/21537377 @VividD
 // The latter uses d3 v. 3; here d3 v. 7 is used
 
 namespace Graph {
-
-    let container
     const alphaTarget = 0.5
     const linkDistance = 60;
     const linkStrength = 0.3;
@@ -115,9 +112,9 @@ namespace Graph {
             .data(links)
             .enter().append("foreignObject")
             .attr("class", "edge-label")
-            .attr("id", (d) => `edl-${d.id}`)
-            .attr("dep-id", (d) => d.depTreeNodeId)
-            .attr("head-id", (d) => d.headTreeNodeId)
+            .attr("id", d => `edl-${d.id}`)
+            .attr("dep-id", d => d.depTreeNodeId)
+            .attr("head-id", d => d.headTreeNodeId)
             .attr("width", "1")
             .attr("height", "1")
             .attr("overflow", "visible")
@@ -132,12 +129,12 @@ namespace Graph {
             .append("xhtml:div")
             .attr("class", "edge-label-div")
             .attr("contenteditable", "false")
-            .attr("id", (d) => `edl-${d.id}`)
-            .attr("slash-id", (d) => `${d.id}`)
-            .attr("dep-id", (d) => d.depTreeNodeId)
-            .attr("head-id", (d) => d.headTreeNodeId)
-            .attr("type", (d) => d.type)
-            .html( (d) => d.relation === "" ? Constants.defaultRel : d.relation )
+            .attr("id", d => `edl-${d.id}`)
+            .attr("slash-id", d => `${d.id}`)
+            .attr("dep-id", d => d.depTreeNodeId)
+            .attr("head-id", d => d.headTreeNodeId)
+            .attr("type", d => d.type)
+            .html( d => d.relation === "" ? Constants.defaultRel : d.relation )
 
         const edgeDivLabels = Graph.edgeDivLabels()
 
@@ -188,13 +185,17 @@ namespace Graph {
     }
 
     function drawPathMarkers() {
-        container
-            .append("defs")
+        if (d3.select("g.container").select("defs").size() == 0) {
+            d3.select("g.container").append("defs")
+        }
+
+        d3.select("g.container")
+            .select("defs")
             .selectAll("marker")
             .data(["head", "slash"])
             .enter()
-            .append("marker")
-            .attr("id", (d: ITreeLink) => d)
+            .append("marker") 
+            .attr("id", (d) => d) 
             .attr("viewBox", "0 0 10 10")
             .attr("orient", "auto")
             .attr("markerWidth", 10)
@@ -296,12 +297,14 @@ namespace Graph {
         
         clearGraph()
     
-        let svg = d3.select("svg")
-            .append("g")
-            .attr("class", "container")
-            .attr("xmlns:xhtml", "http://www.w3.org/1999/xhtml")
-
-        container = d3.select("g.container");
+        if (d3.select("svg").select("g.container").size() == 0) {
+            d3.select("svg")
+                .append("g")
+                .attr("class", "container")
+                .attr("xmlns:xhtml", "http://www.w3.org/1999/xhtml")
+        }
+        
+        let container = d3.select("g.container");
     
         container.append("g")
             .attr("class", "links");
@@ -312,8 +315,7 @@ namespace Graph {
         container.append("g")
             .attr("class", "edgelabel");
     
-        drawPathMarkers();
-        // resetClock();
+        drawPathMarkers();  // Draw these only once
         createSimulation(state);
     }
 
@@ -493,6 +495,7 @@ namespace Graph {
         const circles = drawCircles(nodes);
         const nodeLabels = drawNodeLabels(nodes);
         const edgeLabels = drawEdgeLabels(links);
+        // drawPathMarkers()
 
         globalState
             .simulation
@@ -515,6 +518,7 @@ namespace Graph {
         const circles = drawCircles(nodes);
         const nodeLabels = drawNodeLabels(nodes);
         const edgeLabels = drawEdgeLabels(links);
+        // drawPathMarkers()
 
         globalState.simulation = d3.forceSimulation(nodes);
         setForces(nodes, links)
