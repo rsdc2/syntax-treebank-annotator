@@ -336,46 +336,12 @@ var Graph;
         })
             .strength(collisionStrength));
     }
-    function tick(paths, links, circles, nodeLabels, edgeLabels, end) {
+    function tick(paths, links, circles, nodeLabels, edgeLabels) {
         function _tick() {
-            // if (end == undefined) {
-            //     globalState.simulation.stop();
-            //     console.log('end undefined')
-            // }
-            // else 
-            // if (end - Date.now() > 0) {
-            // case true:
-            // console.log(Date.now() - end)
             paths.attr("d", linkArc(links));
             circles.attr("transform", transform);
             nodeLabels.attr("transform", transform_);
             edgeLabels.attr("transform", edgeLabelPos(paths));
-            // break
-            // } 
-            // else if (end - Date.now() <= 0) {
-            //     // case false:
-            //         // Used to stop the graph starting from the beginning on undo / redo
-            //         globalState
-            //             .treeStateIO
-            //             .fmap(
-            //                 TreeStateIO.replaceSentStateFromNodes(
-            //                     globalState.simulation.nodes(),
-            //                     false, 
-            //                     globalState
-            //                         .treeStateIO
-            //                         .fmap(TreeStateIO.currentSentStateIdx)
-            //                         .fromMaybe(0)
-            //                 )
-            //             )
-            //         globalState
-            //             .textStateIO
-            //             .bind(TextStateIO.currentState)
-            //             .fmap(TextState.updateTreeState(globalState.treeStateIO.fmap(TreeStateIO.currentSentState)))
-            //         console.log(Date.now(), end, end - Date.now())
-            //         globalState.simulation.stop();
-            //         end = undefined
-            // break
-            // }
         }
         return _tick;
     }
@@ -438,39 +404,9 @@ var Graph;
             .simulation
             .alphaTarget(alphaTarget)
             .restart()
-            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels, Date.now() + duration));
+            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
     }
     Graph.updateSimulation = updateSimulation;
-    function updateSimulation_(ts) {
-        if (globalState.simulation === undefined) {
-            createSimulation_(ts);
-            return;
-        }
-        if (globalState.textStateIO.fmap(TextStateIO.currentSentence).isNothing) {
-            Graph.clearGraph();
-            return;
-        }
-        const nodes = ts.nodes;
-        const links = TreeNode.links(nodes);
-        globalState.simulation.nodes(nodes);
-        setForces(nodes, links);
-        const paths = drawPaths(links);
-        const circles = drawCircles(nodes);
-        const nodeLabels = drawNodeLabels(nodes);
-        const edgeLabels = drawEdgeLabels(links);
-        Graph.unclickCircles();
-        ts.clickState
-            .circleElem
-            .fmap(HTML.Elem.Class.add("clicked"));
-        ts.clickState
-            .labelElem
-            .fmap(HTML.Elem.Class.add("clicked"));
-        globalState.simulation
-            .alphaTarget(alphaTarget)
-            .restart()
-            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels, Date.now() + duration));
-    }
-    Graph.updateSimulation_ = updateSimulation_;
     function createSimulation(state) {
         const tokens = state.currentTreeState.tokens;
         const nodes = TreeNode.tokensToTreeNodes(tokens);
@@ -485,26 +421,9 @@ var Graph;
             .simulation
             .alphaTarget(alphaTarget)
             .restart()
-            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels, Date.now() + duration));
+            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
     }
     Graph.createSimulation = createSimulation;
-    function createSimulation_(state) {
-        const tokens = state.tokens;
-        const nodes = TreeNode.tokensToTreeNodes(tokens);
-        const links = TreeNode.links(nodes);
-        const paths = drawPaths(links);
-        const circles = drawCircles(nodes);
-        const nodeLabels = drawNodeLabels(nodes);
-        const edgeLabels = drawEdgeLabels(links);
-        globalState.simulation = d3.forceSimulation(nodes);
-        setForces(nodes, links);
-        globalState
-            .simulation
-            .alphaTarget(alphaTarget)
-            .restart()
-            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels, Date.now() + duration));
-    }
-    Graph.createSimulation_ = createSimulation_;
     Graph.svg = () => {
         return MaybeT.of(document.querySelector("div.tree-container svg"));
     };

@@ -39,13 +39,6 @@ namespace Graph {
         const clickState = ClickState.of(MaybeT.of(tokenId))(TreeLabelType.NodeLabel)(ClickType.Left)
         globalState.treeStateIO.fmap(TreeStateIO.changeClickState(clickState))
     }
-    
-    // function resetClock() {
-    //     // for this solution for stopping clock, cf. 
-    //     // https://stackoverflow.com/questions/23334366/how-to-stop-force-directed-graph-simulation @ Jarrett Meyer
-
-    //     endt = Date.now() + duration;
-    // }
 
     function handleDrag(event, d: ITreeNode) {
     
@@ -128,7 +121,7 @@ namespace Graph {
             .attr("id", (d) => `edl-${d.id}`)
             .attr("dep-id", (d) => d.depTreeNodeId)
             .attr("head-id", (d) => d.headTreeNodeId)
-            .attr("width", "1") // cf. https://stackoverflow.com/questions/16254651/auto-height-for-a-foreignobject-in-svg
+            .attr("width", "1")
             .attr("height", "1")
             .attr("overflow", "visible")
 
@@ -174,7 +167,7 @@ namespace Graph {
             .attr("token-id", (d) => d.arethusaTokenId )
             .attr("x", "0.5em")
             .attr("y", "1em")
-            .attr("width", "1") // cf. https://stackoverflow.com/questions/16254651/auto-height-for-a-foreignobject-in-svg
+            .attr("width", "1")
             .attr("height", "1")
             .attr("overflow", "visible")
 
@@ -434,7 +427,7 @@ namespace Graph {
         return _tick
     }
     
-    // cf. https://observablehq.com/@d3/mobile-patent-suits
+    // inspired by https://observablehq.com/@d3/mobile-patent-suits
     const linkArc = (links: ITreeLink[]) => (d: ITreeLink) => {
         
         let parallels = TreeNode
@@ -480,13 +473,11 @@ namespace Graph {
     }
 
     function transform(d: ITreeNode) {
-        const x =  "translate(" + d.x + "," + d.y + ")";
-        return x
+        return "translate(" + d.x + "," + d.y + ")"
     }
 
     function transform_(d: ITreeNode) {
-        const x =  "translate(" + d.x + "," + d.y + ")";
-        return x
+        return "translate(" + d.x + "," + d.y + ")"
     }
     
     export function updateSimulation(state: TreeStateIO) {

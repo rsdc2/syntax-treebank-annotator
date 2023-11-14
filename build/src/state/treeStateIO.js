@@ -115,7 +115,7 @@ class TreeStateIO {
         this.replace = (state, update, sentStateToReplaceIdx) => {
             this._treeState = state;
             if (update) {
-                Graph.updateSimulation_(this._treeState);
+                Graph.updateSimulation(this);
             }
         };
         this.undo = () => {
