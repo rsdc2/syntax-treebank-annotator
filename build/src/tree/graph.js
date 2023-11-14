@@ -182,7 +182,7 @@ var Graph;
             .selectAll("path")
             .data(links)
             .join("path")
-            .attr("d", linkArc(links))
+            .attr("d", linkPath(links))
             .attr("class", (d) => "link " + d.type)
             .attr("id", (d) => `edg-${d.id}`)
             .attr("marker-end", (d) => "url(#" + d.type + ")");
@@ -334,7 +334,7 @@ var Graph;
     }
     function tick(paths, links, circles, nodeLabels, edgeLabels) {
         function _tick() {
-            paths.attr("d", linkArc(links));
+            paths.attr("d", linkPath(links));
             circles.attr("transform", transform);
             nodeLabels.attr("transform", transform_);
             edgeLabels.attr("transform", edgeLabelPos(paths));
@@ -342,39 +342,39 @@ var Graph;
         return _tick;
     }
     // inspired by https://observablehq.com/@d3/mobile-patent-suits
-    const linkArc = (links) => (d) => {
+    const linkPath = (links) => (d) => {
+        function _linkPath(d, type) {
+            if (d.target.x === undefined || d.source.x === undefined) {
+                return "M0,0L0,0";
+            }
+            if (d.target.y === undefined || d.source.y === undefined) {
+                return "M0,0L0,0";
+            }
+            const dx = d.target.x - d.source.x;
+            const dy = d.target.y - d.source.y;
+            const ra = Math.sqrt(dx * dx + dy * dy) * 0.6;
+            const rb = ra;
+            if (type == ArcType.Straight) {
+                return "M" + d.source.x + "," + d.source.y + "L" + d.target.x + "," + d.target.y;
+            }
+            switch (d.type) {
+                case LinkType.Slash: {
+                    return "M" + d.source.x + "," + d.source.y + "A" + ra + "," + rb + " 0 0,1 " + d.target.x + "," + d.target.y;
+                }
+                case LinkType.Head: {
+                    return "M" + d.source.x + "," + d.source.y + "L" + d.target.x + "," + d.target.y;
+                }
+                default: {
+                    return "";
+                }
+            }
+        }
         let parallels = TreeNode
             .parallelLinks(links, d.source.treeNodeId, d.target.treeNodeId);
         return parallels.length === 1 ?
-            linkPath(d, ArcType.Straight) :
-            linkPath(d);
+            _linkPath(d, ArcType.Straight) :
+            _linkPath(d);
     };
-    function linkPath(d, type) {
-        if (d.target.x === undefined || d.source.x === undefined) {
-            return "M0,0L0,0";
-        }
-        if (d.target.y === undefined || d.source.y === undefined) {
-            return "M0,0L0,0";
-        }
-        const dx = d.target.x - d.source.x;
-        const dy = d.target.y - d.source.y;
-        const ra = Math.sqrt(dx * dx + dy * dy) * 0.6;
-        const rb = ra;
-        if (type == ArcType.Straight) {
-            return "M" + d.source.x + "," + d.source.y + "L" + d.target.x + "," + d.target.y;
-        }
-        switch (d.type) {
-            case LinkType.Slash: {
-                return "M" + d.source.x + "," + d.source.y + "A" + ra + "," + rb + " 0 0,1 " + d.target.x + "," + d.target.y;
-            }
-            case LinkType.Head: {
-                return "M" + d.source.x + "," + d.source.y + "L" + d.target.x + "," + d.target.y;
-            }
-            default: {
-                return "";
-            }
-        }
-    }
     function transform(d) {
         return "translate(" + d.x + "," + d.y + ")";
     }
