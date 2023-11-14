@@ -61,8 +61,6 @@ namespace Graph {
                 d.fx = mouseSVGX 
                 d.fy = mouseSVGY
             }
-
-            // resetClock();
             
             globalState.simulation.nodes(globalState
                 .treeStateIO
