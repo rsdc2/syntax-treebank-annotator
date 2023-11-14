@@ -7,7 +7,6 @@ namespace Graph {
 
     let container
     const alphaTarget = 0.5
-    const duration = 1500; 
     const linkDistance = 60;
     const linkStrength = 0.3;
     const xStrength = 0.2; // x-positioning force; the greater this value, the narrower the tree: 
