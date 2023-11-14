@@ -472,7 +472,7 @@ class TreeStateIO {
         this._treeState = state
 
         if (update) {
-            Graph.updateSimulation_(this._treeState)
+            Graph.updateSimulation(this)
         }
     }
 

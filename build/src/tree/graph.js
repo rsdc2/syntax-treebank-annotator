@@ -3,7 +3,7 @@
 // The latter uses d3 v. 3; here d3 v. 7 is used
 var Graph;
 (function (Graph) {
-    let container, endt;
+    let container;
     const alphaTarget = 0.5;
     const duration = 1500;
     const linkDistance = 60;
@@ -35,11 +35,11 @@ var Graph;
         const clickState = ClickState.of(MaybeT.of(tokenId))(TreeLabelType.NodeLabel)(ClickType.Left);
         globalState.treeStateIO.fmap(TreeStateIO.changeClickState(clickState));
     };
-    function resetClock() {
-        // for this solution for stopping clock, cf. 
-        // https://stackoverflow.com/questions/23334366/how-to-stop-force-directed-graph-simulation @ Jarrett Meyer
-        endt = Date.now() + duration;
-    }
+    // function resetClock() {
+    //     // for this solution for stopping clock, cf. 
+    //     // https://stackoverflow.com/questions/23334366/how-to-stop-force-directed-graph-simulation @ Jarrett Meyer
+    //     endt = Date.now() + duration;
+    // }
     function handleDrag(event, d) {
         function duringDrag(event, d) {
             // Fix the circle until the drag has finished
@@ -338,29 +338,44 @@ var Graph;
     }
     function tick(paths, links, circles, nodeLabels, edgeLabels, end) {
         function _tick() {
-            const end_ = endt == undefined ? end : endt;
-            switch (Date.now() < end_) {
-                case true:
-                    paths.attr("d", linkArc(links));
-                    circles.attr("transform", transform);
-                    nodeLabels.attr("transform", transform_);
-                    edgeLabels.attr("transform", edgeLabelPos(paths));
-                    break;
-                case false:
-                    globalState.simulation.stop();
-                    // Used to stop the graph starting from the beginning on undo / redo
-                    globalState
-                        .treeStateIO
-                        .fmap(TreeStateIO.replaceSentStateFromNodes(globalState.simulation.nodes(), false, globalState
-                        .treeStateIO
-                        .fmap(TreeStateIO.currentSentStateIdx)
-                        .fromMaybe(0)));
-                    globalState
-                        .textStateIO
-                        .bind(TextStateIO.currentState)
-                        .fmap(TextState.updateTreeState(globalState.treeStateIO.fmap(TreeStateIO.currentSentState)));
-                    break;
-            }
+            // if (end == undefined) {
+            //     globalState.simulation.stop();
+            //     console.log('end undefined')
+            // }
+            // else 
+            // if (end - Date.now() > 0) {
+            // case true:
+            // console.log(Date.now() - end)
+            paths.attr("d", linkArc(links));
+            circles.attr("transform", transform);
+            nodeLabels.attr("transform", transform_);
+            edgeLabels.attr("transform", edgeLabelPos(paths));
+            // break
+            // } 
+            // else if (end - Date.now() <= 0) {
+            //     // case false:
+            //         // Used to stop the graph starting from the beginning on undo / redo
+            //         globalState
+            //             .treeStateIO
+            //             .fmap(
+            //                 TreeStateIO.replaceSentStateFromNodes(
+            //                     globalState.simulation.nodes(),
+            //                     false, 
+            //                     globalState
+            //                         .treeStateIO
+            //                         .fmap(TreeStateIO.currentSentStateIdx)
+            //                         .fromMaybe(0)
+            //                 )
+            //             )
+            //         globalState
+            //             .textStateIO
+            //             .bind(TextStateIO.currentState)
+            //             .fmap(TextState.updateTreeState(globalState.treeStateIO.fmap(TreeStateIO.currentSentState)))
+            //         console.log(Date.now(), end, end - Date.now())
+            //         globalState.simulation.stop();
+            //         end = undefined
+            // break
+            // }
         }
         return _tick;
     }
@@ -421,12 +436,9 @@ var Graph;
         const edgeLabels = drawEdgeLabels(links);
         globalState
             .simulation
-            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels, Date.now() + duration));
-        // resetClock()
-        globalState
-            .simulation
             .alphaTarget(alphaTarget)
-            .restart();
+            .restart()
+            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels, Date.now() + duration));
     }
     Graph.updateSimulation = updateSimulation;
     function updateSimulation_(ts) {
@@ -453,13 +465,10 @@ var Graph;
         ts.clickState
             .labelElem
             .fmap(HTML.Elem.Class.add("clicked"));
-        globalState
-            .simulation
-            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels, Date.now() + duration));
-        resetClock();
         globalState.simulation
             .alphaTarget(alphaTarget)
-            .restart();
+            .restart()
+            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels, Date.now() + duration));
     }
     Graph.updateSimulation_ = updateSimulation_;
     function createSimulation(state) {
@@ -472,9 +481,10 @@ var Graph;
         const edgeLabels = drawEdgeLabels(links);
         globalState.simulation = d3.forceSimulation(nodes);
         setForces(nodes, links);
-        // resetClock()
         globalState
             .simulation
+            .alphaTarget(alphaTarget)
+            .restart()
             .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels, Date.now() + duration));
     }
     Graph.createSimulation = createSimulation;
@@ -488,9 +498,10 @@ var Graph;
         const edgeLabels = drawEdgeLabels(links);
         globalState.simulation = d3.forceSimulation(nodes);
         setForces(nodes, links);
-        // resetClock()
         globalState
             .simulation
+            .alphaTarget(alphaTarget)
+            .restart()
             .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels, Date.now() + duration));
     }
     Graph.createSimulation_ = createSimulation_;

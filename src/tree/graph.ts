@@ -5,7 +5,7 @@
 
 namespace Graph {
 
-    let container, endt
+    let container
     const alphaTarget = 0.5
     const duration = 1500; 
     const linkDistance = 60;
@@ -40,12 +40,12 @@ namespace Graph {
         globalState.treeStateIO.fmap(TreeStateIO.changeClickState(clickState))
     }
     
-    function resetClock() {
-        // for this solution for stopping clock, cf. 
-        // https://stackoverflow.com/questions/23334366/how-to-stop-force-directed-graph-simulation @ Jarrett Meyer
+    // function resetClock() {
+    //     // for this solution for stopping clock, cf. 
+    //     // https://stackoverflow.com/questions/23334366/how-to-stop-force-directed-graph-simulation @ Jarrett Meyer
 
-        endt = Date.now() + duration;
-    }
+    //     endt = Date.now() + duration;
+    // }
 
     function handleDrag(event, d: ITreeNode) {
     
@@ -423,41 +423,13 @@ namespace Graph {
         )
     }
     
-    function tick(paths, links, circles, nodeLabels, edgeLabels, end) {
+    function tick(paths, links, circles, nodeLabels, edgeLabels) {
     
         function _tick() {
-            const end_ = endt == undefined ? end : endt
-            switch (Date.now() < end_) {
-                case true:
-                    paths.attr("d", linkArc(links));
-                    circles.attr("transform", transform);
-                    nodeLabels.attr("transform", transform_);
-                    edgeLabels.attr("transform", edgeLabelPos(paths));
-                    break
-                case false:
-                    globalState.simulation.stop();
-
-                    // Used to stop the graph starting from the beginning on undo / redo
-                    globalState
-                        .treeStateIO
-                        .fmap(
-                            TreeStateIO.replaceSentStateFromNodes(
-                                globalState.simulation.nodes(),
-                                false, 
-                                globalState
-                                    .treeStateIO
-                                    .fmap(TreeStateIO.currentSentStateIdx)
-                                    .fromMaybe(0)
-                            )
-                        )
-    
-                    globalState
-                        .textStateIO
-                        .bind(TextStateIO.currentState)
-                        .fmap(TextState.updateTreeState(globalState.treeStateIO.fmap(TreeStateIO.currentSentState)))
-                    break
-    
-            }
+            paths.attr("d", linkArc(links));
+            circles.attr("transform", transform);
+            nodeLabels.attr("transform", transform_);
+            edgeLabels.attr("transform", edgeLabelPos(paths));
         }
         return _tick
     }
@@ -536,69 +508,14 @@ namespace Graph {
 
         globalState
             .simulation
+            .alphaTarget(alphaTarget)
+            .restart()
             .on('tick', tick(
                 paths, 
                 links, 
                 circles, 
                 nodeLabels, 
-                edgeLabels,
-                Date.now() + duration));
-
-        // resetClock()
-        globalState
-            .simulation
-            .alphaTarget(alphaTarget)
-            .restart();
-    }
-    
-    export function updateSimulation_(ts: TreeState) {
-        if (globalState.simulation === undefined) {
-            createSimulation_(ts)
-            return
-        }
-
-        if (globalState.textStateIO.fmap(TextStateIO.currentSentence).isNothing) {
-            Graph.clearGraph()
-            return
-        }
-
-        const nodes = ts.nodes
-        const links = TreeNode.links(nodes)
-
-        globalState.simulation.nodes(nodes)
-        setForces(nodes, links)
-
-        const paths = drawPaths(links);
-        const circles = drawCircles(nodes);
-        const nodeLabels = drawNodeLabels(nodes);
-        const edgeLabels = drawEdgeLabels(links);
-
-        unclickCircles()
-        ts.clickState
-            .circleElem
-            .fmap(HTML.Elem.Class.add("clicked"))
-        ts.clickState
-            .labelElem
-            .fmap(HTML.Elem.Class.add("clicked"))
-
-        globalState
-            .simulation
-            .on(
-                'tick', 
-                tick(
-                    paths, 
-                    links, 
-                    circles, 
-                    nodeLabels, 
-                    edgeLabels,
-                    Date.now() + duration
-                )
-            );
-
-        resetClock()
-        globalState.simulation
-            .alphaTarget(alphaTarget)
-            .restart();
+                edgeLabels));
     }
 
     export function createSimulation(state: TreeStateIO) {
@@ -614,9 +531,10 @@ namespace Graph {
         globalState.simulation = d3.forceSimulation(nodes);
         setForces(nodes, links)
 
-        // resetClock()
         globalState
             .simulation
+            .alphaTarget(alphaTarget)
+            .restart()
             .on(
                 'tick', 
                 tick(
@@ -624,36 +542,7 @@ namespace Graph {
                     links, 
                     circles, 
                     nodeLabels, 
-                    edgeLabels, 
-                    Date.now() + duration)
-            );
-    }
-
-    export function createSimulation_(state: TreeState) {
-        const tokens = state.tokens
-        const nodes = TreeNode.tokensToTreeNodes(tokens)
-        const links = TreeNode.links(nodes)
-    
-        const paths = drawPaths(links);
-        const circles = drawCircles(nodes);
-        const nodeLabels = drawNodeLabels(nodes);
-        const edgeLabels = drawEdgeLabels(links);
-
-        globalState.simulation = d3.forceSimulation(nodes);
-        setForces(nodes, links)
-
-        // resetClock()
-        globalState
-            .simulation
-            .on(
-                'tick', 
-                tick(
-                    paths, 
-                    links, 
-                    circles, 
-                    nodeLabels, 
-                    edgeLabels,
-                    Date.now() + duration)
+                    edgeLabels)
             );
     }
 
