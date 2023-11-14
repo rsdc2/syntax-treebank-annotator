@@ -42,7 +42,7 @@ namespace Graph {
     
     function resetClock() {
         // for this solution for stopping clock, cf. 
-        // https://stackoverflow.com/questions/23334366/how-to-stop-force-directed-graph-simulation @ Jaret Meyer
+        // https://stackoverflow.com/questions/23334366/how-to-stop-force-directed-graph-simulation @ Jarrett Meyer
 
         start = Date.now();
         end = start + simDurationMs;
