@@ -3,9 +3,9 @@
 // The latter uses d3 v. 3; here d3 v. 7 is used
 var Graph;
 (function (Graph) {
-    let container, start, end;
+    let container, endt;
     const alphaTarget = 0.5;
-    const simDurationMs = 1500;
+    const duration = 1500;
     const linkDistance = 60;
     const linkStrength = 0.3;
     const xStrength = 0.2; // x-positioning force; the greater this value, the narrower the tree: 
@@ -37,9 +37,8 @@ var Graph;
     };
     function resetClock() {
         // for this solution for stopping clock, cf. 
-        // https://stackoverflow.com/questions/23334366/how-to-stop-force-directed-graph-simulation @ Jaret Meyer
-        start = Date.now();
-        end = start + simDurationMs;
+        // https://stackoverflow.com/questions/23334366/how-to-stop-force-directed-graph-simulation @ Jarrett Meyer
+        endt = Date.now() + duration;
     }
     function handleDrag(event, d) {
         function duringDrag(event, d) {
@@ -61,7 +60,7 @@ var Graph;
                 d.fx = mouseSVGX;
                 d.fy = mouseSVGY;
             }
-            resetClock();
+            // resetClock();
             globalState.simulation.nodes(globalState
                 .treeStateIO
                 .fmap(TreeStateIO.nodes)
@@ -257,7 +256,7 @@ var Graph;
         container.append("g")
             .attr("class", "edgelabel");
         drawPathMarkers();
-        resetClock();
+        // resetClock();
         createSimulation(state);
     }
     Graph.graph = graph;
@@ -337,9 +336,10 @@ var Graph;
         })
             .strength(collisionStrength));
     }
-    function tick(paths, links, circles, nodeLabels, edgeLabels) {
+    function tick(paths, links, circles, nodeLabels, edgeLabels, end) {
         function _tick() {
-            switch (Date.now() < end) {
+            const end_ = endt == undefined ? end : endt;
+            switch (Date.now() < end_) {
                 case true:
                     paths.attr("d", linkArc(links));
                     circles.attr("transform", transform);
@@ -421,8 +421,8 @@ var Graph;
         const edgeLabels = drawEdgeLabels(links);
         globalState
             .simulation
-            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
-        resetClock();
+            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels, Date.now() + duration));
+        // resetClock()
         globalState
             .simulation
             .alphaTarget(alphaTarget)
@@ -455,7 +455,7 @@ var Graph;
             .fmap(HTML.Elem.Class.add("clicked"));
         globalState
             .simulation
-            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
+            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels, Date.now() + duration));
         resetClock();
         globalState.simulation
             .alphaTarget(alphaTarget)
@@ -472,10 +472,10 @@ var Graph;
         const edgeLabels = drawEdgeLabels(links);
         globalState.simulation = d3.forceSimulation(nodes);
         setForces(nodes, links);
-        resetClock();
+        // resetClock()
         globalState
             .simulation
-            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
+            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels, Date.now() + duration));
     }
     Graph.createSimulation = createSimulation;
     function createSimulation_(state) {
@@ -488,10 +488,10 @@ var Graph;
         const edgeLabels = drawEdgeLabels(links);
         globalState.simulation = d3.forceSimulation(nodes);
         setForces(nodes, links);
-        resetClock();
+        // resetClock()
         globalState
             .simulation
-            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
+            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels, Date.now() + duration));
     }
     Graph.createSimulation_ = createSimulation_;
     Graph.svg = () => {

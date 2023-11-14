@@ -5,9 +5,9 @@
 
 namespace Graph {
 
-    let container, start, end
+    let container, endt
     const alphaTarget = 0.5
-    const simDurationMs = 1500; 
+    const duration = 1500; 
     const linkDistance = 60;
     const linkStrength = 0.3;
     const xStrength = 0.2; // x-positioning force; the greater this value, the narrower the tree: 
@@ -44,8 +44,7 @@ namespace Graph {
         // for this solution for stopping clock, cf. 
         // https://stackoverflow.com/questions/23334366/how-to-stop-force-directed-graph-simulation @ Jarrett Meyer
 
-        start = Date.now();
-        end = start + simDurationMs;
+        endt = Date.now() + duration;
     }
 
     function handleDrag(event, d: ITreeNode) {
@@ -70,7 +69,7 @@ namespace Graph {
                 d.fy = mouseSVGY
             }
 
-            resetClock();
+            // resetClock();
             
             globalState.simulation.nodes(globalState
                 .treeStateIO
@@ -324,7 +323,7 @@ namespace Graph {
             .attr("class", "edgelabel");
     
         drawPathMarkers();
-        resetClock();
+        // resetClock();
         createSimulation(state);
     }
 
@@ -424,11 +423,11 @@ namespace Graph {
         )
     }
     
-    function tick(paths, links, circles, nodeLabels, edgeLabels) {
+    function tick(paths, links, circles, nodeLabels, edgeLabels, end) {
     
         function _tick() {
-
-            switch (Date.now() < end) {
+            const end_ = endt == undefined ? end : endt
+            switch (Date.now() < end_) {
                 case true:
                     paths.attr("d", linkArc(links));
                     circles.attr("transform", transform);
@@ -537,9 +536,15 @@ namespace Graph {
 
         globalState
             .simulation
-            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
+            .on('tick', tick(
+                paths, 
+                links, 
+                circles, 
+                nodeLabels, 
+                edgeLabels,
+                Date.now() + duration));
 
-        resetClock()
+        // resetClock()
         globalState
             .simulation
             .alphaTarget(alphaTarget)
@@ -585,7 +590,8 @@ namespace Graph {
                     links, 
                     circles, 
                     nodeLabels, 
-                    edgeLabels
+                    edgeLabels,
+                    Date.now() + duration
                 )
             );
 
@@ -608,12 +614,18 @@ namespace Graph {
         globalState.simulation = d3.forceSimulation(nodes);
         setForces(nodes, links)
 
-        resetClock()
+        // resetClock()
         globalState
             .simulation
             .on(
                 'tick', 
-                tick(paths, links, circles, nodeLabels, edgeLabels)
+                tick(
+                    paths, 
+                    links, 
+                    circles, 
+                    nodeLabels, 
+                    edgeLabels, 
+                    Date.now() + duration)
             );
     }
 
@@ -630,12 +642,18 @@ namespace Graph {
         globalState.simulation = d3.forceSimulation(nodes);
         setForces(nodes, links)
 
-        resetClock()
+        // resetClock()
         globalState
             .simulation
             .on(
                 'tick', 
-                tick(paths, links, circles, nodeLabels, edgeLabels)
+                tick(
+                    paths, 
+                    links, 
+                    circles, 
+                    nodeLabels, 
+                    edgeLabels,
+                    Date.now() + duration)
             );
     }
 

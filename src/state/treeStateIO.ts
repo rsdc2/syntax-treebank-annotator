@@ -423,7 +423,7 @@ class TreeStateIO {
         treeStateIO.currentSentStateIdx = 0
 
         if (updateGraph) {
-            Graph.updateSimulation_(treeStateIO._treeState)
+            Graph.updateSimulation(treeStateIO)
         }
 
         const changeArethusaSentence = globalState
