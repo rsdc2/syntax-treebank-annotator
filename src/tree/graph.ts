@@ -184,7 +184,11 @@ namespace Graph {
         return nodeLabels
     }
 
-    function drawPathMarkers() {
+    // These templates are only to be drawn once, 
+    // since they are then linked to
+    // within the graph
+    function drawPathMarkerTemplates() {
+
         if (d3.select("g.container").select("defs").size() == 0) {
             d3.select("g.container").append("defs")
         }
@@ -315,7 +319,7 @@ namespace Graph {
         container.append("g")
             .attr("class", "edgelabel");
     
-        drawPathMarkers();  // Draw these only once
+        drawPathMarkerTemplates();  // Draw these only once
         createSimulation(state);
     }
 
@@ -495,7 +499,6 @@ namespace Graph {
         const circles = drawCircles(nodes);
         const nodeLabels = drawNodeLabels(nodes);
         const edgeLabels = drawEdgeLabels(links);
-        // drawPathMarkers()
 
         globalState
             .simulation
@@ -518,7 +521,6 @@ namespace Graph {
         const circles = drawCircles(nodes);
         const nodeLabels = drawNodeLabels(nodes);
         const edgeLabels = drawEdgeLabels(links);
-        // drawPathMarkers()
 
         globalState.simulation = d3.forceSimulation(nodes);
         setForces(nodes, links)
