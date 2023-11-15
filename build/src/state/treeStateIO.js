@@ -169,7 +169,8 @@ TreeStateIO.changeClickState = (newClickState) => (state) => {
             state.changeEdgeLabelClickState(newClickState);
             break;
         case (TreeLabelType.NodeLabel):
-            state.clickState
+            state
+                .clickState
                 .edgeLabelElement
                 .fmap(state.changeRelation);
             Graph.unclickAll();

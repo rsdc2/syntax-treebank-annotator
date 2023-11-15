@@ -39,7 +39,8 @@ class TreeStateIO {
                 break
 
             case (TreeLabelType.NodeLabel):
-                state.clickState
+                state
+                    .clickState
                     .edgeLabelElement
                     .fmap(state.changeRelation)
 

@@ -32,8 +32,14 @@ namespace Graph {
     }
 
     export const clickCircle = (tokenId: string) =>  {
-        const clickState = ClickState.of(MaybeT.of(tokenId))(TreeLabelType.NodeLabel)(ClickType.Left)
-        globalState.treeStateIO.fmap(TreeStateIO.changeClickState(clickState))
+        const clickState = ClickState.of
+            (MaybeT.of(tokenId))
+            (TreeLabelType.NodeLabel)
+            (ClickType.Left)
+            
+        globalState
+            .treeStateIO
+            .fmap(TreeStateIO.changeClickState(clickState))
     }
 
     function handleDrag(event, d: ITreeNode) {
@@ -500,10 +506,19 @@ namespace Graph {
         const nodeLabels = drawNodeLabels(nodes);
         const edgeLabels = drawEdgeLabels(links);
 
+        unclickAll() // So that do not accumulate clicked items
+
+        // Makes sure that currently clicked items 
+        // remain highlighted
+        state.clickState
+            .circleElem
+            .fmap(HTML.Elem.Class.add("clicked"))
+        state.clickState
+            .labelElem
+            .fmap(HTML.Elem.Class.add("clicked"))
+
         globalState
             .simulation
-            .alphaTarget(alphaTarget)
-            .restart()
             .on('tick', tick(
                 paths, 
                 links, 
@@ -511,6 +526,8 @@ namespace Graph {
                 nodeLabels, 
                 edgeLabels));
     }
+
+
 
     export function createSimulation(state: TreeStateIO) {
         const tokens = state.currentTreeState.tokens

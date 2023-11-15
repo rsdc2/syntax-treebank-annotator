@@ -31,7 +31,9 @@ var Graph;
     Graph.clearGraph = clearGraph;
     Graph.clickCircle = (tokenId) => {
         const clickState = ClickState.of(MaybeT.of(tokenId))(TreeLabelType.NodeLabel)(ClickType.Left);
-        globalState.treeStateIO.fmap(TreeStateIO.changeClickState(clickState));
+        globalState
+            .treeStateIO
+            .fmap(TreeStateIO.changeClickState(clickState));
     };
     function handleDrag(event, d) {
         function duringDrag(event, d) {
@@ -397,10 +399,15 @@ var Graph;
         const circles = drawCircles(nodes);
         const nodeLabels = drawNodeLabels(nodes);
         const edgeLabels = drawEdgeLabels(links);
+        unclickAll();
+        state.clickState
+            .circleElem
+            .fmap(HTML.Elem.Class.add("clicked"));
+        state.clickState
+            .labelElem
+            .fmap(HTML.Elem.Class.add("clicked"));
         globalState
             .simulation
-            .alphaTarget(alphaTarget)
-            .restart()
             .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
     }
     Graph.updateSimulation = updateSimulation;

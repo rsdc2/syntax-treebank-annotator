@@ -45,6 +45,7 @@ class ClickState {
     }
 
     get labelElem (): Maybe<HTMLDivElement | SVGTextElement> {
+        console.log(this._elementType)
         if (this._elementType === TreeLabelType.EdgeLabel) {
             return Graph.edgeLabelById(this._lastClickedTreeNodeId)
         } else if (this._elementType === TreeLabelType.NodeLabel) {
@@ -67,6 +68,8 @@ class ClickState {
             .fmap(HTML.Elem.Class.contains("clicked"))
             .fromMaybe(false)
 
+        console.log(labelClicked)
+
         const circleClicked = clickState
             .circleElem
             .fmap(HTML.Elem.Class.contains("clicked"))
@@ -80,6 +83,7 @@ class ClickState {
         clickState
             .labelElem
             .fmap(HTML.Elem.Class.add("clicked"))
+        console.log(clickState.labelElem.value?.classList)
         clickState
             .circleElem
             .fmap(HTML.Elem.Class.add("clicked"))

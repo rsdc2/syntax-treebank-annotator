@@ -19,6 +19,7 @@ class ClickState {
         return Nothing.of();
     }
     get labelElem() {
+        console.log(this._elementType);
         if (this._elementType === TreeLabelType.EdgeLabel) {
             return Graph.edgeLabelById(this._lastClickedTreeNodeId);
         }
@@ -34,10 +35,12 @@ class ClickState {
         return this._elementType;
     }
     static clicked(clickState) {
+        var _a;
         const labelClicked = clickState
             .labelElem
             .fmap(HTML.Elem.Class.contains("clicked"))
             .fromMaybe(false);
+        console.log(labelClicked);
         const circleClicked = clickState
             .circleElem
             .fmap(HTML.Elem.Class.contains("clicked"))
@@ -49,6 +52,7 @@ class ClickState {
         clickState
             .labelElem
             .fmap(HTML.Elem.Class.add("clicked"));
+        console.log((_a = clickState.labelElem.value) === null || _a === void 0 ? void 0 : _a.classList);
         clickState
             .circleElem
             .fmap(HTML.Elem.Class.add("clicked"));
