@@ -491,10 +491,6 @@ namespace Graph {
     function transform(d: ITreeNode) {
         return "translate(" + d.x + "," + d.y + ")"
     }
-
-    function transform_(d: ITreeNode) {
-        return "translate(" + d.x + "," + d.y + ")"
-    }
     
     export function updateSimulation(state: TreeStateIO) {
         if (globalState.simulation === undefined) {
