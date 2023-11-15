@@ -8,6 +8,7 @@ namespace Constants {
         headTokenId: -1,
         relation: AGLDTRel.NONE,
         lemma: "",
+        feats: "",
         postag: "",
         secondaryDeps: [],
         distToRoot: 0, 
@@ -22,6 +23,7 @@ namespace Constants {
         id: 0,
         lemma: "",
         postag: "",
+        feats: "",
         relation: AGLDTRel.NONE,
         type: TreeTokenType.Root,
         secondaryDeps: []

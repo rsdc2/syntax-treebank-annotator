@@ -6,6 +6,12 @@ var TreeToken;
         }
         return ArtificialType.None;
     };
+    TreeToken.feats = (token) => {
+        if ('feats' in token) {
+            return token.feats;
+        }
+        return "";
+    };
     TreeToken.headId = (token) => {
         return token.headId;
     };

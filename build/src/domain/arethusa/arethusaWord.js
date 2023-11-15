@@ -77,6 +77,10 @@ ArethusaWord.postag = (w) => {
     return XML.attr("postag")(w._node)
         .bind(XML.nodeValue);
 };
+ArethusaWord.feats = (w) => {
+    return XML.attr("feats")(w._node)
+        .bind(XML.nodeValue);
+};
 ArethusaWord.relation = (w) => {
     const rel = XML.attr("relation")(w._node)
         .bind(XML.nodeValue)
@@ -114,6 +118,9 @@ ArethusaWord.toTreeToken = (w) => {
             .fromMaybe(""),
         postag: ArethusaWord
             .postag(w)
+            .fromMaybe(""),
+        feats: ArethusaWord
+            .feats(w)
             .fromMaybe(""),
         relation: ArethusaWord
             .relation(w),

@@ -11,6 +11,15 @@ namespace TreeToken {
         return ArtificialType.None
     }
 
+    export const feats = 
+        (token: ITreeToken): string => 
+    {
+        if ('feats' in token) {
+            return token.feats;
+        }
+        return "";
+    }
+
     export const headId = (token: ITreeToken) => {
         return token.headId
     }

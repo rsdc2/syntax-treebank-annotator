@@ -7,6 +7,7 @@ var Constants;
         headTokenId: -1,
         relation: AGLDTRel.NONE,
         lemma: "",
+        feats: "",
         postag: "",
         secondaryDeps: [],
         distToRoot: 0,
@@ -20,6 +21,7 @@ var Constants;
         id: 0,
         lemma: "",
         postag: "",
+        feats: "",
         relation: AGLDTRel.NONE,
         type: TreeTokenType.Root,
         secondaryDeps: []

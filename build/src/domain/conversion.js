@@ -30,6 +30,7 @@ Conversion.epidocXMLToArethusaXML = (epidocXML) => {
             form: token.normalizedText,
             lemma: "",
             postag: "",
+            feats: "",
             relation: "",
             head: "",
             secdeps: "",

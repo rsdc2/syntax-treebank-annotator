@@ -39,6 +39,7 @@ class Conversion {
                 form: token.normalizedText,
                 lemma: "",
                 postag: "",
+                feats: "",
                 relation: "",
                 head: "",
                 secdeps: "",

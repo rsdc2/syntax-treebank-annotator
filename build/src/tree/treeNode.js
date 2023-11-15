@@ -34,6 +34,7 @@ var TreeNode;
             relation: AGLDTRel.NONE,
             lemma: "",
             postag: "",
+            feats: "",
             insertionId: "",
             type: NodeType.None,
             artificialType: ArtificialType.None,
@@ -187,6 +188,7 @@ var TreeNode;
             relation: token.relation,
             lemma: TreeToken.lemma(token),
             postag: TreeToken.postag(token),
+            feats: TreeToken.feats(token),
             secondaryDeps: token.secondaryDeps,
             distToRoot: TreeEdge.countEdgesToRoot(token.id, tokens),
             insertionId: TreeToken.insertionId(token),
@@ -238,6 +240,7 @@ var TreeNode;
                 form="${node.name}" 
                 lemma="${node.lemma}" 
                 postag="${node.postag}" 
+                feats="${node.feats}"
                 relation="${node.relation}" 
                 head="${node.headTokenId}" 
                 secdeps="${TreeNode.slashesToStr(node)}"

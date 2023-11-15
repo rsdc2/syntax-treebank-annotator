@@ -86,6 +86,11 @@ class ArethusaWord implements HasText {
             .bind(XML.nodeValue)
     }
 
+    static feats = (w: ArethusaWord) => {
+        return XML.attr ("feats") (w._node)
+            .bind(XML.nodeValue)
+    }
+
     static relation = (w: ArethusaWord) => {
         const rel = XML.attr ("relation") (w._node)
             .bind(XML.nodeValue)
@@ -137,6 +142,9 @@ class ArethusaWord implements HasText {
                 .fromMaybe(""),
             postag: ArethusaWord
                 .postag(w)
+                .fromMaybe(""),
+            feats: ArethusaWord
+                .feats(w)
                 .fromMaybe(""),
             relation: ArethusaWord
                 .relation(w),
