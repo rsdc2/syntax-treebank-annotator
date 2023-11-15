@@ -96,7 +96,8 @@ var Graph;
             .select('.edgelabel')
             .selectAll("foreignObject")
             .data(links)
-            .enter().append("foreignObject")
+            .enter()
+            .append("foreignObject")
             .attr("class", "edge-label")
             .attr("id", d => `edl-${d.id}`)
             .attr("dep-id", d => d.depTreeNodeId)
@@ -107,8 +108,7 @@ var Graph;
         d3.selectAll(".edgelabel")
             .selectAll(".edge-label-div")
             .remove();
-        const divs = d3
-            .selectAll(".edge-label")
+        d3.selectAll(".edge-label")
             .data(links)
             .append("xhtml:div")
             .attr("class", "edge-label-div")

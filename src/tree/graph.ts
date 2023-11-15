@@ -132,8 +132,7 @@ namespace Graph {
             .selectAll(".edge-label-div")
             .remove()
 
-        const divs = d3
-            .selectAll(".edge-label")
+        d3.selectAll(".edge-label")
             .data(links)
             .append("xhtml:div")
             .attr("class", "edge-label-div")
