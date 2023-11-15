@@ -383,9 +383,6 @@ var Graph;
     function transform(d) {
         return "translate(" + d.x + "," + d.y + ")";
     }
-    function transform_(d) {
-        return "translate(" + d.x + "," + d.y + ")";
-    }
     function updateSimulation(state) {
         if (globalState.simulation === undefined) {
             createSimulation(state);
@@ -403,10 +400,10 @@ var Graph;
         // Makes sure that currently clicked items 
         // remain highlighted
         state.clickState
-            .circleElem
+            .currentClickedCircleElem
             .fmap(HTML.Elem.Class.add("clicked"));
         state.clickState
-            .labelElem
+            .currentClickedLabelElem
             .fmap(HTML.Elem.Class.add("clicked"));
         globalState
             .simulation

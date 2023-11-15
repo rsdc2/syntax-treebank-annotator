@@ -18,8 +18,7 @@ class ClickState {
         }
         return Nothing.of();
     }
-    get labelElem() {
-        console.log(this._elementType);
+    get currentClickedLabelElem() {
         if (this._elementType === TreeLabelType.EdgeLabel) {
             return Graph.edgeLabelById(this._lastClickedTreeNodeId);
         }
@@ -28,21 +27,19 @@ class ClickState {
         }
         return MaybeT.of(null);
     }
-    get circleElem() {
+    get currentClickedCircleElem() {
         return this._lastClickedTreeNodeId.bind(SVG.Circle.circleByTreeNodeId);
     }
     get elementType() {
         return this._elementType;
     }
     static clicked(clickState) {
-        var _a;
         const labelClicked = clickState
-            .labelElem
+            .currentClickedLabelElem
             .fmap(HTML.Elem.Class.contains("clicked"))
             .fromMaybe(false);
-        console.log(labelClicked);
         const circleClicked = clickState
-            .circleElem
+            .currentClickedCircleElem
             .fmap(HTML.Elem.Class.contains("clicked"))
             .fromMaybe(false);
         if (labelClicked || circleClicked) {
@@ -50,11 +47,10 @@ class ClickState {
             return;
         }
         clickState
-            .labelElem
+            .currentClickedLabelElem
             .fmap(HTML.Elem.Class.add("clicked"));
-        console.log((_a = clickState.labelElem.value) === null || _a === void 0 ? void 0 : _a.classList);
         clickState
-            .circleElem
+            .currentClickedCircleElem
             .fmap(HTML.Elem.Class.add("clicked"));
     }
     get lastClickedId() {
@@ -69,9 +65,9 @@ ClickState.none = () => {
 };
 ClickState.unclicked = (clickState) => {
     clickState
-        .labelElem
+        .currentClickedLabelElem
         .fmap(HTML.Elem.Class.remove("clicked"));
     clickState
-        .circleElem
+        .currentClickedCircleElem
         .fmap(HTML.Elem.Class.remove("clicked"));
 };

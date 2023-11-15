@@ -43,7 +43,7 @@ class TreeStateIO {
                     .fmap(this.changeRelation);
                 Graph.unclickAll();
                 newClickState
-                    .labelElem
+                    .currentClickedLabelElem
                     .fmap(HTML.Elem.setAttr("contenteditable")("true"));
                 ClickState.clicked(newClickState);
             }
