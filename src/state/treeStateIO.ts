@@ -83,7 +83,7 @@ class TreeStateIO {
             Graph.unclickAll()
 
             newClickState
-                .labelElem
+                .currentClickedLabelElem
                 .fmap( HTML.Elem.setAttr ("contenteditable") ("true") )
 
             ClickState.clicked(newClickState)

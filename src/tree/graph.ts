@@ -514,10 +514,10 @@ namespace Graph {
         // Makes sure that currently clicked items 
         // remain highlighted
         state.clickState
-            .circleElem
+            .currentClickedCircleElem
             .fmap(HTML.Elem.Class.add("clicked"))
         state.clickState
-            .labelElem
+            .currentClickedLabelElem
             .fmap(HTML.Elem.Class.add("clicked"))
 
         globalState

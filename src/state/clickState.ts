@@ -44,8 +44,7 @@ class ClickState {
         return Nothing.of()
     }
 
-    get labelElem (): Maybe<HTMLDivElement | SVGTextElement> {
-        console.log(this._elementType)
+    get currentClickedLabelElem (): Maybe<HTMLDivElement | SVGTextElement> {
         if (this._elementType === TreeLabelType.EdgeLabel) {
             return Graph.edgeLabelById(this._lastClickedTreeNodeId)
         } else if (this._elementType === TreeLabelType.NodeLabel) {
@@ -54,7 +53,7 @@ class ClickState {
         return MaybeT.of<HTMLDivElement|SVGTextElement>(null)
     }
 
-    get circleElem (): Maybe<SVGCircleElement> {
+    get currentClickedCircleElem (): Maybe<SVGCircleElement> {
         return  this._lastClickedTreeNodeId.bind(SVG.Circle.circleByTreeNodeId)
     }
 
@@ -64,14 +63,12 @@ class ClickState {
 
     static clicked (clickState: ClickState) {
         const labelClicked = clickState
-            .labelElem
+            .currentClickedLabelElem
             .fmap(HTML.Elem.Class.contains("clicked"))
             .fromMaybe(false)
 
-        console.log(labelClicked)
-
         const circleClicked = clickState
-            .circleElem
+            .currentClickedCircleElem
             .fmap(HTML.Elem.Class.contains("clicked"))
             .fromMaybe(false)
 
@@ -81,11 +78,10 @@ class ClickState {
         }
 
         clickState
-            .labelElem
+            .currentClickedLabelElem
             .fmap(HTML.Elem.Class.add("clicked"))
-        console.log(clickState.labelElem.value?.classList)
         clickState
-            .circleElem
+            .currentClickedCircleElem
             .fmap(HTML.Elem.Class.add("clicked"))
     }
 
@@ -95,10 +91,10 @@ class ClickState {
 
     static unclicked = (clickState: ClickState) => {
         clickState
-            .labelElem
+            .currentClickedLabelElem
             .fmap(HTML.Elem.Class.remove("clicked"))
         clickState
-            .circleElem
+            .currentClickedCircleElem
             .fmap(HTML.Elem.Class.remove("clicked"))
 
     }
