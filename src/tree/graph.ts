@@ -15,6 +15,8 @@ namespace Graph {
     const centerForceX = 300
     const centerForceY = 300
 
+    type D3Selection<T extends d3.BaseType, U> = d3.Selection<T, U, d3.BaseType, unknown>
+
     export const circles = () => {
         const circles = document.querySelectorAll("circle")
         const circleArr = new Array<SVGCircleElement>()
@@ -216,7 +218,7 @@ namespace Graph {
             .attr("d", "M0,0L6,3L0,6");
     }
 
-    function drawPaths(links: ITreeLink[]) {
+    function drawPaths(links: ITreeLink[]): d3.Selection<d3.BaseType | SVGPathElement, ITreeLink, d3.BaseType, unknown> {
         const paths = d3
             .select('.links')
             .selectAll("path")
@@ -425,15 +427,20 @@ namespace Graph {
         )
     }
     
-    function tick(paths, links, circles, nodeLabels, edgeLabels) {
+    function simTickListener(
+        paths: D3Selection<d3.BaseType | SVGPathElement, ITreeLink>, 
+        links: ITreeLink[], 
+        circles: D3Selection<d3.BaseType | SVGCircleElement, ITreeNode>, 
+        nodeLabels: D3Selection<SVGTextElement, ITreeNode>, 
+        edgeLabels: D3Selection<SVGForeignObjectElement, ITreeLink>) {
     
-        function _tick() {
+        function _simTickListener() {
             paths.attr("d", linkPath(links));
             circles.attr("transform", transform);
-            nodeLabels.attr("transform", transform_);
+            nodeLabels.attr("transform", transform);
             edgeLabels.attr("transform", edgeLabelPos(paths));
         }
-        return _tick
+        return _simTickListener
     }
     
     // inspired by https://observablehq.com/@d3/mobile-patent-suits
@@ -519,7 +526,7 @@ namespace Graph {
 
         globalState
             .simulation
-            .on('tick', tick(
+            .on('tick', simTickListener(
                 paths, 
                 links, 
                 circles, 
@@ -548,7 +555,7 @@ namespace Graph {
             .restart()
             .on(
                 'tick', 
-                tick(
+                simTickListener(
                     paths, 
                     links, 
                     circles, 

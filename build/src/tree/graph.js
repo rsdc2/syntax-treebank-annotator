@@ -337,14 +337,14 @@ var Graph;
         })
             .strength(collisionStrength));
     }
-    function tick(paths, links, circles, nodeLabels, edgeLabels) {
-        function _tick() {
+    function simTickListener(paths, links, circles, nodeLabels, edgeLabels) {
+        function _simTickListener() {
             paths.attr("d", linkPath(links));
             circles.attr("transform", transform);
-            nodeLabels.attr("transform", transform_);
+            nodeLabels.attr("transform", transform);
             edgeLabels.attr("transform", edgeLabelPos(paths));
         }
-        return _tick;
+        return _simTickListener;
     }
     // inspired by https://observablehq.com/@d3/mobile-patent-suits
     const linkPath = (links) => (d) => {
@@ -399,7 +399,9 @@ var Graph;
         const circles = drawCircles(nodes);
         const nodeLabels = drawNodeLabels(nodes);
         const edgeLabels = drawEdgeLabels(links);
-        unclickAll();
+        unclickAll(); // So that do not accumulate clicked items
+        // Makes sure that currently clicked items 
+        // remain highlighted
         state.clickState
             .circleElem
             .fmap(HTML.Elem.Class.add("clicked"));
@@ -408,7 +410,7 @@ var Graph;
             .fmap(HTML.Elem.Class.add("clicked"));
         globalState
             .simulation
-            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
+            .on('tick', simTickListener(paths, links, circles, nodeLabels, edgeLabels));
     }
     Graph.updateSimulation = updateSimulation;
     function createSimulation(state) {
@@ -425,7 +427,7 @@ var Graph;
             .simulation
             .alphaTarget(alphaTarget)
             .restart()
-            .on('tick', tick(paths, links, circles, nodeLabels, edgeLabels));
+            .on('tick', simTickListener(paths, links, circles, nodeLabels, edgeLabels));
     }
     Graph.createSimulation = createSimulation;
     Graph.svg = () => {
