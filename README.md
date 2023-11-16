@@ -108,7 +108,7 @@ in an Arethusa XML file; the insertion position is simply the linear order
 in the XML file.
 
 ## Dependencies
-The syntax treebank annotator was written in [TypeScript](https://www.typescriptlang.org/) and uses the library [D3.js](https://d3js.org/) ([ISC](https://github.com/d3/d3/blob/main/LICENSE)) for representation of the trees (graphs). Dev dependencies are the D3 types provided by [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/d3) ([MIT](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/LICENSE)). The licenses for these projects are located in the `LICENSES` directory.
+The syntax treebank annotator was written in [TypeScript](https://www.typescriptlang.org/) ([Apache 2.0](https://github.com/microsoft/TypeScript/blob/main/LICENSE.txt)) and uses the library [D3.js](https://d3js.org/) ([ISC](https://github.com/d3/d3/blob/main/LICENSE)) for representation of the trees (graphs). Dev dependencies are the D3 types provided by [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/d3) ([MIT](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/LICENSE)). The licenses for these projects are located in the `LICENSES` directory.
 
 
 ## Acknowledgements
