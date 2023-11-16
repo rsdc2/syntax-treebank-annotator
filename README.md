@@ -107,8 +107,12 @@ At present the annotator does not read the ```@insertion_id``` attribute
 in an Arethusa XML file; the insertion position is simply the linear order
 in the XML file.
 
+## Dependencies
+The syntax treebank annotator was written in [TypeScript](https://www.typescriptlang.org/) and uses the library [D3.js](https://d3js.org/) ([ISC](https://github.com/d3/d3/blob/main/LICENSE)) for representation of the trees (graphs). Dev dependencies are the D3 types provided by [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/d3) ([MIT](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/LICENSE)). The licenses for these projects are located in the `LICENSES` directory.
+
+
 ## Acknowledgements
 
-The syntax treebank annotator was written in [TypeScript](https://www.typescriptlang.org/) and uses the library [D3.js](https://d3js.org/) ([ISC](https://github.com/d3/d3/blob/main/LICENSE)) for representation of the trees (graphs). Dev dependencies are the D3 types provided by [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/d3) ([MIT](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/LICENSE)). The XML file format is designed to be compatible with that used by [Arethusa](https://www.perseids.org/tools/arethusa/app/#/).
+The XML file format is designed to be compatible with that used by [Arethusa](https://www.perseids.org/tools/arethusa/app/#/).
 
 The software for the Syntax Treebank Annotator was written by Robert Crellin as part of the Crossreads project at the Faculty of Classics, University of Oxford, and is licensed under the MIT license. This project has received funding from the European Research Council (ERC) under the European Union’s Horizon 2020 research and innovation programme (grant agreement No 885040, “Crossreads”).
