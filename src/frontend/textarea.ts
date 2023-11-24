@@ -120,6 +120,7 @@ class TextArea {
 
     static textFromSelection(textarea: HTMLTextAreaElement) {
         // cf. https://stackoverflow.com/questions/717224/how-can-i-get-the-selected-text-in-a-textarea
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/substring
         return textarea.value.substring(
             textarea.selectionStart,
             textarea.selectionEnd

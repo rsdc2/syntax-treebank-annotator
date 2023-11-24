@@ -530,8 +530,6 @@ namespace Graph {
                 edgeLabels));
     }
 
-
-
     export function createSimulation(state: TreeStateIO) {
         const tokens = state.currentTreeState.tokens
         const nodes = TreeNode.tokensToTreeNodes(tokens)
