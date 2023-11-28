@@ -891,7 +891,7 @@ class TextStateIO {
 
         // Set the sentences text
         let v = this.currentSentence
-            .fmap(ArethusaSentence.wordsAsStr)
+            .fmap(ArethusaSentence.wordsAsLeidenStr)
             .fmap(SentencesDiv.setText)
 
         // Update the tree

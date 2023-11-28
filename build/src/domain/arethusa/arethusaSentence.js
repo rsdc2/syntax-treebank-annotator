@@ -417,7 +417,7 @@ ArethusaSentence.words = (s) => {
         .fmap(ArethusaSentence.wordsFromNodes)
         .fromMaybe([]);
 };
-ArethusaSentence.wordsAsStr = (s) => {
+ArethusaSentence.wordsAsNormalizedStr = (s) => {
     const wordsArr = ArethusaSentence
         .words(s)
         .map(ArethusaWord.form);
@@ -425,8 +425,17 @@ ArethusaSentence.wordsAsStr = (s) => {
     return newWords.join(' ')
         .replace(/\s\./g, '.')
         .replace(/\s,/g, ',')
-        // .replace(/\s;/g, ';')
-        // .replace(/\s:/g, ':')
+        .replace(/\s·/g, '·')
+        .replace(/\s·/g, '·');
+};
+ArethusaSentence.wordsAsLeidenStr = (s) => {
+    const wordsArr = ArethusaSentence
+        .words(s)
+        .map(ArethusaWord.leiden);
+    const newWords = Arr.removeNothings(wordsArr);
+    return newWords.join(' ')
+        .replace(/\s\./g, '.')
+        .replace(/\s,/g, ',')
         .replace(/\s·/g, '·')
         .replace(/\s·/g, '·');
 };

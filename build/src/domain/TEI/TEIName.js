@@ -25,7 +25,8 @@ class TEIName {
             .replace(",", "")
             .replace(")", "")
             .replace("(", "")
-            .replace("·", "");
+            .replace("·", "")
+            .replace(".", "");
     }
     static of(node) {
         return new TEIName(node);

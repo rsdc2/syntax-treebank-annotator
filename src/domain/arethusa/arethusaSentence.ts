@@ -586,7 +586,7 @@ class ArethusaSentence implements Word, HasToken, HasText  {
             .fromMaybe([])
     }
 
-    static wordsAsStr = (s: ArethusaSentence): string => {
+    static wordsAsNormalizedStr = (s: ArethusaSentence): string => {
         const wordsArr = ArethusaSentence
             .words(s)
             .map(ArethusaWord.form)
@@ -595,8 +595,19 @@ class ArethusaSentence implements Word, HasToken, HasText  {
         return newWords.join(' ')
             .replace(/\s\./g, '.')
             .replace(/\s,/g, ',')
-            // .replace(/\s;/g, ';')
-            // .replace(/\s:/g, ':')
+            .replace(/\s·/g, '·')
+            .replace(/\s·/g, '·')
+    }
+
+    static wordsAsLeidenStr = (s: ArethusaSentence): string => {
+        const wordsArr = ArethusaSentence
+            .words(s)
+            .map(ArethusaWord.leiden)
+
+        const newWords = Arr.removeNothings(wordsArr)
+        return newWords.join(' ')
+            .replace(/\s\./g, '.')
+            .replace(/\s,/g, ',')
             .replace(/\s·/g, '·')
             .replace(/\s·/g, '·')
     }

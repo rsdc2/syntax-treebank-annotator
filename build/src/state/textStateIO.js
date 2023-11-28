@@ -124,7 +124,7 @@ class TextStateIO {
             this.updateSentenceViewState();
             // Set the sentences text
             let v = this.currentSentence
-                .fmap(ArethusaSentence.wordsAsStr)
+                .fmap(ArethusaSentence.wordsAsLeidenStr)
                 .fmap(SentencesDiv.setText);
             // Update the tree
             const treeStateFunc = MaybeT.of(globalState.simulation).isNothing ?
