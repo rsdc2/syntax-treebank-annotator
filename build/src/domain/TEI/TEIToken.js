@@ -9,9 +9,11 @@ class TEIToken {
     get leidenText() {
         return this.textNodes
             .filter(TextNode.filterByNotAncestor(["g", "reg", "corr", "am"]))
-            .map((textNode) => TextNode.expansionsInParens(textNode))
-            .map((textNode) => TextNode.delInDoubleBrackets(textNode))
-            .map((textNode) => TextNode.suppliedInBrackets(textNode))
+            .map((textNode) => TextNode.bracketExpansion(textNode))
+            .map((textNode) => TextNode.bracketDel(textNode))
+            .map((textNode) => TextNode.bracketSupplied(textNode))
+            .map((textNode) => TextNode.bracketSurplus(textNode))
+            .map((textNode) => TextNode.bracketGap(textNode))
             .map(XML.textContent)
             .map((maybeStr) => { return maybeStr.fromMaybe(""); })
             .join("")
@@ -84,46 +86,48 @@ var TextNode;
             .xpath(xpathStr)(token._node)
             .fromMaybe([]);
     };
-    TextNode.delInDoubleBrackets = (textNode) => {
-        if (!XML.hasAncestor("del")(textNode)) {
+    const bracketText = (localName) => (openBracket) => (closeBracket) => (textNode) => {
+        if (!XML.hasAncestor(localName)(textNode)) {
             return textNode;
         }
-        const preceding = XML.precedingTextNodesWithAncestorByAncestorName("del")(textNode);
+        const preceding = XML.precedingTextNodesWithAncestorByAncestorName(localName)(textNode);
         if (preceding.length == 0) {
-            textNode.textContent = "[[" + textNode.textContent;
+            textNode.textContent = openBracket + textNode.textContent;
         }
-        const following = XML.followingTextNodesWithAncestorByAncestorName("del")(textNode);
+        const following = XML.followingTextNodesWithAncestorByAncestorName(localName)(textNode);
         if (following.length == 0) {
-            textNode.textContent += "]]";
+            textNode.textContent += closeBracket;
         }
         return textNode;
     };
-    TextNode.expansionsInParens = (textNode) => {
-        if (!XML.hasAncestor("ex")(textNode)) {
-            return textNode;
+    const getTextFromNode = (localName) => (openStr) => (closeStr) => (text) => {
+        var _a, _b;
+        const preceding = XML.previous(text);
+        const following = XML.next(text);
+        if (((_a = Arr.last(preceding)._value) === null || _a === void 0 ? void 0 : _a.nodeName) !== localName && following[0].nodeName !== localName) {
+            return text;
         }
-        const preceding = XML.precedingTextNodesWithAncestorByAncestorName("ex")(textNode);
-        if (preceding.length == 0) {
-            textNode.textContent = "(" + textNode.textContent;
+        if (((_b = Arr.last(preceding)._value) === null || _b === void 0 ? void 0 : _b.nodeName) === localName) {
+            text.textContent = text.textContent + closeStr;
         }
-        const following = XML.followingTextNodesWithAncestorByAncestorName("ex")(textNode);
-        if (following.length == 0) {
-            textNode.textContent += ")";
+        if (following[0].nodeName === localName) {
+            text.textContent = openStr + text.textContent;
         }
-        return textNode;
+        return text;
     };
-    TextNode.suppliedInBrackets = (textNode) => {
-        if (!XML.hasAncestor("supplied")(textNode)) {
-            return MaybeT.of(textNode).fromMaybe(new Text(""));
-        }
-        const preceding = XML.precedingTextNodesWithAncestorByAncestorName("supplied")(textNode);
-        if (preceding.length == 0) {
-            textNode.textContent = "[" + textNode.textContent;
-        }
-        const following = XML.followingTextNodesWithAncestorByAncestorName("supplied")(textNode);
-        if (following.length == 0) {
-            textNode.textContent += "]";
-        }
-        return textNode;
+    TextNode.bracketDel = (textNode) => {
+        return bracketText("del")("⟦")("⟧")(textNode);
+    };
+    TextNode.bracketExpansion = (textNode) => {
+        return bracketText("ex")("(")(")")(textNode);
+    };
+    TextNode.bracketGap = (textNode) => {
+        return getTextFromNode("gap")("[-gap-]")("[-gap-]")(textNode);
+    };
+    TextNode.bracketSupplied = (textNode) => {
+        return bracketText("supplied")("[")("]")(textNode);
+    };
+    TextNode.bracketSurplus = (textNode) => {
+        return bracketText("surplus")("{")("}")(textNode);
     };
 })(TextNode || (TextNode = {}));

@@ -23,9 +23,11 @@ class TEIToken implements Word, HasText {
     get leidenText(): string {
         return this.textNodes
             .filter(TextNode.filterByNotAncestor(["g", "reg", "corr", "am"]))
-            .map( (textNode: Text) => TextNode.expansionsInParens(textNode) )
-            .map( (textNode: Text) => TextNode.delInDoubleBrackets(textNode) )
-            .map( (textNode: Text) => TextNode.suppliedInBrackets(textNode) )
+            .map( (textNode: Text) => TextNode.bracketExpansion(textNode) )
+            .map( (textNode: Text) => TextNode.bracketDel(textNode) )
+            .map( (textNode: Text) => TextNode.bracketSupplied(textNode) )
+            .map( (textNode: Text) => TextNode.bracketSurplus(textNode) )
+            .map( (textNode: Text) => TextNode.bracketGap(textNode) )
             .map(XML.textContent)
             .map( (maybeStr: Maybe<string>) => {return maybeStr.fromMaybe("")})
             .join("")         
@@ -116,70 +118,67 @@ namespace TextNode {
             .xpath(xpathStr)(token._node)
             .fromMaybe([]) as Text[]
     }
-    
-    export const delInDoubleBrackets = (textNode: Text): Text => {
-        if (!XML.hasAncestor("del")(textNode)) {
+
+    const bracketText = (localName: string) => (openBracket: string) => (closeBracket: string) => (textNode: Text) => {
+        if (!XML.hasAncestor(localName)(textNode)) {
             return textNode
         }
 
-        const preceding = XML.precedingTextNodesWithAncestorByAncestorName("del")(textNode)
+        const preceding = XML.precedingTextNodesWithAncestorByAncestorName(localName)(textNode)
         
         if (preceding.length == 0) {
-            textNode.textContent = "[[" + textNode.textContent
+            textNode.textContent = openBracket + textNode.textContent
 
         }
 
-        const following = XML.followingTextNodesWithAncestorByAncestorName("del")(textNode)
+        const following = XML.followingTextNodesWithAncestorByAncestorName(localName)(textNode)
 
         if (following.length == 0) {
-            textNode.textContent += "]]"
+            textNode.textContent += closeBracket
         }
 
         return textNode
     }
 
-    export const expansionsInParens = (textNode: Text): Text => {
-        if (!XML.hasAncestor("ex")(textNode)) {
-            return textNode
+    const getTextFromNode = (localName: string) => (openStr: string) => (closeStr: string) => (text: Text) => {
+
+        const preceding = XML.previous(text)
+        const following = XML.next(text)
+
+        if (Arr.last(preceding)._value?.nodeName !== localName && following[0].nodeName !== localName) {
+            return text
         }
 
-        const preceding = XML.precedingTextNodesWithAncestorByAncestorName("ex")(textNode)
+        if (Arr.last(preceding)._value?.nodeName === localName) {
+            text.textContent = text.textContent + closeStr
+        }
         
-        if (preceding.length == 0) {
-            textNode.textContent = "(" + textNode.textContent
-
+        if (following[0].nodeName === localName) {
+            text.textContent = openStr + text.textContent
         }
 
-        const following = XML.followingTextNodesWithAncestorByAncestorName("ex")(textNode)
-
-        if (following.length == 0) {
-            textNode.textContent += ")"
-        }
-
-        return textNode 
+        return text
     }
-
-
-    export const suppliedInBrackets = (textNode: Text): Text => {
     
-        if (!XML.hasAncestor("supplied")(textNode)) {
-            return MaybeT.of(textNode).fromMaybe(new Text(""))
-        }
-
-        const preceding = XML.precedingTextNodesWithAncestorByAncestorName("supplied")(textNode)
-
-        if (preceding.length == 0) {
-            textNode.textContent = "[" + textNode.textContent
-
-        }
-
-        const following = XML.followingTextNodesWithAncestorByAncestorName("supplied")(textNode)
-
-        if (following.length == 0) {
-            textNode.textContent += "]"
-        }
-
-        return textNode 
+    export const bracketDel = (textNode: Text): Text => {
+        return bracketText ("del") ("⟦") ("⟧") (textNode)
     }
+
+    export const bracketExpansion = (textNode: Text): Text => {
+        return bracketText ("ex") ("(") (")") (textNode)
+    }
+
+    export const bracketGap = (textNode: Text): Text => {
+        return getTextFromNode ("gap") ("[--]") ("[--]") (textNode)
+    }
+
+    export const bracketSupplied = (textNode: Text): Text => {
+        return bracketText ("supplied") ("[") ("]") (textNode)
+    }
+
+    export const bracketSurplus = (textNode: Text): Text => {
+        return bracketText ("surplus") ("{") ("}") (textNode)
+    }
+
 
 }

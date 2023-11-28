@@ -423,6 +423,9 @@ XML.insertAfter = (nodeToInsert) => (refNode) => {
     const insertedNode = parentNode.fmap(insertNewNode);
     return insertedNode.bind(XML.parent);
 };
+XML.next = (node) => {
+    return (XML.xpathMaybeC("following::*")(MaybeT.of(node)).fromMaybe([]));
+};
 XML.nextSibling = (node) => {
     return Arr.head(XML.xpathMaybeC("following-sibling::*")(MaybeT.of(node)).fromMaybe([]));
 };
