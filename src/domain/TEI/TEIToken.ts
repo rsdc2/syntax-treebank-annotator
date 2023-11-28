@@ -12,22 +12,39 @@ class TEIToken implements Word, HasText {
         return DOM.Elem.attributes(this._element)
     }
 
+    static getLeidenText = (token: TEIToken) => {
+        return token.leidenText
+    }
+
     static getNormalizedText = (token: TEIToken) => {
         return token.normalizedText
     }
 
+    get leidenText(): string {
+        return this.textNodes
+            .filter(TextNode.filterByNotAncestor(["g", "reg", "corr", "am"]))
+            .map( (textNode: Text) => TextNode.expansionsInParens(textNode) )
+            .map( (textNode: Text) => TextNode.delInDoubleBrackets(textNode) )
+            .map( (textNode: Text) => TextNode.suppliedInBrackets(textNode) )
+            .map(XML.textContent)
+            .map( (maybeStr: Maybe<string>) => {return maybeStr.fromMaybe("")})
+            .join("")         
+            .replace(/[\s\t\n]/g, "")
+    }
+
     get normalizedText(): string {
         return this.textNodes
-            .filter(TextNode.filterByNotAncestor(["g", "orig", "sic", "del", "surplus"])) // "am", 
-            .map( (textNode: Text) => TextNode.suppliedInBrackets(textNode) )
+            .filter(TextNode.filterByNotAncestor(["g", "orig", "sic", "del", "surplus", "am"]))
+            .map(XML.textContent)
+            .map( (maybeStr: Maybe<string>) => {return maybeStr.fromMaybe("")})
             .join("")
             .replace("][", "")
             .replace(",", "")
             .replace(")", "")
             .replace("(", "")
             .replace("·", "")
+            .replace(".", "")
     }
-
 
     get text() {
         return MaybeT.of(this._node.textContent)
@@ -61,10 +78,6 @@ namespace TEITokenFuncs {
             
         return Arr.removeNothings(textArr).join("")
     }
-
-
-
-
 }
 
 namespace TextNode {
@@ -104,30 +117,69 @@ namespace TextNode {
             .fromMaybe([]) as Text[]
     }
     
-    export const suppliedInBrackets = (textNode: Text): string => {
+    export const delInDoubleBrackets = (textNode: Text): Text => {
+        if (!XML.hasAncestor("del")(textNode)) {
+            return textNode
+        }
+
+        const preceding = XML.precedingTextNodesWithAncestorByAncestorName("del")(textNode)
         
+        if (preceding.length == 0) {
+            textNode.textContent = "[[" + textNode.textContent
+
+        }
+
+        const following = XML.followingTextNodesWithAncestorByAncestorName("del")(textNode)
+
+        if (following.length == 0) {
+            textNode.textContent += "]]"
+        }
+
+        return textNode
+    }
+
+    export const expansionsInParens = (textNode: Text): Text => {
+        if (!XML.hasAncestor("ex")(textNode)) {
+            return textNode
+        }
+
+        const preceding = XML.precedingTextNodesWithAncestorByAncestorName("ex")(textNode)
+        
+        if (preceding.length == 0) {
+            textNode.textContent = "(" + textNode.textContent
+
+        }
+
+        const following = XML.followingTextNodesWithAncestorByAncestorName("ex")(textNode)
+
+        if (following.length == 0) {
+            textNode.textContent += ")"
+        }
+
+        return textNode 
+    }
+
+
+    export const suppliedInBrackets = (textNode: Text): Text => {
     
         if (!XML.hasAncestor("supplied")(textNode)) {
-            return MaybeT.of(textNode.textContent).fromMaybe("")
+            return MaybeT.of(textNode).fromMaybe(new Text(""))
         }
 
         const preceding = XML.precedingTextNodesWithAncestorByAncestorName("supplied")(textNode)
-        let returnString = ""
+
         if (preceding.length == 0) {
-            returnString += "["
+            textNode.textContent = "[" + textNode.textContent
 
         }
-
-        returnString += textNode.textContent
 
         const following = XML.followingTextNodesWithAncestorByAncestorName("supplied")(textNode)
 
         if (following.length == 0) {
-            returnString += "]"
+            textNode.textContent += "]"
         }
 
-        return returnString
-
+        return textNode 
     }
 
 }

@@ -28,7 +28,7 @@ Conversion.epidocXMLToArethusaXML = (epidocXML) => {
     const attrs = tokens.reduce((acc, token) => {
         const attr = {
             form: token.normalizedText,
-            leiden: "",
+            leiden: token.leidenText,
             lemma: "",
             postag: "",
             feats: "",
@@ -37,6 +37,7 @@ Conversion.epidocXMLToArethusaXML = (epidocXML) => {
             secdeps: "",
             corpusId: XML.getAttrVal("http://www.w3.org/XML/1998/namespace")("id")(token).fromMaybe("")
         };
+        // console.log(attr)
         // if (attr.form === "") {
         //     return acc
         // } 

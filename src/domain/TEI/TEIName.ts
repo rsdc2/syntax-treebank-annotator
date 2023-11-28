@@ -12,20 +12,36 @@ class TEIName implements TEIToken {
         return DOM.Elem.attributes(this._element)
     }
 
+    static getLeidenText = (token: TEIToken) => {
+        return token.leidenText
+    }
+    
     static getNormalizedText = (token: TEIToken) => {
         return token.normalizedText
     }
 
+    get leidenText(): string {
+        return this.textNodes
+            .filter(TextNode.filterByNotAncestor(["g", "reg", "corr", "am"]))
+            .map( (textNode: Text) => TextNode.expansionsInParens(textNode) )
+            .map( (textNode: Text) => TextNode.delInDoubleBrackets(textNode) )
+            .map( (textNode: Text) => TextNode.suppliedInBrackets(textNode) )
+            .map(XML.textContent)
+            .map( (maybeStr: Maybe<string>) => {return maybeStr.fromMaybe("")})
+            .join("")         
+            .replace(/[\s\t\n]/g, "")
+    }
+
     get normalizedText(): string {
         return this.textNodes
-            .filter(TextNode.filterByNotAncestor(["g", "orig", "sic", "del", "surplus"])) // "am"
-            .map( (textNode: Text) => TextNode.suppliedInBrackets(textNode) )
+            .filter(TextNode.filterByNotAncestor(["g", "orig", "sic", "del", "surplus", "am"]))
             .join("")
             .replace("][", "")
             .replace(",", "")
             .replace(")", "")
             .replace("(", "")
             .replace("·", "")
+            .replace(".", "")
     }
 
     static of(node: Node) {

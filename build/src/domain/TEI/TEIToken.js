@@ -6,10 +6,22 @@ class TEIToken {
     get attrs() {
         return DOM.Elem.attributes(this._element);
     }
+    get leidenText() {
+        return this.textNodes
+            .filter(TextNode.filterByNotAncestor(["g", "reg", "corr", "am"]))
+            .map((textNode) => TextNode.expansionsInParens(textNode))
+            .map((textNode) => TextNode.delInDoubleBrackets(textNode))
+            .map((textNode) => TextNode.suppliedInBrackets(textNode))
+            .map(XML.textContent)
+            .map((maybeStr) => { return maybeStr.fromMaybe(""); })
+            .join("")
+            .replace(/[\s\t\n]/g, "");
+    }
     get normalizedText() {
         return this.textNodes
-            .filter(TextNode.filterByNotAncestor(["g", "orig", "sic", "del", "surplus"])) // "am", 
-            .map((textNode) => TextNode.suppliedInBrackets(textNode))
+            .filter(TextNode.filterByNotAncestor(["g", "orig", "sic", "del", "surplus", "am"]))
+            .map(XML.textContent)
+            .map((maybeStr) => { return maybeStr.fromMaybe(""); })
             .join("")
             .replace("][", "")
             .replace(",", "")
@@ -31,6 +43,9 @@ class TEIToken {
         return Edition.xpathAddress + "//*[self::t:w|self::t:name|self::t:num]";
     }
 }
+TEIToken.getLeidenText = (token) => {
+    return token.leidenText;
+};
 TEIToken.getNormalizedText = (token) => {
     return token.normalizedText;
 };
@@ -68,20 +83,46 @@ var TextNode;
             .xpath(xpathStr)(token._node)
             .fromMaybe([]);
     };
+    TextNode.delInDoubleBrackets = (textNode) => {
+        if (!XML.hasAncestor("del")(textNode)) {
+            return textNode;
+        }
+        const preceding = XML.precedingTextNodesWithAncestorByAncestorName("del")(textNode);
+        if (preceding.length == 0) {
+            textNode.textContent = "[[" + textNode.textContent;
+        }
+        const following = XML.followingTextNodesWithAncestorByAncestorName("del")(textNode);
+        if (following.length == 0) {
+            textNode.textContent += "]]";
+        }
+        return textNode;
+    };
+    TextNode.expansionsInParens = (textNode) => {
+        if (!XML.hasAncestor("ex")(textNode)) {
+            return textNode;
+        }
+        const preceding = XML.precedingTextNodesWithAncestorByAncestorName("ex")(textNode);
+        if (preceding.length == 0) {
+            textNode.textContent = "(" + textNode.textContent;
+        }
+        const following = XML.followingTextNodesWithAncestorByAncestorName("ex")(textNode);
+        if (following.length == 0) {
+            textNode.textContent += ")";
+        }
+        return textNode;
+    };
     TextNode.suppliedInBrackets = (textNode) => {
         if (!XML.hasAncestor("supplied")(textNode)) {
-            return MaybeT.of(textNode.textContent).fromMaybe("");
+            return MaybeT.of(textNode).fromMaybe(new Text(""));
         }
         const preceding = XML.precedingTextNodesWithAncestorByAncestorName("supplied")(textNode);
-        let returnString = "";
         if (preceding.length == 0) {
-            returnString += "[";
+            textNode.textContent = "[" + textNode.textContent;
         }
-        returnString += textNode.textContent;
         const following = XML.followingTextNodesWithAncestorByAncestorName("supplied")(textNode);
         if (following.length == 0) {
-            returnString += "]";
+            textNode.textContent += "]";
         }
-        return returnString;
+        return textNode;
     };
 })(TextNode || (TextNode = {}));

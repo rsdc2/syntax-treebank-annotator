@@ -48,6 +48,10 @@ ArethusaToken.isArtificial = (w) => {
         .fmap(DXML.isArtificial)
         .fromMaybe(false);
 };
+ArethusaToken.leiden = (w) => {
+    return XML.attr("leiden")(w._node)
+        .bind(XML.nodeValue);
+};
 ArethusaToken.matchId = (id) => (word) => {
     return ArethusaToken
         .id(word)

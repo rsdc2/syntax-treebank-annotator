@@ -37,7 +37,7 @@ class Conversion {
         const attrs = tokens.reduce ( (acc: IArethusaWord[], token: TEIToken): IArethusaWord[] => {
             const attr = {
                 form: token.normalizedText,
-                leiden: "",
+                leiden: token.leidenText,
                 lemma: "",
                 postag: "",
                 feats: "",
@@ -46,6 +46,7 @@ class Conversion {
                 secdeps: "",
                 corpusId: XML.getAttrVal("http://www.w3.org/XML/1998/namespace")("id")(token).fromMaybe("")
             }
+            // console.log(attr)
 
             // if (attr.form === "") {
             //     return acc

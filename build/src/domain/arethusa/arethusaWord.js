@@ -43,6 +43,11 @@ ArethusaWord.createAttrs = (form) => {
         "corpusId": ""
     };
 };
+ArethusaWord.leiden = (w) => {
+    return XML.attr("leiden")(w._node)
+        .bind(XML.nodeValue)
+        .fmap(Str.replace(/\n/g)(""));
+};
 ArethusaWord.matchId = (id) => (word) => {
     return ArethusaWord.id(word).unpack("") === id;
 };
