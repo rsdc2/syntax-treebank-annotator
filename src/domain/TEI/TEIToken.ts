@@ -142,6 +142,7 @@ namespace TextNode {
 
     const getTextFromNode = (localName: string) => (openStr: string) => (closeStr: string) => (text: Text) => {
 
+        // To be used e.g. for <gap>
         const preceding = XML.previous(text)
         const following = XML.next(text)
 
