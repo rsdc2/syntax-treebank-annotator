@@ -36,6 +36,7 @@ class ArethusaArtificial implements HasText {
     static createAttrs = (form: string): IArtificial => {
         return {
             "form": form,
+            "leiden": "",
             "artificial": "elliptic",
             "insertion_id": "",
             "relation": "",
@@ -121,6 +122,9 @@ class ArethusaArtificial implements HasText {
     static toTreeToken = (w: ArethusaArtificial): ITreeArtificial => {
         return {
             form: ArethusaArtificial
+                .form(w)
+                .fromMaybe("[None]"),
+            leiden: ArethusaArtificial
                 .form(w)
                 .fromMaybe("[None]"),
             headId: ArethusaArtificial

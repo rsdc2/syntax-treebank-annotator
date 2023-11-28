@@ -28,6 +28,7 @@ Conversion.epidocXMLToArethusaXML = (epidocXML) => {
     const attrs = tokens.reduce((acc, token) => {
         const attr = {
             form: token.normalizedText,
+            leiden: "",
             lemma: "",
             postag: "",
             feats: "",

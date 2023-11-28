@@ -28,6 +28,7 @@ class ArethusaToken {
 ArethusaToken.createAttrs = (form) => {
     return {
         "form": form,
+        "leiden": "",
         "relation": "",
         "head": "",
         "secdeps": "",

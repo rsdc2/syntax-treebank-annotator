@@ -33,6 +33,7 @@ var TreeNode;
             distToRoot: -1,
             relation: AGLDTRel.NONE,
             lemma: "",
+            leiden: "",
             postag: "",
             feats: "",
             insertionId: "",
@@ -186,6 +187,7 @@ var TreeNode;
             treeNodeId: counter,
             headTokenId: token.headId,
             relation: token.relation,
+            leiden: token.leiden,
             lemma: TreeToken.lemma(token),
             postag: TreeToken.postag(token),
             feats: TreeToken.feats(token),
@@ -228,6 +230,7 @@ var TreeNode;
         if (node.artificialType == ArtificialType.Elliptic) {
             return `<word id="${node.arethusaTokenId}" 
                     form="${node.name}" 
+                    leiden="${node.leiden}" 
                     artificial="${node.artificialType}" 
                     insertion_id="${node.insertionId}" 
                     relation="${node.relation}" 
@@ -238,6 +241,7 @@ var TreeNode;
         }
         return `<word id="${node.arethusaTokenId}" 
                 form="${node.name}" 
+                leiden="${node.leiden}" 
                 lemma="${node.lemma}" 
                 postag="${node.postag}" 
                 feats="${node.feats}"

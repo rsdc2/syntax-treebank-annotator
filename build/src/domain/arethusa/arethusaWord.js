@@ -34,6 +34,7 @@ ArethusaWord.form = (w) => {
 ArethusaWord.createAttrs = (form) => {
     return {
         "form": form,
+        "leiden": "",
         "lemma": "",
         "postag": "",
         "relation": "",
@@ -103,6 +104,9 @@ ArethusaWord.slashes = (w) => {
 ArethusaWord.toTreeToken = (w) => {
     return {
         form: ArethusaWord
+            .form(w)
+            .fromMaybe("[None]"),
+        leiden: ArethusaWord
             .form(w)
             .fromMaybe("[None]"),
         headId: ArethusaWord

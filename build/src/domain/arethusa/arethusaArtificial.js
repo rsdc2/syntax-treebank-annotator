@@ -40,6 +40,7 @@ ArethusaArtificial.form = (w) => {
 ArethusaArtificial.createAttrs = (form) => {
     return {
         "form": form,
+        "leiden": "",
         "artificial": "elliptic",
         "insertion_id": "",
         "relation": "",
@@ -96,6 +97,9 @@ ArethusaArtificial.secondaryDeps = (w) => {
 ArethusaArtificial.toTreeToken = (w) => {
     return {
         form: ArethusaArtificial
+            .form(w)
+            .fromMaybe("[None]"),
+        leiden: ArethusaArtificial
             .form(w)
             .fromMaybe("[None]"),
         headId: ArethusaArtificial

@@ -29,6 +29,7 @@ class ArethusaWord implements HasText {
     static createAttrs = (form: string): IArethusaWord => {
         return {
             "form": form,
+            "leiden": "",
             "lemma": "",
             "postag": "",
             "relation": "",
@@ -127,6 +128,9 @@ class ArethusaWord implements HasText {
     static toTreeToken = (w: ArethusaWord): ITreeWord => {
         return {
             form: ArethusaWord
+                .form(w)
+                .fromMaybe("[None]"),
+            leiden: ArethusaWord
                 .form(w)
                 .fromMaybe("[None]"),
             headId: ArethusaWord

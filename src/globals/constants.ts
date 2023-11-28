@@ -7,6 +7,7 @@ namespace Constants {
         treeNodeId: 0,
         headTokenId: -1,
         relation: AGLDTRel.NONE,
+        leiden: "",
         lemma: "",
         feats: "",
         postag: "",
@@ -19,6 +20,7 @@ namespace Constants {
 
     export const rootToken: ITreeWord = {
         form: "&ltROOT&gt",
+        leiden: "",
         headId: -1,
         id: 0,
         lemma: "",

@@ -14,6 +14,7 @@ class ArethusaToken implements HasText {
     static createAttrs = (form: string): IArethusaToken => {
         return {
             "form": form,
+            "leiden": "",
             "relation": "",
             "head": "",
             "secdeps": "",

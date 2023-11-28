@@ -9,6 +9,7 @@ interface ISecondaryDep {
  */
 interface ITreeWord {
     form: string,
+    leiden: string,
     headId: number,
     id: number,
     relation: string,
@@ -22,6 +23,7 @@ interface ITreeWord {
 
 interface ITreeArtificial {
     form: string,
+    leiden: string,
     headId: number,
     id: number,
     relation: string,
@@ -46,6 +48,7 @@ interface ITreeNode extends d3.SimulationNodeDatum {
     secondaryDeps: ISecondaryDep[],   // a secondary dep is stored on the dependent node
     distToRoot: number,
     relation: string,
+    leiden: string,
     lemma: string,
     feats: string,
     postag: string,

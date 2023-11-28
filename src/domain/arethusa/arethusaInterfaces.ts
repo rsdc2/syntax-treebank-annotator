@@ -1,6 +1,7 @@
 
 interface IArethusaToken {
     form: string,
+    leiden: string,
     relation: string,
     head: string,
     secdeps: string

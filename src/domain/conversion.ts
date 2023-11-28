@@ -37,6 +37,7 @@ class Conversion {
         const attrs = tokens.reduce ( (acc: IArethusaWord[], token: TEIToken): IArethusaWord[] => {
             const attr = {
                 form: token.normalizedText,
+                leiden: "",
                 lemma: "",
                 postag: "",
                 feats: "",

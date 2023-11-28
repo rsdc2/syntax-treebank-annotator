@@ -6,6 +6,7 @@ var Constants;
         treeNodeId: 0,
         headTokenId: -1,
         relation: AGLDTRel.NONE,
+        leiden: "",
         lemma: "",
         feats: "",
         postag: "",
@@ -17,6 +18,7 @@ var Constants;
     };
     Constants.rootToken = {
         form: "&ltROOT&gt",
+        leiden: "",
         headId: -1,
         id: 0,
         lemma: "",
