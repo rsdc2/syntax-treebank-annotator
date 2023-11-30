@@ -19,8 +19,8 @@ class TEIToken implements Word, HasText {
             .map( (textNode: Text) => TextNode.bracketSupplied(textNode) )
             .map( (textNode: Text) => TextNode.bracketSurplus(textNode) )
             .map( (textNode: Text) => TextNode.bracketGap(textNode) )
-            .map( (textNode: Text) => TextNode.interpunct(textNode) )
             .map( (textNode: Text) => TextNode.newLineLb(textNode) )
+            .map( (textNode: Text) => TextNode.interpunct(textNode) )
             .map(XML.textContent)
             .map( (maybeStr: Maybe<string>) => {return maybeStr.fromMaybe("")})
             .join("")         
@@ -193,24 +193,35 @@ namespace TextNode {
     //     return text
     // }
 
-    const getTextFromNode = (localName: string) => (openStr: string) => (closeStr: string) => (text: Text) => {
+    const getTextFromNonTextNode = (localName: string) => (openStr: string) => (closeStr: string) => (text: Text) => {
 
         // To be used e.g. for <gap>
-        const preceding = XML.previous(text)
-        const following = XML.next(text)
+        const precedingItems = XML.previousNode(text)
+        const preceding = precedingItems[precedingItems.length - 1]
+        const following = XML.nextNode(text)[0]
 
-        if (preceding[0].nodeName !== localName && following[0].nodeName !== localName) {
-            return text
-        }
+        // if (preceding.textContent !== "") {
+        //     return text
+        // }
+        // console.log(text, preceding.textContent, following.textContent)
+        // if (following.textContent?.trim() !== "") {
+        //     console.log(text, following.textContent)
+        //     return text
+        // }
 
-        if (following[0].nodeName === localName) {
+        // if (preceding.nodeName !== localName && following.nodeName !== localName) {
+        //     return text
+        // }
+
+        if (following.nodeName === localName) {
             text.textContent = text.textContent + closeStr
         }
         
-        if (preceding[0].nodeName === localName) {
+        if (preceding.nodeName === localName) {
             text.textContent = openStr + text.textContent
         }
 
+        console.log(preceding.nodeName, preceding.textContent, text, following.nodeName, following.textContent)
         return text
     }
     
@@ -223,7 +234,7 @@ namespace TextNode {
     }
 
     export const bracketGap = (textNode: Text): Text => {
-        return getTextFromNode ("gap") ("[-?-]") ("[-?-]") (textNode)
+        return getTextFromNonTextNode ("gap") ("[-?-]") ("[-?-]") (textNode)
     }
 
     export const bracketSupplied = (textNode: Text): Text => {
@@ -235,11 +246,11 @@ namespace TextNode {
     }
 
     export const newLineLb = (textNode: Text): Text => {
-        return getTextFromNode ("lb") ("|") ("|") (textNode)
+        return getTextFromNonTextNode ("lb") ("|") ("|") (textNode)
     }
 
     export const interpunct = (textNode: Text): Text => {
-        return getTextFromNode ("g") (" · ") (" · ") (textNode)
+        return getTextFromNonTextNode ("g") (" · ") (" · ") (textNode)
     }
 
 

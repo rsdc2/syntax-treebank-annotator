@@ -38,14 +38,14 @@ class TEIToken {
 }
 TEIToken.getLeidenText = (token) => {
     return token.textNodes
-        .filter(TextNode.filterByNotAncestor(["g", "reg", "corr", "am"]))
+        .filter(TextNode.filterByNotAncestor(["reg", "corr", "am"]))
         .map((textNode) => TextNode.bracketExpansion(textNode))
         .map((textNode) => TextNode.bracketDel(textNode))
         .map((textNode) => TextNode.bracketSupplied(textNode))
         .map((textNode) => TextNode.bracketSurplus(textNode))
         .map((textNode) => TextNode.bracketGap(textNode))
-        .map((textNode) => TextNode.interpunct(textNode))
         .map((textNode) => TextNode.newLineLb(textNode))
+        .map((textNode) => TextNode.interpunct(textNode))
         .map(XML.textContent)
         .map((maybeStr) => { return maybeStr.fromMaybe(""); })
         .join("")
@@ -142,19 +142,29 @@ var TextNode;
     //     }
     //     return text
     // }
-    const getTextFromNode = (localName) => (openStr) => (closeStr) => (text) => {
+    const getTextFromNonTextNode = (localName) => (openStr) => (closeStr) => (text) => {
         // To be used e.g. for <gap>
-        const preceding = XML.previous(text);
-        const following = XML.next(text);
-        if (preceding[0].nodeName !== localName && following[0].nodeName !== localName) {
-            return text;
-        }
-        if (following[0].nodeName === localName) {
+        const precedingItems = XML.previousNode(text);
+        const preceding = precedingItems[precedingItems.length - 1];
+        const following = XML.nextNode(text)[0];
+        // if (preceding.textContent !== "") {
+        //     return text
+        // }
+        // console.log(text, preceding.textContent, following.textContent)
+        // if (following.textContent?.trim() !== "") {
+        //     console.log(text, following.textContent)
+        //     return text
+        // }
+        // if (preceding.nodeName !== localName && following.nodeName !== localName) {
+        //     return text
+        // }
+        if (following.nodeName === localName) {
             text.textContent = text.textContent + closeStr;
         }
-        if (preceding[0].nodeName === localName) {
+        if (preceding.nodeName === localName) {
             text.textContent = openStr + text.textContent;
         }
+        console.log(preceding.nodeName, preceding.textContent, text, following.nodeName, following.textContent);
         return text;
     };
     TextNode.bracketDel = (textNode) => {
@@ -164,7 +174,7 @@ var TextNode;
         return bracketText("ex")("(")(")")(textNode);
     };
     TextNode.bracketGap = (textNode) => {
-        return getTextFromNode("gap")("[-?-]")("[-?-]")(textNode);
+        return getTextFromNonTextNode("gap")("[-?-]")("[-?-]")(textNode);
     };
     TextNode.bracketSupplied = (textNode) => {
         return bracketText("supplied")("[")("]")(textNode);
@@ -173,9 +183,9 @@ var TextNode;
         return bracketText("surplus")("{")("}")(textNode);
     };
     TextNode.newLineLb = (textNode) => {
-        return getTextFromNode("lb")("|")("|")(textNode);
+        return getTextFromNonTextNode("lb")("|")("|")(textNode);
     };
     TextNode.interpunct = (textNode) => {
-        return getTextFromNode("g")(" · ")(" · ")(textNode);
+        return getTextFromNonTextNode("g")(" · ")(" · ")(textNode);
     };
 })(TextNode || (TextNode = {}));

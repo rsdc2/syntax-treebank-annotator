@@ -609,6 +609,7 @@ class ArethusaSentence implements Word, HasToken, HasText  {
             .replace(/\s+/g, " ")
             .replace(/\|+/g, "|")
             .replace(/\|\s?/g, "\n")
+            .replace(/^\n/, "")
             
     }
 
