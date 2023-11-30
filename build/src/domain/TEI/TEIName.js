@@ -7,17 +7,7 @@ class TEIName {
         return DOM.Elem.attributes(this._element);
     }
     get leidenText() {
-        return this.textNodes
-            .filter(TextNode.filterByNotAncestor(["g", "reg", "corr", "am"]))
-            .map((textNode) => TextNode.bracketExpansion(textNode))
-            .map((textNode) => TextNode.bracketDel(textNode))
-            .map((textNode) => TextNode.bracketSupplied(textNode))
-            .map((textNode) => TextNode.bracketSurplus(textNode))
-            .map((textNode) => TextNode.bracketGap(textNode))
-            .map(XML.textContent)
-            .map((maybeStr) => { return maybeStr.fromMaybe(""); })
-            .join("")
-            .replace(/[\s\t\n]/g, "");
+        return TEIToken.getLeidenText(this);
     }
     get normalizedText() {
         return this.textNodes

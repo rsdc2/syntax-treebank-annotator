@@ -21,17 +21,7 @@ class TEIName implements TEIToken {
     }
 
     get leidenText(): string {
-        return this.textNodes
-            .filter(TextNode.filterByNotAncestor(["g", "reg", "corr", "am"]))
-            .map( (textNode: Text) => TextNode.bracketExpansion(textNode) )
-            .map( (textNode: Text) => TextNode.bracketDel(textNode) )
-            .map( (textNode: Text) => TextNode.bracketSupplied(textNode) )
-            .map( (textNode: Text) => TextNode.bracketSurplus(textNode) )
-            .map( (textNode: Text) => TextNode.bracketGap(textNode) )
-            .map(XML.textContent)
-            .map( (maybeStr: Maybe<string>) => {return maybeStr.fromMaybe("")})
-            .join("")         
-            .replace(/[\s\t\n]/g, "")
+        return TEIToken.getLeidenText(this)
     }
 
     get normalizedText(): string {

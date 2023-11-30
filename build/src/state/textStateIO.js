@@ -126,6 +126,12 @@ class TextStateIO {
             let v = this.currentSentence
                 .fmap(ArethusaSentence.wordsAsLeidenStr)
                 .fmap(SentencesDiv.setText);
+            // Use Leiden text if present, otherwise use normalized
+            if (Str.strip(SentencesDiv.getText().fromMaybe("")) === "") {
+                this.currentSentence
+                    .fmap(ArethusaSentence.wordsAsNormalizedStr)
+                    .fmap(SentencesDiv.setText);
+            }
             // Update the tree
             const treeStateFunc = MaybeT.of(globalState.simulation).isNothing ?
                 ArethusaSentence.toTreeSentState :

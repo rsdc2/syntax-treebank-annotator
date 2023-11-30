@@ -53,6 +53,7 @@ Div.setInnerHTML = (s) => (div) => {
 };
 Div.setTextContent = (s) => (div) => {
     div.textContent = s;
+    return div;
 };
 Div.textContent = (div) => {
     return MaybeT.of(div.textContent);

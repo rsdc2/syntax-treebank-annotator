@@ -605,11 +605,9 @@ class ArethusaSentence implements Word, HasToken, HasText  {
             .map(ArethusaWord.leiden)
 
         const newWords = Arr.removeNothings(wordsArr)
-        return newWords.join(' ')
-            .replace(/\s\./g, '.')
-            .replace(/\s,/g, ',')
-            .replace(/\s·/g, '·')
-            .replace(/\s·/g, '·')
+        return newWords.join(' ').replace(/\s\s/g, " ")
+            // .replace("|", "\n")
+            
     }
 
     static wordsFromNodes = (nodes: Node[]): ArethusaWord[] => {

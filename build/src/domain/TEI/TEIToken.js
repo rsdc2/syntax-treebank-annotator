@@ -7,17 +7,7 @@ class TEIToken {
         return DOM.Elem.attributes(this._element);
     }
     get leidenText() {
-        return this.textNodes
-            .filter(TextNode.filterByNotAncestor(["g", "reg", "corr", "am"]))
-            .map((textNode) => TextNode.bracketExpansion(textNode))
-            .map((textNode) => TextNode.bracketDel(textNode))
-            .map((textNode) => TextNode.bracketSupplied(textNode))
-            .map((textNode) => TextNode.bracketSurplus(textNode))
-            .map((textNode) => TextNode.bracketGap(textNode))
-            .map(XML.textContent)
-            .map((maybeStr) => { return maybeStr.fromMaybe(""); })
-            .join("")
-            .replace(/[\s\t\n]/g, "");
+        return TEIToken.getLeidenText(this);
     }
     get normalizedText() {
         return this.textNodes
@@ -47,7 +37,21 @@ class TEIToken {
     }
 }
 TEIToken.getLeidenText = (token) => {
-    return token.leidenText;
+    return token.textNodes
+        .filter(TextNode.filterByNotAncestor(["g", "reg", "corr", "am"]))
+        .map((textNode) => TextNode.bracketExpansion(textNode))
+        .map((textNode) => TextNode.bracketDel(textNode))
+        .map((textNode) => TextNode.bracketSupplied(textNode))
+        .map((textNode) => TextNode.bracketSurplus(textNode))
+        .map((textNode) => TextNode.bracketGap(textNode))
+        // .map( (textNode: Text) => TextNode.newLineLb(textNode) )
+        .map((textNode) => TextNode.interpunct(textNode))
+        .map(XML.textContent)
+        .map((maybeStr) => { return maybeStr.fromMaybe(""); })
+        .join("")
+        .replace(/\t/g, "")
+        .replace(/\n/g, "|")
+        .replace(/(?<!·)\s(?!·)/g, "");
 };
 TEIToken.getNormalizedText = (token) => {
     return token.normalizedText;
@@ -101,17 +105,18 @@ var TextNode;
         return textNode;
     };
     const getTextFromNode = (localName) => (openStr) => (closeStr) => (text) => {
-        var _a, _b;
+        var _a;
+        // To be used e.g. for <gap>
         const preceding = XML.previous(text);
         const following = XML.next(text);
         if (((_a = Arr.last(preceding)._value) === null || _a === void 0 ? void 0 : _a.nodeName) !== localName && following[0].nodeName !== localName) {
             return text;
         }
-        if (((_b = Arr.last(preceding)._value) === null || _b === void 0 ? void 0 : _b.nodeName) === localName) {
-            text.textContent = text.textContent + closeStr;
+        if (preceding[0].nodeName === localName) {
+            text.textContent = closeStr + text.textContent;
         }
         if (following[0].nodeName === localName) {
-            text.textContent = openStr + text.textContent;
+            text.textContent = text.textContent + openStr;
         }
         return text;
     };
@@ -122,12 +127,18 @@ var TextNode;
         return bracketText("ex")("(")(")")(textNode);
     };
     TextNode.bracketGap = (textNode) => {
-        return getTextFromNode("gap")("[-gap-]")("[-gap-]")(textNode);
+        return getTextFromNode("gap")("[-?-]")("[-?-]")(textNode);
     };
     TextNode.bracketSupplied = (textNode) => {
         return bracketText("supplied")("[")("]")(textNode);
     };
     TextNode.bracketSurplus = (textNode) => {
         return bracketText("surplus")("{")("}")(textNode);
+    };
+    TextNode.newLineLb = (textNode) => {
+        return getTextFromNode("lb")("|")("")(textNode);
+    };
+    TextNode.interpunct = (textNode) => {
+        return getTextFromNode("g")(" · ")("")(textNode);
     };
 })(TextNode || (TextNode = {}));

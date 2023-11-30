@@ -91,6 +91,7 @@ class Div {
     
     static setTextContent = (s: string) => (div: HTMLDivElement) => {
         div.textContent = s
+        return div
     }
 
     static textContent = (div: HTMLDivElement) => {

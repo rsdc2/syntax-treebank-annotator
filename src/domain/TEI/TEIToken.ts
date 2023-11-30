@@ -13,7 +13,21 @@ class TEIToken implements Word, HasText {
     }
 
     static getLeidenText = (token: TEIToken) => {
-        return token.leidenText
+        return token.textNodes
+            .filter(TextNode.filterByNotAncestor(["g", "reg", "corr", "am"]))
+            .map( (textNode: Text) => TextNode.bracketExpansion(textNode) )
+            .map( (textNode: Text) => TextNode.bracketDel(textNode) )
+            .map( (textNode: Text) => TextNode.bracketSupplied(textNode) )
+            .map( (textNode: Text) => TextNode.bracketSurplus(textNode) )
+            .map( (textNode: Text) => TextNode.bracketGap(textNode) )
+            // .map( (textNode: Text) => TextNode.newLineLb(textNode) )
+            .map( (textNode: Text) => TextNode.interpunct(textNode) )
+            .map(XML.textContent)
+            .map( (maybeStr: Maybe<string>) => {return maybeStr.fromMaybe("")})
+            .join("")         
+            .replace(/\t/g, "")
+            .replace(/\n/g, "|")
+            .replace(/(?<!·)\s(?!·)/g, "")
     }
 
     static getNormalizedText = (token: TEIToken) => {
@@ -21,17 +35,7 @@ class TEIToken implements Word, HasText {
     }
 
     get leidenText(): string {
-        return this.textNodes
-            .filter(TextNode.filterByNotAncestor(["g", "reg", "corr", "am"]))
-            .map( (textNode: Text) => TextNode.bracketExpansion(textNode) )
-            .map( (textNode: Text) => TextNode.bracketDel(textNode) )
-            .map( (textNode: Text) => TextNode.bracketSupplied(textNode) )
-            .map( (textNode: Text) => TextNode.bracketSurplus(textNode) )
-            .map( (textNode: Text) => TextNode.bracketGap(textNode) )
-            .map(XML.textContent)
-            .map( (maybeStr: Maybe<string>) => {return maybeStr.fromMaybe("")})
-            .join("")         
-            .replace(/[\s\t\n]/g, "")
+        return TEIToken.getLeidenText(this)
     }
 
     get normalizedText(): string {
@@ -150,12 +154,12 @@ namespace TextNode {
             return text
         }
 
-        if (Arr.last(preceding)._value?.nodeName === localName) {
-            text.textContent = text.textContent + closeStr
+        if (preceding[0].nodeName === localName) {
+            text.textContent = closeStr + text.textContent
         }
         
         if (following[0].nodeName === localName) {
-            text.textContent = openStr + text.textContent
+            text.textContent = text.textContent + openStr
         }
 
         return text
@@ -170,7 +174,7 @@ namespace TextNode {
     }
 
     export const bracketGap = (textNode: Text): Text => {
-        return getTextFromNode ("gap") ("[--]") ("[--]") (textNode)
+        return getTextFromNode ("gap") ("[-?-]") ("[-?-]") (textNode)
     }
 
     export const bracketSupplied = (textNode: Text): Text => {
@@ -179,6 +183,14 @@ namespace TextNode {
 
     export const bracketSurplus = (textNode: Text): Text => {
         return bracketText ("surplus") ("{") ("}") (textNode)
+    }
+
+    export const newLineLb = (textNode: Text): Text => {
+        return getTextFromNode ("lb") ("|") ("") (textNode)
+    }
+
+    export const interpunct = (textNode: Text): Text => {
+        return getTextFromNode ("g") (" · ") ("") (textNode)
     }
 
 
