@@ -1,4 +1,3 @@
-
 class TEIToken implements Word, HasText {
     _node: Node
     _element: Element
@@ -20,13 +19,14 @@ class TEIToken implements Word, HasText {
             .map( (textNode: Text) => TextNode.bracketSupplied(textNode) )
             .map( (textNode: Text) => TextNode.bracketSurplus(textNode) )
             .map( (textNode: Text) => TextNode.bracketGap(textNode) )
-            // .map( (textNode: Text) => TextNode.newLineLb(textNode) )
             .map( (textNode: Text) => TextNode.interpunct(textNode) )
+            .map( (textNode: Text) => TextNode.newLineLb(textNode) )
             .map(XML.textContent)
             .map( (maybeStr: Maybe<string>) => {return maybeStr.fromMaybe("")})
             .join("")         
             .replace(/\t/g, "")
-            .replace(/\n/g, "|")
+            .replace(/\n+/g, "|")
+            .replace(/\|+/g, "|")
             .replace(/(?<!·)\s(?!·)/g, "")
     }
 
@@ -144,22 +144,71 @@ namespace TextNode {
         return textNode
     }
 
+    // const getTextFromNode = (localName: string) => (openStr: string) => (closeStr: string) => (text: Text) => {
+
+    //     // To be used e.g. for <gap>
+    //     const preceding = XML.previousNode(text)
+    //     const following = XML.nextNode(text)
+
+    //     const getFirstTextOrLb = (result: Maybe<Node>, node: Node):Maybe<Node> => {
+    //         {
+    //             if (result.isSomething) {
+    //                 return result
+    //             }
+
+    //             if (node.textContent !== null && node.textContent !== "") {
+    //                 return MaybeT.of(node)
+    //             }
+
+    //             if (node.nodeName === localName) {
+    //                 return MaybeT.of(node)
+    //             }
+
+    //             return Nothing.of()
+    //         }
+    //     }
+
+    //     const firstTextOrLb = following.reduce<Maybe<Node>>((result: Maybe<Node>, node: Node): Maybe<Node> => 
+    //         getFirstTextOrLb(result, node)
+    //         , Nothing.of()
+    //     )
+
+    //     const lastTextOrLb = preceding.reduce<Maybe<Node>>((result: Maybe<Node>, node: Node): Maybe<Node> => 
+    //         getFirstTextOrLb(result, node)
+    //         , Nothing.of()
+    //     )
+
+    //     if (firstTextOrLb.isNothing && lastTextOrLb.isNothing) {
+    //         return text
+    //     }
+
+    //     if (lastTextOrLb.value?.nodeName === localName) {
+    //         text.textContent = closeStr + text.textContent
+    //     }
+        
+    //     if (firstTextOrLb.value?.nodeName === localName) {
+    //         text.textContent = text.textContent + openStr
+    //     }
+
+    //     return text
+    // }
+
     const getTextFromNode = (localName: string) => (openStr: string) => (closeStr: string) => (text: Text) => {
 
         // To be used e.g. for <gap>
         const preceding = XML.previous(text)
         const following = XML.next(text)
 
-        if (Arr.last(preceding)._value?.nodeName !== localName && following[0].nodeName !== localName) {
+        if (preceding[0].nodeName !== localName && following[0].nodeName !== localName) {
             return text
         }
 
-        if (preceding[0].nodeName === localName) {
-            text.textContent = closeStr + text.textContent
+        if (following[0].nodeName === localName) {
+            text.textContent = text.textContent + closeStr
         }
         
-        if (following[0].nodeName === localName) {
-            text.textContent = text.textContent + openStr
+        if (preceding[0].nodeName === localName) {
+            text.textContent = openStr + text.textContent
         }
 
         return text
@@ -186,11 +235,11 @@ namespace TextNode {
     }
 
     export const newLineLb = (textNode: Text): Text => {
-        return getTextFromNode ("lb") ("|") ("") (textNode)
+        return getTextFromNode ("lb") ("|") ("|") (textNode)
     }
 
     export const interpunct = (textNode: Text): Text => {
-        return getTextFromNode ("g") (" · ") ("") (textNode)
+        return getTextFromNode ("g") (" · ") (" · ") (textNode)
     }
 
 

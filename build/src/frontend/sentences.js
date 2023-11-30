@@ -12,5 +12,5 @@ SentencesDiv.setText = (text) => {
     SentencesDiv
         .control
         .fmap(Div.setTextContent(text))
-        .fmap(HTML.Elem.setAttr("style")("white-space: pre-wrap;"));
+        .fmap(HTML.Elem.setAttr("style")("white-space: pre;"));
 };

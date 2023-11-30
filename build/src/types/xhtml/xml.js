@@ -426,6 +426,9 @@ XML.insertAfter = (nodeToInsert) => (refNode) => {
 XML.next = (node) => {
     return (XML.xpathMaybeC("following::*")(MaybeT.of(node)).fromMaybe([]));
 };
+XML.nextNode = (node) => {
+    return (XML.xpathMaybeC("following::node()")(MaybeT.of(node)).fromMaybe([]));
+};
 XML.nextSibling = (node) => {
     return Arr.head(XML.xpathMaybeC("following-sibling::*")(MaybeT.of(node)).fromMaybe([]));
 };
@@ -437,6 +440,9 @@ XML.ownerDocumentOfNodeOrDoc = (nodeOrDoc) => {
 };
 XML.previous = (node) => {
     return (XML.xpathMaybeC("preceding::*")(MaybeT.of(node)).fromMaybe([]));
+};
+XML.previousNode = (node) => {
+    return (XML.xpathMaybeC("preceding::node()")(MaybeT.of(node)).fromMaybe([]));
 };
 XML.previousSibling = (node) => {
     const sib = Arr.last(XML.xpathMaybeC("preceding-sibling::*")(MaybeT.of(node)).fromMaybe([]));

@@ -490,6 +490,10 @@ class XML {
         return (XML.xpathMaybeC("following::*") (MaybeT.of(node)).fromMaybe([]))        
     }
 
+    static nextNode = (node: Node) => {
+        return (XML.xpathMaybeC("following::node()") (MaybeT.of(node)).fromMaybe([]))        
+    }
+
 
     static nextSibling = (node: Node) => {
         return Arr.head (XML.xpathMaybeC("following-sibling::*") (MaybeT.of(node)).fromMaybe([]))
@@ -553,6 +557,10 @@ class XML {
 
     static previous = (node: Node) => {
         return (XML.xpathMaybeC("preceding::*") (MaybeT.of(node)).fromMaybe([]))        
+    }
+
+    static previousNode = (node: Node) => {
+        return (XML.xpathMaybeC("preceding::node()") (MaybeT.of(node)).fromMaybe([]))        
     }
 
     static previousSibling = (node: Node) => {

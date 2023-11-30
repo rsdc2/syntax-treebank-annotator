@@ -433,8 +433,10 @@ ArethusaSentence.wordsAsLeidenStr = (s) => {
         .words(s)
         .map(ArethusaWord.leiden);
     const newWords = Arr.removeNothings(wordsArr);
-    return newWords.join(' ').replace(/\s\s/g, " ");
-    // .replace("|", "\n")
+    return newWords.join(' ')
+        .replace(/\s+/g, " ")
+        .replace(/\|+/g, "|")
+        .replace(/\|\s?/g, "\n");
 };
 ArethusaSentence.wordsFromNodes = (nodes) => {
     return nodes

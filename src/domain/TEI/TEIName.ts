@@ -1,4 +1,3 @@
-
 class TEIName implements TEIToken {
     _node: Node
     _element: Element
