@@ -436,6 +436,7 @@ ArethusaSentence.wordsAsLeidenStr = (s) => {
     return newWords.join(' ')
         .replace(/\s+/g, " ")
         .replace(/\|+/g, "|")
+        .replace(/·\s+·/g, '·')
         .replace(/\|\s?/g, "\n")
         .replace(/^\n/, "");
 };

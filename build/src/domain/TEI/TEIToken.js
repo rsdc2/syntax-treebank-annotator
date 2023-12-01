@@ -43,9 +43,7 @@ TEIToken.getLeidenText = (token) => {
         .map((textNode) => TextNode.bracketDel(textNode))
         .map((textNode) => TextNode.bracketSupplied(textNode))
         .map((textNode) => TextNode.bracketSurplus(textNode))
-        .map((textNode) => TextNode.bracketGap(textNode))
-        .map((textNode) => TextNode.newLineLb(textNode))
-        .map((textNode) => TextNode.interpunct(textNode))
+        .map((textNode) => TextNode.getTextFromNonTextNode(["lb", "g", "gap"])(["|", " · ", "[-?-]"])(textNode))
         .map(XML.textContent)
         .map((maybeStr) => { return maybeStr.fromMaybe(""); })
         .join("")
@@ -142,27 +140,53 @@ var TextNode;
     //     }
     //     return text
     // }
-    const getTextFromNonTextNode = (localName) => (openStr) => (closeStr) => (text) => {
+    TextNode.getTextFromNonTextNode = (localNames) => (stringReps) => (text) => {
         // To be used e.g. for <gap>
         const precedingItems = XML.previousNode(text);
-        let preceding = precedingItems[precedingItems.length - 1];
-        if (preceding.textContent === ' ') {
-            preceding = precedingItems[precedingItems.length - 2];
+        const followingItems = XML.nextNode(text);
+        // Text to prepend
+        let textToPrepend = precedingItems.reduceRight((acc, node) => {
+            var _a;
+            if (acc[0] === "?") {
+                return acc;
+            }
+            if (localNames.includes(node.nodeName) || (node.nodeName === "#text" && localNames.includes(((_a = node.parentNode) === null || _a === void 0 ? void 0 : _a.nodeName) || ""))) {
+                const localNameIdx = localNames.findIndex((value) => value === node.nodeName);
+                const stringRep = stringReps[localNameIdx] || "";
+                return stringRep + acc;
+            }
+            else if (node.textContent === " ") {
+                return " " + acc;
+            }
+            else {
+                return "?" + acc;
+            }
+        }, "");
+        // Text to append
+        let textToAppend = followingItems.reduce((acc, node) => {
+            var _a;
+            if (acc[0] === "?") {
+                return acc;
+            }
+            if (localNames.includes(node.nodeName) || (node.nodeName === "#text" && localNames.includes(((_a = node.parentNode) === null || _a === void 0 ? void 0 : _a.nodeName) || ""))) {
+                const localNameIdx = localNames.findIndex((value) => value === node.nodeName);
+                const stringRep = stringReps[localNameIdx] || "";
+                return acc + stringRep;
+            }
+            else if (node.textContent === " ") {
+                return acc + " ";
+            }
+            else {
+                return "?" + acc;
+            }
+        }, "");
+        if (textToPrepend[0] === "?") {
+            textToPrepend = textToPrepend.slice(1);
         }
-        let following = XML.nextNode(text)[0];
-        if (following.textContent === ' ') {
-            following = XML.nextNode(text)[1];
+        if (textToAppend[0] === "?") {
+            textToAppend = textToAppend.slice(1);
         }
-        if (localName === 'g') {
-            console.log(text, preceding, preceding.textContent, following, following.textContent);
-        }
-        if (following.nodeName === localName) {
-            text.textContent = text.textContent + closeStr;
-        }
-        if (preceding.nodeName === localName) {
-            text.textContent = openStr + text.textContent;
-        }
-        // console.log(preceding.nodeName, preceding.textContent, text, following.nodeName, following.textContent)
+        text.textContent = textToPrepend + text.textContent + textToAppend;
         return text;
     };
     TextNode.bracketDel = (textNode) => {
@@ -171,9 +195,9 @@ var TextNode;
     TextNode.bracketExpansion = (textNode) => {
         return bracketText("ex")("(")(")")(textNode);
     };
-    TextNode.bracketGap = (textNode) => {
-        return getTextFromNonTextNode("gap")("[-?-]")("[-?-]")(textNode);
-    };
+    // export const bracketGap = (textNode: Text): Text => {
+    //     return getTextFromNonTextNode (["gap"]) (["[-?-]"]) (textNode)
+    // }
     TextNode.bracketSupplied = (textNode) => {
         return bracketText("supplied")("[")("]")(textNode);
     };
@@ -181,9 +205,6 @@ var TextNode;
         return bracketText("surplus")("{")("}")(textNode);
     };
     TextNode.newLineLb = (textNode) => {
-        return getTextFromNonTextNode("lb")("|")("|")(textNode);
-    };
-    TextNode.interpunct = (textNode) => {
-        return getTextFromNonTextNode("g")(" · ")(" · ")(textNode);
+        return TextNode.getTextFromNonTextNode(["lb", "g", "gap"])(["|", " · ", "[-?-]"])(textNode);
     };
 })(TextNode || (TextNode = {}));

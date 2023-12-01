@@ -1,3 +1,4 @@
+
 class TEIToken implements Word, HasText {
     _node: Node
     _element: Element
@@ -18,9 +19,7 @@ class TEIToken implements Word, HasText {
             .map( (textNode: Text) => TextNode.bracketDel(textNode) )
             .map( (textNode: Text) => TextNode.bracketSupplied(textNode) )
             .map( (textNode: Text) => TextNode.bracketSurplus(textNode) )
-            .map( (textNode: Text) => TextNode.bracketGap(textNode) )
-            .map( (textNode: Text) => TextNode.newLineLb(textNode) )
-            .map( (textNode: Text) => TextNode.interpunct(textNode) )
+            .map( (textNode: Text) => TextNode.getTextFromNonTextNode (["lb", "g", "gap"]) (["|", " · ", "[-?-]"]) (textNode) )
             .map(XML.textContent)
             .map( (maybeStr: Maybe<string>) => {return maybeStr.fromMaybe("")})
             .join("")         
@@ -193,37 +192,70 @@ namespace TextNode {
     //     return text
     // }
 
-    const getTextFromNonTextNode = (localName: string) => (openStr: string) => (closeStr: string) => (text: Text) => {
+    export const getTextFromNonTextNode = (localNames: string[]) => (stringReps: string[]) => (text: Text) => {
 
 
 
         // To be used e.g. for <gap>
         const precedingItems = XML.previousNode(text)
-        let preceding = precedingItems[precedingItems.length - 1]
-        
-        if (preceding.textContent === ' ') {
-            preceding = precedingItems[precedingItems.length - 2]
+        const followingItems = XML.nextNode(text)
+
+        // Text to prepend
+        let textToPrepend = precedingItems.reduceRight<string>( 
+            (acc: string, node: Node): string => {
+
+                if (acc[0] === "?") {
+                    return acc
+                } 
+
+                if (localNames.includes(node.nodeName) || (node.nodeName === "#text" && localNames.includes(node.parentNode?.nodeName || ""))) {
+                    const localNameIdx = localNames.findIndex( 
+                        (value: string) => value === node.nodeName
+                    ) 
+                    const stringRep = stringReps[localNameIdx] || ""
+                    return stringRep + acc    
+                } else if (node.textContent === " ") {
+                    return " " + acc
+                } else {
+                    return "?" + acc
+                }
+
+            }, ""
+        ) 
+
+        // Text to append
+        let textToAppend = followingItems.reduce<string>( 
+            (acc: string, node: Node): string => {
+
+                if (acc[0] === "?") {
+                    return acc
+                } 
+
+                if (localNames.includes(node.nodeName) || (node.nodeName === "#text" && localNames.includes(node.parentNode?.nodeName || ""))) {
+                    const localNameIdx = localNames.findIndex( 
+                        (value: string) => value === node.nodeName
+                    ) 
+                    const stringRep = stringReps[localNameIdx] || ""
+                    return acc + stringRep  
+                } else if (node.textContent === " ") {
+                    return acc + " "
+                } else {
+                    return "?" + acc
+                }
+
+            }, ""
+        ) 
+
+        if (textToPrepend[0] === "?") {
+            textToPrepend = textToPrepend.slice(1)
         }
 
-        let following = XML.nextNode(text)[0]
-
-        if (following.textContent === ' ') {
-            following = XML.nextNode(text)[1]
+        if (textToAppend[0] === "?") {
+            textToAppend = textToAppend.slice(1)
         }
 
-        if (localName === 'g') {
-            console.log(text, preceding, preceding.textContent, following, following.textContent)
-        }
+        text.textContent = textToPrepend + text.textContent + textToAppend
 
-        if (following.nodeName === localName) {
-            text.textContent = text.textContent + closeStr
-        }
-        
-        if (preceding.nodeName === localName) {
-            text.textContent = openStr + text.textContent
-        }
-
-        // console.log(preceding.nodeName, preceding.textContent, text, following.nodeName, following.textContent)
         return text
     }
     
@@ -235,9 +267,9 @@ namespace TextNode {
         return bracketText ("ex") ("(") (")") (textNode)
     }
 
-    export const bracketGap = (textNode: Text): Text => {
-        return getTextFromNonTextNode ("gap") ("[-?-]") ("[-?-]") (textNode)
-    }
+    // export const bracketGap = (textNode: Text): Text => {
+    //     return getTextFromNonTextNode (["gap"]) (["[-?-]"]) (textNode)
+    // }
 
     export const bracketSupplied = (textNode: Text): Text => {
         return bracketText ("supplied") ("[") ("]") (textNode)
@@ -248,12 +280,7 @@ namespace TextNode {
     }
 
     export const newLineLb = (textNode: Text): Text => {
-        return getTextFromNonTextNode ("lb") ("|") ("|") (textNode)
+        return getTextFromNonTextNode (["lb", "g", "gap"]) (["|", " · ", "[-?-]"]) (textNode)
     }
-
-    export const interpunct = (textNode: Text): Text => {
-        return getTextFromNonTextNode ("g") (" · ") (" · ") (textNode)
-    }
-
 
 }
