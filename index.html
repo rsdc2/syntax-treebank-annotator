@@ -288,7 +288,7 @@
             <li>
               <button
                 id="MoveGraphUp"
-                onclick="TreeStateIO.moveGraph(SVG.ViewBox.incrMinY)"
+                onclick="TreeStateIO.moveGraph(SVG.ViewBox.decrMinY)"
               >
                 Up
               </button>
@@ -296,7 +296,7 @@
             <li>
               <button
                 id="MoveGraphDown"
-                onclick="TreeStateIO.moveGraph(SVG.ViewBox.decrMinY)"
+                onclick="TreeStateIO.moveGraph(SVG.ViewBox.incrMinY)"
               >
                 Down
               </button>
@@ -304,7 +304,7 @@
             <li>
               <button
                 id="MoveGraphLeft"
-                onclick="TreeStateIO.moveGraph(SVG.ViewBox.incrMinX)"
+                onclick="TreeStateIO.moveGraph(SVG.ViewBox.decrMinX)"
               >
                 Left
               </button>
@@ -312,7 +312,7 @@
             <li>
               <button
                 id="MoveGraphRight"
-                onclick="TreeStateIO.moveGraph(SVG.ViewBox.decrMinX)"
+                onclick="TreeStateIO.moveGraph(SVG.ViewBox.incrMinX)"
               >
                 Right
               </button>
