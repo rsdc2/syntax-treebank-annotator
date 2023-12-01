@@ -12,6 +12,7 @@ class TEIToken implements Word, HasText {
         return DOM.Elem.attributes(this._element)
     }
 
+    
     static getLeidenText = (token: TEIToken) => {
         return token.textNodes
             .filter(TextNode.filterByNotAncestor(["g", "reg", "corr", "am"]))
@@ -143,60 +144,13 @@ namespace TextNode {
         return textNode
     }
 
-    // const getTextFromNode = (localName: string) => (openStr: string) => (closeStr: string) => (text: Text) => {
-
-    //     // To be used e.g. for <gap>
-    //     const preceding = XML.previousNode(text)
-    //     const following = XML.nextNode(text)
-
-    //     const getFirstTextOrLb = (result: Maybe<Node>, node: Node):Maybe<Node> => {
-    //         {
-    //             if (result.isSomething) {
-    //                 return result
-    //             }
-
-    //             if (node.textContent !== null && node.textContent !== "") {
-    //                 return MaybeT.of(node)
-    //             }
-
-    //             if (node.nodeName === localName) {
-    //                 return MaybeT.of(node)
-    //             }
-
-    //             return Nothing.of()
-    //         }
-    //     }
-
-    //     const firstTextOrLb = following.reduce<Maybe<Node>>((result: Maybe<Node>, node: Node): Maybe<Node> => 
-    //         getFirstTextOrLb(result, node)
-    //         , Nothing.of()
-    //     )
-
-    //     const lastTextOrLb = preceding.reduce<Maybe<Node>>((result: Maybe<Node>, node: Node): Maybe<Node> => 
-    //         getFirstTextOrLb(result, node)
-    //         , Nothing.of()
-    //     )
-
-    //     if (firstTextOrLb.isNothing && lastTextOrLb.isNothing) {
-    //         return text
-    //     }
-
-    //     if (lastTextOrLb.value?.nodeName === localName) {
-    //         text.textContent = closeStr + text.textContent
-    //     }
-        
-    //     if (firstTextOrLb.value?.nodeName === localName) {
-    //         text.textContent = text.textContent + openStr
-    //     }
-
-    //     return text
-    // }
-
     export const getTextFromNonTextNode = (localNames: string[]) => (stringReps: string[]) => (text: Text) => {
 
+        // To be used e.g. for <gap>, <lb> and <g> that do not contain text
+        // to be included in the treebanked version
 
-
-        // To be used e.g. for <gap>
+        // It is important that the localNames and their respective
+        // stringReps are given in the same order
         const precedingItems = XML.previousNode(text)
         const followingItems = XML.nextNode(text)
 
@@ -208,12 +162,15 @@ namespace TextNode {
                     return acc
                 } 
 
-                if (localNames.includes(node.nodeName) || (node.nodeName === "#text" && localNames.includes(node.parentNode?.nodeName || ""))) {
+                if (localNames.includes(node.nodeName) || 
+                    (node.nodeName === "#text" && localNames.includes(node.parentNode?.nodeName || ""))) {
+
                     const localNameIdx = localNames.findIndex( 
                         (value: string) => value === node.nodeName
                     ) 
                     const stringRep = stringReps[localNameIdx] || ""
                     return stringRep + acc    
+
                 } else if (node.textContent === " ") {
                     return " " + acc
                 } else {
@@ -267,20 +224,12 @@ namespace TextNode {
         return bracketText ("ex") ("(") (")") (textNode)
     }
 
-    // export const bracketGap = (textNode: Text): Text => {
-    //     return getTextFromNonTextNode (["gap"]) (["[-?-]"]) (textNode)
-    // }
-
     export const bracketSupplied = (textNode: Text): Text => {
         return bracketText ("supplied") ("[") ("]") (textNode)
     }
 
     export const bracketSurplus = (textNode: Text): Text => {
         return bracketText ("surplus") ("{") ("}") (textNode)
-    }
-
-    export const newLineLb = (textNode: Text): Text => {
-        return getTextFromNonTextNode (["lb", "g", "gap"]) (["|", " · ", "[-?-]"]) (textNode)
     }
 
 }
