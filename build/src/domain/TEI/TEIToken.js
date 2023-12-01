@@ -37,6 +37,8 @@ class TEIToken {
     }
 }
 TEIToken.getLeidenText = (token) => {
+    // Returns the Leiden text of a token
+    // Includes line breaks and interpuncts
     return token.textNodes
         .filter(TextNode.filterByNotAncestor(["g", "reg", "corr", "am"]))
         .map((textNode) => TextNode.bracketExpansion(textNode))
@@ -103,45 +105,11 @@ var TextNode;
         }
         return textNode;
     };
-    // const getTextFromNode = (localName: string) => (openStr: string) => (closeStr: string) => (text: Text) => {
-    //     // To be used e.g. for <gap>
-    //     const preceding = XML.previousNode(text)
-    //     const following = XML.nextNode(text)
-    //     const getFirstTextOrLb = (result: Maybe<Node>, node: Node):Maybe<Node> => {
-    //         {
-    //             if (result.isSomething) {
-    //                 return result
-    //             }
-    //             if (node.textContent !== null && node.textContent !== "") {
-    //                 return MaybeT.of(node)
-    //             }
-    //             if (node.nodeName === localName) {
-    //                 return MaybeT.of(node)
-    //             }
-    //             return Nothing.of()
-    //         }
-    //     }
-    //     const firstTextOrLb = following.reduce<Maybe<Node>>((result: Maybe<Node>, node: Node): Maybe<Node> => 
-    //         getFirstTextOrLb(result, node)
-    //         , Nothing.of()
-    //     )
-    //     const lastTextOrLb = preceding.reduce<Maybe<Node>>((result: Maybe<Node>, node: Node): Maybe<Node> => 
-    //         getFirstTextOrLb(result, node)
-    //         , Nothing.of()
-    //     )
-    //     if (firstTextOrLb.isNothing && lastTextOrLb.isNothing) {
-    //         return text
-    //     }
-    //     if (lastTextOrLb.value?.nodeName === localName) {
-    //         text.textContent = closeStr + text.textContent
-    //     }
-    //     if (firstTextOrLb.value?.nodeName === localName) {
-    //         text.textContent = text.textContent + openStr
-    //     }
-    //     return text
-    // }
     TextNode.getTextFromNonTextNode = (localNames) => (stringReps) => (text) => {
-        // To be used e.g. for <gap>
+        // To be used e.g. for <gap>, <lb> and <g> that do not contain text
+        // to be included in the treebanked version
+        // It is important that the localNames and their respective
+        // stringReps are given in the same order
         const precedingItems = XML.previousNode(text);
         const followingItems = XML.nextNode(text);
         // Text to prepend
@@ -150,7 +118,8 @@ var TextNode;
             if (acc[0] === "?") {
                 return acc;
             }
-            if (localNames.includes(node.nodeName) || (node.nodeName === "#text" && localNames.includes(((_a = node.parentNode) === null || _a === void 0 ? void 0 : _a.nodeName) || ""))) {
+            if (localNames.includes(node.nodeName) ||
+                (node.nodeName === "#text" && localNames.includes(((_a = node.parentNode) === null || _a === void 0 ? void 0 : _a.nodeName) || ""))) {
                 const localNameIdx = localNames.findIndex((value) => value === node.nodeName);
                 const stringRep = stringReps[localNameIdx] || "";
                 return stringRep + acc;
@@ -195,16 +164,10 @@ var TextNode;
     TextNode.bracketExpansion = (textNode) => {
         return bracketText("ex")("(")(")")(textNode);
     };
-    // export const bracketGap = (textNode: Text): Text => {
-    //     return getTextFromNonTextNode (["gap"]) (["[-?-]"]) (textNode)
-    // }
     TextNode.bracketSupplied = (textNode) => {
         return bracketText("supplied")("[")("]")(textNode);
     };
     TextNode.bracketSurplus = (textNode) => {
         return bracketText("surplus")("{")("}")(textNode);
-    };
-    TextNode.newLineLb = (textNode) => {
-        return TextNode.getTextFromNonTextNode(["lb", "g", "gap"])(["|", " · ", "[-?-]"])(textNode);
     };
 })(TextNode || (TextNode = {}));

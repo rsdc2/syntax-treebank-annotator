@@ -429,11 +429,19 @@ ArethusaSentence.wordsAsNormalizedStr = (s) => {
         .replace(/\s·/g, '·');
 };
 ArethusaSentence.wordsAsLeidenStr = (s) => {
+    // Returns the Leiden text of a sentence
+    // Uses the @leiden attribute on an ArethusaToken
+    // if this contains any text;
+    // otherwise uses the @form attribute
     const wordsArr = ArethusaSentence
         .words(s)
-        .map(ArethusaWord.leiden);
-    const newWords = Arr.removeNothings(wordsArr);
-    return newWords.join(' ')
+        .map((word) => {
+        if (word.leiden.fromMaybe("") === "") {
+            return word.form.fromMaybe("");
+        }
+        return word.leiden.fromMaybe("");
+    });
+    return wordsArr.join(' ')
         .replace(/\s+/g, " ")
         .replace(/\|+/g, "|")
         .replace(/·\s+·/g, '·')

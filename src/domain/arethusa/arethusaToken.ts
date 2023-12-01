@@ -42,6 +42,10 @@ class ArethusaToken implements HasText {
             .fromMaybe(false)
     }
 
+    get leiden() {
+        return ArethusaToken.leiden(this)
+    }
+
     static leiden = (w: ArethusaToken): Maybe<string> => {
         return XML.attr ("leiden") (w._node)
             .bind(XML.nodeValue)

@@ -16,6 +16,9 @@ class ArethusaArtificial {
     get form() {
         return ArethusaToken.form(this);
     }
+    get leiden() {
+        return ArethusaToken.leiden(this);
+    }
     static of(node) {
         return new ArethusaArtificial(node);
     }

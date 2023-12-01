@@ -45,6 +45,10 @@ class ArethusaArtificial implements HasText {
         }
     }
 
+    get leiden() {
+        return ArethusaToken.leiden(this)
+    }
+
     static matchId = 
         (id: string) => 
         (word: ArethusaArtificial) => 

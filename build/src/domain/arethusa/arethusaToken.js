@@ -9,6 +9,9 @@ class ArethusaToken {
     get form() {
         return ArethusaToken.form(this);
     }
+    get leiden() {
+        return ArethusaToken.leiden(this);
+    }
     static of(node) {
         if (XML.hasAttr('artificial')(node)) {
             return ArethusaArtificial.of(node);

@@ -22,8 +22,6 @@ class ArethusaWord implements HasText {
             .fmap(Str.replace(/\n/g)(""))
     }
 
-
-
     get form(): Maybe<string> {
         return ArethusaToken.form(this)
     }
@@ -41,13 +39,17 @@ class ArethusaWord implements HasText {
         }
     }
 
+    get leiden(): Maybe<string> {
+        return ArethusaToken.leiden(this)
+    }
+
     static leiden = (w: ArethusaWord): Maybe<string> => {
         return XML.attr ("leiden") (w._node)
             .bind(XML.nodeValue)
     }
 
     static matchId = (id: string) => (word: ArethusaWord) => {
-        return ArethusaWord.id(word).unpack("") === id
+        return ArethusaWord.id(word).fromMaybe("") === id
     }
 
     static of(node: HasXMLNode): ArethusaWord {

@@ -9,6 +9,9 @@ class ArethusaWord {
     get form() {
         return ArethusaToken.form(this);
     }
+    get leiden() {
+        return ArethusaToken.leiden(this);
+    }
     static of(node) {
         return new ArethusaWord(node);
     }
@@ -48,7 +51,7 @@ ArethusaWord.leiden = (w) => {
         .bind(XML.nodeValue);
 };
 ArethusaWord.matchId = (id) => (word) => {
-    return ArethusaWord.id(word).unpack("") === id;
+    return ArethusaWord.id(word).fromMaybe("") === id;
 };
 ArethusaWord.fromAttrs = (a) => (attrs) => {
     return a.doc

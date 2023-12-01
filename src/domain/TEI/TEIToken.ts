@@ -14,6 +14,10 @@ class TEIToken implements Word, HasText {
 
     
     static getLeidenText = (token: TEIToken) => {
+
+        // Returns the Leiden text of a token
+        // Includes line breaks and interpuncts
+
         return token.textNodes
             .filter(TextNode.filterByNotAncestor(["g", "reg", "corr", "am"]))
             .map( (textNode: Text) => TextNode.bracketExpansion(textNode) )

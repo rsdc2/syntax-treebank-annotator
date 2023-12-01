@@ -600,12 +600,22 @@ class ArethusaSentence implements Word, HasToken, HasText  {
     }
 
     static wordsAsLeidenStr = (s: ArethusaSentence): string => {
+        // Returns the Leiden text of a sentence
+        // Uses the @leiden attribute on an ArethusaToken
+        // if this contains any text;
+        // otherwise uses the @form attribute
+
         const wordsArr = ArethusaSentence
             .words(s)
-            .map(ArethusaWord.leiden)
+            .map( (word: ArethusaWord): string => {
+                if (word.leiden.fromMaybe("") === "") {
+                    return word.form.fromMaybe("")
+                }
 
-        const newWords = Arr.removeNothings(wordsArr)
-        return newWords.join(' ')
+                return word.leiden.fromMaybe("")
+            })
+
+        return wordsArr.join(' ')
             .replace(/\s+/g, " ")
             .replace(/\|+/g, "|")
             .replace(/·\s+·/g, '·')
