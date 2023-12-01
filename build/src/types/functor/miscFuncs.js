@@ -34,9 +34,6 @@ function getNth(a, n) {
         return new Nothing();
     }
 }
-// function head<T>(a: Array<T>): Maybe<T> {
-//     return getNth(a, 0)
-// }
 function tail(a) {
     if (a.length === 0) {
         return [];
@@ -95,4 +92,3 @@ const flip_2_to_3 = (f) => (x) => (z) => (y) => {
 const apply = (f) => (x) => {
     return f(x);
 };
-const $$ = apply;

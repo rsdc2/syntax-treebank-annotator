@@ -114,7 +114,7 @@ ArethusaWord.toTreeToken = (w) => {
             .form(w)
             .fromMaybe("[None]"),
         leiden: ArethusaWord
-            .form(w)
+            .leiden(w)
             .fromMaybe("[None]"),
         headId: ArethusaWord
             .head(w)

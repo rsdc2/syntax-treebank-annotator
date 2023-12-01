@@ -95,7 +95,7 @@ Arr.push = (item) => (array) => {
     return _array;
 };
 Arr.removeByIdx = (array) => (idx) => {
-    return $$(MaybeT.of)(array.reduce((acc, item, _idx) => {
+    return apply(MaybeT.of)(array.reduce((acc, item, _idx) => {
         if (_idx !== idx) {
             return Arr.push(item)(acc);
         }
@@ -135,7 +135,7 @@ Arr.removeByItem = (array) => (item) => {
     }, new Array);
 };
 Arr.replaceByIdx = (array) => (newItem) => (idx) => {
-    return $$(MaybeT.of)(array.reduce((acc, item, _idx) => {
+    return apply(MaybeT.of)(array.reduce((acc, item, _idx) => {
         if (_idx !== idx) {
             return Arr.push(item)(acc);
         }

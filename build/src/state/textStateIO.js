@@ -122,7 +122,7 @@ class TextStateIO {
             ArethusaDoc.pushToFrontend(this);
             Frontend.pushPlainTextToFrontend(this);
             this.updateSentenceViewState();
-            // Set the sentences text
+            // Set the sentences text from the Leiden text
             let v = this.currentSentence
                 .fmap(ArethusaSentence.wordsAsLeidenStr)
                 .fmap(SentencesDiv.setText);
@@ -266,7 +266,7 @@ class TextStateIO {
         return MaybeT.ofNonNeg(Arr.len(this.states) - 1);
     }
     get nextIdx() {
-        return $$(MaybeT.of)(this
+        return apply(MaybeT.of)(this
             .currentStateIdx
             .applyFmap(this.lastStateIdx.fmap(BoundedNum.of(0)))
             .fmap(BoundedNum.increment)
