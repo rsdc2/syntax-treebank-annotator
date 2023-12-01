@@ -594,7 +594,7 @@ class TextStateIO {
     }
 
     get nextIdx () {
-        return $$ (MaybeT.of) (this
+        return apply (MaybeT.of) (this
             .currentStateIdx
             .applyFmap( this.lastStateIdx.fmap(BoundedNum.of(0)) )
             .fmap( BoundedNum.increment )
@@ -889,7 +889,7 @@ class TextStateIO {
         Frontend.pushPlainTextToFrontend(this)
         this.updateSentenceViewState()
 
-        // Set the sentences text
+        // Set the sentences text from the Leiden text
         let v = this.currentSentence
             .fmap(ArethusaSentence.wordsAsLeidenStr)
             .fmap(SentencesDiv.setText)

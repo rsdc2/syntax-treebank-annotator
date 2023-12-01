@@ -118,7 +118,7 @@ class Arr {
     }
 
     static removeByIdx = <T>(array: T[]) =>  (idx: number)  => {
-        return $$ (MaybeT.of) (array.reduce ( (acc: T[], item: T, _idx: number) => {
+        return apply (MaybeT.of) (array.reduce ( (acc: T[], item: T, _idx: number) => {
             if (_idx !== idx) {
                 return Arr.push(item)(acc)
             }
@@ -165,7 +165,7 @@ class Arr {
     }
 
     static replaceByIdx = <T>(array: T[]) => (newItem: T) => (idx: number) => {
-        return $$ (MaybeT.of) (array.reduce ( (acc: T[], item: T, _idx: number) => {
+        return apply (MaybeT.of) (array.reduce ( (acc: T[], item: T, _idx: number) => {
             if (_idx !== idx) {
                 return Arr.push(item)(acc)
             }

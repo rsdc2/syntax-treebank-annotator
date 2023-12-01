@@ -43,10 +43,6 @@ function getNth<T>(a: Array<T>, n: number): Maybe<T> {
 }
 
 
-// function head<T>(a: Array<T>): Maybe<T> {
-//     return getNth(a, 0)
-// }
-
 function tail<T>(a: Array<T>): T[] {
     if (a.length === 0) {
         return []
@@ -117,5 +113,3 @@ const flip_2_to_3 = <T, U, V, W>(f: (a: T) => (b: U) => (c: V) => W) => (x: T) =
 const apply = <T, U>(f: (a: T) => U) => (x: T) => {
     return f(x)
 }
-
-const $$ = apply
