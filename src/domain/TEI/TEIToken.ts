@@ -195,23 +195,25 @@ namespace TextNode {
 
     const getTextFromNonTextNode = (localName: string) => (openStr: string) => (closeStr: string) => (text: Text) => {
 
+
+
         // To be used e.g. for <gap>
         const precedingItems = XML.previousNode(text)
-        const preceding = precedingItems[precedingItems.length - 1]
-        const following = XML.nextNode(text)[0]
+        let preceding = precedingItems[precedingItems.length - 1]
+        
+        if (preceding.textContent === ' ') {
+            preceding = precedingItems[precedingItems.length - 2]
+        }
 
-        // if (preceding.textContent !== "") {
-        //     return text
-        // }
-        // console.log(text, preceding.textContent, following.textContent)
-        // if (following.textContent?.trim() !== "") {
-        //     console.log(text, following.textContent)
-        //     return text
-        // }
+        let following = XML.nextNode(text)[0]
 
-        // if (preceding.nodeName !== localName && following.nodeName !== localName) {
-        //     return text
-        // }
+        if (following.textContent === ' ') {
+            following = XML.nextNode(text)[1]
+        }
+
+        if (localName === 'g') {
+            console.log(text, preceding, preceding.textContent, following, following.textContent)
+        }
 
         if (following.nodeName === localName) {
             text.textContent = text.textContent + closeStr
@@ -221,7 +223,7 @@ namespace TextNode {
             text.textContent = openStr + text.textContent
         }
 
-        console.log(preceding.nodeName, preceding.textContent, text, following.nodeName, following.textContent)
+        // console.log(preceding.nodeName, preceding.textContent, text, following.nodeName, following.textContent)
         return text
     }
     

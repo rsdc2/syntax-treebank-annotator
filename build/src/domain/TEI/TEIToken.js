@@ -38,7 +38,7 @@ class TEIToken {
 }
 TEIToken.getLeidenText = (token) => {
     return token.textNodes
-        .filter(TextNode.filterByNotAncestor(["reg", "corr", "am"]))
+        .filter(TextNode.filterByNotAncestor(["g", "reg", "corr", "am"]))
         .map((textNode) => TextNode.bracketExpansion(textNode))
         .map((textNode) => TextNode.bracketDel(textNode))
         .map((textNode) => TextNode.bracketSupplied(textNode))
@@ -145,26 +145,24 @@ var TextNode;
     const getTextFromNonTextNode = (localName) => (openStr) => (closeStr) => (text) => {
         // To be used e.g. for <gap>
         const precedingItems = XML.previousNode(text);
-        const preceding = precedingItems[precedingItems.length - 1];
-        const following = XML.nextNode(text)[0];
-        // if (preceding.textContent !== "") {
-        //     return text
-        // }
-        // console.log(text, preceding.textContent, following.textContent)
-        // if (following.textContent?.trim() !== "") {
-        //     console.log(text, following.textContent)
-        //     return text
-        // }
-        // if (preceding.nodeName !== localName && following.nodeName !== localName) {
-        //     return text
-        // }
+        let preceding = precedingItems[precedingItems.length - 1];
+        if (preceding.textContent === ' ') {
+            preceding = precedingItems[precedingItems.length - 2];
+        }
+        let following = XML.nextNode(text)[0];
+        if (following.textContent === ' ') {
+            following = XML.nextNode(text)[1];
+        }
+        if (localName === 'g') {
+            console.log(text, preceding, preceding.textContent, following, following.textContent);
+        }
         if (following.nodeName === localName) {
             text.textContent = text.textContent + closeStr;
         }
         if (preceding.nodeName === localName) {
             text.textContent = openStr + text.textContent;
         }
-        console.log(preceding.nodeName, preceding.textContent, text, following.nodeName, following.textContent);
+        // console.log(preceding.nodeName, preceding.textContent, text, following.nodeName, following.textContent)
         return text;
     };
     TextNode.bracketDel = (textNode) => {
