@@ -140,7 +140,7 @@ class ArethusaWord implements HasText {
                 .form(w)
                 .fromMaybe("[None]"),
             leiden: ArethusaWord
-                .form(w)
+                .leiden(w)
                 .fromMaybe("[None]"),
             headId: ArethusaWord
                 .head(w)
