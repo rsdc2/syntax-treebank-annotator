@@ -160,7 +160,7 @@ namespace TextNode {
 
         const _reduceTextToAdd = (acc: string[], node: Node): string[] => {
 
-            if (Arr.last(acc).value === "[ignore]") {
+            if (Arr.last(acc).value === "[stop]") {
                 return acc
             } else if (boundaries.includes(Arr.last(acc).fromMaybe(""))) {
                 return acc
@@ -178,7 +178,7 @@ namespace TextNode {
             } else if (node.textContent?.trim() === "") {
                 return acc
             } else {
-                return Arr.concat (acc) (['[ignore]']) 
+                return Arr.concat (acc) (['[stop]']) 
             }
         }
 
@@ -186,12 +186,12 @@ namespace TextNode {
             .reduceRight<string[]>(_reduceTextToAdd, [])
             .reverse()
             .join("")
-            .replace("[ignore]", "")
+            .replace("[stop]", "")
 
         let textToAppend = followingItems
             .reduce<string[]>(_reduceTextToAdd, [])
             .join("")
-            .replace("[ignore]", "")
+            .replace("[stop]", "")
 
         text.textContent = textToPrepend + text.textContent + textToAppend
 

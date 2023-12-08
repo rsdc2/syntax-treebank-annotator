@@ -112,9 +112,9 @@ var TextNode;
         // stringReps are given in the same order
         const precedingItems = XML.previousNode(text);
         const followingItems = XML.nextNode(text);
-        const reduceTextToAdd = (acc, node) => {
+        const _reduceTextToAdd = (acc, node) => {
             var _a, _b;
-            if (Arr.last(acc).value === "[ignore]") {
+            if (Arr.last(acc).value === "[stop]") {
                 return acc;
             }
             else if (boundaries.includes(Arr.last(acc).fromMaybe(""))) {
@@ -130,13 +130,18 @@ var TextNode;
                 return acc;
             }
             else {
-                return Arr.concat(acc)(['[ignore]']);
+                return Arr.concat(acc)(['[stop]']);
             }
         };
-        // Text to prepend
-        let textToPrepend = precedingItems.reduceRight(reduceTextToAdd, []).reverse().join("").replace("[ignore]", "");
-        // Text to append
-        let textToAppend = followingItems.reduce(reduceTextToAdd, []).join("").replace("[ignore]", "");
+        let textToPrepend = precedingItems
+            .reduceRight(_reduceTextToAdd, [])
+            .reverse()
+            .join("")
+            .replace("[stop]", "");
+        let textToAppend = followingItems
+            .reduce(_reduceTextToAdd, [])
+            .join("")
+            .replace("[stop]", "");
         text.textContent = textToPrepend + text.textContent + textToAppend;
         return text;
     };
