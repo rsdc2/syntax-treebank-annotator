@@ -446,7 +446,8 @@ ArethusaSentence.wordsAsLeidenStr = (s) => {
         .replace(/\|+/g, "|")
         .replace(/·\s+·/g, '·')
         .replace(/\|\s?/g, "\n")
-        .replace(/^\n/, "");
+        .replace(/^\n/, "")
+        .replace(/\n{2,}/g, "\n");
 };
 ArethusaSentence.wordsFromNodes = (nodes) => {
     return nodes

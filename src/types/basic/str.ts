@@ -46,6 +46,13 @@ class Str {
         return s1.concat(joiner, s2)
     }
 
+    static last = (s: string): string => {
+        if (s.length == 0) {
+            return ''
+        }
+        return s[s.length -1]
+    }
+
     static lastIndexOf = (substring: string) => (s: string)  => {
         return s.lastIndexOf(substring)
     }

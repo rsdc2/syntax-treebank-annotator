@@ -45,7 +45,7 @@ TEIToken.getLeidenText = (token) => {
         .map((textNode) => TextNode.bracketDel(textNode))
         .map((textNode) => TextNode.bracketSupplied(textNode))
         .map((textNode) => TextNode.bracketSurplus(textNode))
-        .map((textNode) => TextNode.getTextFromNonTextNode(["lb", "g", "gap"])(["|", " · ", "[-?-]"])(textNode))
+        .map((textNode) => TextNode.getTextFromNonTextNode(["|"])(["g", "lb", "gap"])([" · ", "|", "[-?-]"])(textNode))
         .map(XML.textContent)
         .map((maybeStr) => { return maybeStr.fromMaybe(""); })
         .join("")
@@ -105,56 +105,38 @@ var TextNode;
         }
         return textNode;
     };
-    TextNode.getTextFromNonTextNode = (localNames) => (stringReps) => (text) => {
+    TextNode.getTextFromNonTextNode = (boundaries) => (localNames) => (stringReps) => (text) => {
         // To be used e.g. for <gap>, <lb> and <g> that do not contain text
         // to be included in the treebanked version
         // It is important that the localNames and their respective
         // stringReps are given in the same order
         const precedingItems = XML.previousNode(text);
         const followingItems = XML.nextNode(text);
-        // Text to prepend
-        let textToPrepend = precedingItems.reduceRight((acc, node) => {
-            var _a;
-            if (acc[0] === "?") {
+        const reduceTextToAdd = (acc, node) => {
+            var _a, _b;
+            if (Arr.last(acc).value === "[ignore]") {
+                return acc;
+            }
+            else if (boundaries.includes(Arr.last(acc).fromMaybe(""))) {
                 return acc;
             }
             if (localNames.includes(node.nodeName) ||
                 (node.nodeName === "#text" && localNames.includes(((_a = node.parentNode) === null || _a === void 0 ? void 0 : _a.nodeName) || ""))) {
                 const localNameIdx = localNames.findIndex((value) => value === node.nodeName);
                 const stringRep = stringReps[localNameIdx] || "";
-                return stringRep + acc;
+                return Arr.concat(acc)([stringRep]);
             }
-            else if (node.textContent === " ") {
-                return " " + acc;
-            }
-            else {
-                return "?" + acc;
-            }
-        }, "");
-        // Text to append
-        let textToAppend = followingItems.reduce((acc, node) => {
-            var _a;
-            if (acc[0] === "?") {
+            else if (((_b = node.textContent) === null || _b === void 0 ? void 0 : _b.trim()) === "") {
                 return acc;
             }
-            if (localNames.includes(node.nodeName) || (node.nodeName === "#text" && localNames.includes(((_a = node.parentNode) === null || _a === void 0 ? void 0 : _a.nodeName) || ""))) {
-                const localNameIdx = localNames.findIndex((value) => value === node.nodeName);
-                const stringRep = stringReps[localNameIdx] || "";
-                return acc + stringRep;
-            }
-            else if (node.textContent === " ") {
-                return acc + " ";
-            }
             else {
-                return "?" + acc;
+                return Arr.concat(acc)(['[ignore]']);
             }
-        }, "");
-        if (textToPrepend[0] === "?") {
-            textToPrepend = textToPrepend.slice(1);
-        }
-        if (textToAppend[0] === "?") {
-            textToAppend = textToAppend.slice(1);
-        }
+        };
+        // Text to prepend
+        let textToPrepend = precedingItems.reduceRight(reduceTextToAdd, []).reverse().join("").replace("[ignore]", "");
+        // Text to append
+        let textToAppend = followingItems.reduce(reduceTextToAdd, []).join("").replace("[ignore]", "");
         text.textContent = textToPrepend + text.textContent + textToAppend;
         return text;
     };

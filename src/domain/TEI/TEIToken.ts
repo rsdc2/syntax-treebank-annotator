@@ -24,7 +24,7 @@ class TEIToken implements Word, HasText {
             .map( (textNode: Text) => TextNode.bracketDel(textNode) )
             .map( (textNode: Text) => TextNode.bracketSupplied(textNode) )
             .map( (textNode: Text) => TextNode.bracketSurplus(textNode) )
-            .map( (textNode: Text) => TextNode.getTextFromNonTextNode (["lb", "g", "gap"]) (["|", " · ", "[-?-]"]) (textNode) )
+            .map( (textNode: Text) => TextNode.getTextFromNonTextNode (["|"]) (["g", "lb", "gap"]) ([" · ", "|", "[-?-]"]) (textNode) )
             .map(XML.textContent)
             .map( (maybeStr: Maybe<string>) => {return maybeStr.fromMaybe("")})
             .join("")         
@@ -148,7 +148,7 @@ namespace TextNode {
         return textNode
     }
 
-    export const getTextFromNonTextNode = (localNames: string[]) => (stringReps: string[]) => (text: Text) => {
+    export const getTextFromNonTextNode = (boundaries: string[]) => (localNames: string[]) => (stringReps: string[]) => (text: Text) => {
 
         // To be used e.g. for <gap>, <lb> and <g> that do not contain text
         // to be included in the treebanked version
@@ -158,62 +158,40 @@ namespace TextNode {
         const precedingItems = XML.previousNode(text)
         const followingItems = XML.nextNode(text)
 
-        // Text to prepend
-        let textToPrepend = precedingItems.reduceRight<string>( 
-            (acc: string, node: Node): string => {
+        const _reduceTextToAdd = (acc: string[], node: Node): string[] => {
 
-                if (acc[0] === "?") {
-                    return acc
-                } 
+            if (Arr.last(acc).value === "[ignore]") {
+                return acc
+            } else if (boundaries.includes(Arr.last(acc).fromMaybe(""))) {
+                return acc
+            }
 
-                if (localNames.includes(node.nodeName) || 
-                    (node.nodeName === "#text" && localNames.includes(node.parentNode?.nodeName || ""))) {
+            if (localNames.includes(node.nodeName) || 
+                (node.nodeName === "#text" && localNames.includes(node.parentNode?.nodeName || ""))) {
 
-                    const localNameIdx = localNames.findIndex( 
-                        (value: string) => value === node.nodeName
-                    ) 
-                    const stringRep = stringReps[localNameIdx] || ""
-                    return stringRep + acc    
+                const localNameIdx = localNames.findIndex( 
+                    (value: string) => value === node.nodeName
+                ) 
+                const stringRep = stringReps[localNameIdx] || ""
+                return Arr.concat (acc) ([stringRep])     
 
-                } else if (node.textContent === " ") {
-                    return " " + acc
-                } else {
-                    return "?" + acc
-                }
-
-            }, ""
-        ) 
-
-        // Text to append
-        let textToAppend = followingItems.reduce<string>( 
-            (acc: string, node: Node): string => {
-
-                if (acc[0] === "?") {
-                    return acc
-                } 
-
-                if (localNames.includes(node.nodeName) || (node.nodeName === "#text" && localNames.includes(node.parentNode?.nodeName || ""))) {
-                    const localNameIdx = localNames.findIndex( 
-                        (value: string) => value === node.nodeName
-                    ) 
-                    const stringRep = stringReps[localNameIdx] || ""
-                    return acc + stringRep  
-                } else if (node.textContent === " ") {
-                    return acc + " "
-                } else {
-                    return "?" + acc
-                }
-
-            }, ""
-        ) 
-
-        if (textToPrepend[0] === "?") {
-            textToPrepend = textToPrepend.slice(1)
+            } else if (node.textContent?.trim() === "") {
+                return acc
+            } else {
+                return Arr.concat (acc) (['[ignore]']) 
+            }
         }
 
-        if (textToAppend[0] === "?") {
-            textToAppend = textToAppend.slice(1)
-        }
+        let textToPrepend = precedingItems
+            .reduceRight<string[]>(_reduceTextToAdd, [])
+            .reverse()
+            .join("")
+            .replace("[ignore]", "")
+
+        let textToAppend = followingItems
+            .reduce<string[]>(_reduceTextToAdd, [])
+            .join("")
+            .replace("[ignore]", "")
 
         text.textContent = textToPrepend + text.textContent + textToAppend
 

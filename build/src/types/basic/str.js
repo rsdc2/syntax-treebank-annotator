@@ -48,6 +48,12 @@ Str.join = (s2) => (joiner) => (s1) => {
     }
     return s1.concat(joiner, s2);
 };
+Str.last = (s) => {
+    if (s.length == 0) {
+        return '';
+    }
+    return s[s.length - 1];
+};
 Str.lastIndexOf = (substring) => (s) => {
     return s.lastIndexOf(substring);
 };
