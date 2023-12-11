@@ -442,14 +442,15 @@ ArethusaSentence.wordsAsLeidenStr = (s) => {
         return word.leiden.fromMaybe("");
     });
     return wordsArr.join(' ')
-        .replace(/\s+/g, " ")
         .replace(/\|+/g, "|")
         .replace(/·\s+·/g, '·')
         .replace(/\|\s?/g, "\n")
         .replace(/^\n/, "")
         .replace(/\n{2,}/g, "\n")
-        .replace(/(?<!-\?)\](\s+?)\[(?!-\?)/g, "$1")
-        .replace(/-\?-\]\s+?\[-\?-/g, "-?-");
+        .replace(/⟧( +)?⟦/g, "$1")
+        .replace(/(?<!-\?)\]( +)?\[(?!-\?)/g, "$1")
+        .replace(/-\?-\]\s+?\[-\?-/g, "-?-")
+        .replace(/ +/g, " ");
 };
 ArethusaSentence.wordsFromNodes = (nodes) => {
     return nodes

@@ -616,14 +616,15 @@ class ArethusaSentence implements Word, HasToken, HasText  {
             })
 
         return wordsArr.join(' ')
-            .replace(/\s+/g, " ")
             .replace(/\|+/g, "|")
             .replace(/·\s+·/g, '·')
             .replace(/\|\s?/g, "\n")
             .replace(/^\n/, "")
             .replace(/\n{2,}/g, "\n")
-            .replace(/(?<!-\?)\](\s+?)\[(?!-\?)/g, "$1")
+            .replace(/⟧( +)?⟦/g, "$1")
+            .replace(/(?<!-\?)\]( +)?\[(?!-\?)/g, "$1")
             .replace(/-\?-\]\s+?\[-\?-/g, "-?-")
+            .replace(/ +/g, " ")
             
     }
 

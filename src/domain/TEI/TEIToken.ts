@@ -20,8 +20,8 @@ class TEIToken implements Word, HasText {
         return token.textNodes
             .filter(TextNode.filterByNotAncestor(["g", "reg", "corr", "am"]))
             .map( (textNode: Text) => TextNode.bracketExpansion(textNode) )
-            .map( (textNode: Text) => TextNode.bracketDel(textNode) )
             .map( (textNode: Text) => TextNode.bracketSupplied(textNode) )
+            .map( (textNode: Text) => TextNode.bracketDel(textNode) )
             .map( (textNode: Text) => TextNode.bracketSurplus(textNode) )
             .map( (textNode: Text) => TextNode.getTextFromNonTextNode (["|"]) (["g", "lb", "gap"]) ([" · ", "|", "[-?-]"]) (textNode) )
             .map(XML.textContent)

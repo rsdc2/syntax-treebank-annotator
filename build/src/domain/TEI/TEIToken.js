@@ -42,8 +42,8 @@ TEIToken.getLeidenText = (token) => {
     return token.textNodes
         .filter(TextNode.filterByNotAncestor(["g", "reg", "corr", "am"]))
         .map((textNode) => TextNode.bracketExpansion(textNode))
-        .map((textNode) => TextNode.bracketDel(textNode))
         .map((textNode) => TextNode.bracketSupplied(textNode))
+        .map((textNode) => TextNode.bracketDel(textNode))
         .map((textNode) => TextNode.bracketSurplus(textNode))
         .map((textNode) => TextNode.getTextFromNonTextNode(["|"])(["g", "lb", "gap"])([" · ", "|", "[-?-]"])(textNode))
         .map(XML.textContent)
