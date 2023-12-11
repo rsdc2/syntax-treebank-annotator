@@ -622,6 +622,8 @@ class ArethusaSentence implements Word, HasToken, HasText  {
             .replace(/\|\s?/g, "\n")
             .replace(/^\n/, "")
             .replace(/\n{2,}/g, "\n")
+            .replace(/(?<!-\?)\](\s+?)\[(?!-\?)/g, "$1")
+            .replace(/-\?-\]\s+?\[-\?-/g, "-?-")
             
     }
 

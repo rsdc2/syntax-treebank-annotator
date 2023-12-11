@@ -12,7 +12,6 @@ class TEIToken implements Word, HasText {
         return DOM.Elem.attributes(this._element)
     }
 
-    
     static getLeidenText = (token: TEIToken) => {
 
         // Returns the Leiden text of a token
