@@ -58,11 +58,11 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
     }
 
     static appendSentenceWithId = 
-        (sentenceId: string) => 
+        (sentenceId: string, notes: string) => 
         (lang: string) =>
         (a: ArethusaDoc) => 
     {
-        const attrs = {"id": sentenceId, "xml:lang": lang}
+        const attrs = {"id": sentenceId, "xml:lang": lang, "notes": notes}
         const sentenceElement = a
             .docCopy
             .fmap(XML.createElement("sentence")(attrs))

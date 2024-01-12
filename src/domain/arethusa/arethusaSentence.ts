@@ -172,6 +172,15 @@ class ArethusaSentence implements Word, HasToken, HasText  {
         return XML.attrVal("xml:lang")(node)
     }
 
+    get notes() {
+        return ArethusaSentence.notes(this)
+    }
+
+    static notes = (sentence: ArethusaSentence) => {
+        const node = DXML.node(sentence)
+        return XML.attrVal("notes")(node)
+    }
+
     static prependToken = 
         (token: ArethusaToken) => 
         (sentence: ArethusaSentence) => 
@@ -550,10 +559,11 @@ class ArethusaSentence implements Word, HasToken, HasText  {
         }
 
         const lang = sentence.lang.fromMaybe("unknown")
+        const notes = sentence.notes.fromMaybe("")
         // console.log("hello")
         const treeTokens = ArethusaSentence.treeTokens(sentence)
 
-        return TreeState.ofTokensWithExistingNodes(nodes)(id, lang)(treeTokens)
+        return TreeState.ofTokensWithExistingNodes(nodes)(id, lang, notes)(treeTokens)
         
     }
 
