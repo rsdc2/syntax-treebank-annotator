@@ -271,7 +271,7 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
     {
 
         const lang = ArethusaDoc.sentenceById(refSentenceId)(a).bind(ArethusaSentence.lang).fromMaybe("unknown")
-        const attrs = {"id": Str.increment(refSentenceId), "xml:lang": lang}
+        const attrs = {"id": Str.increment(refSentenceId), "notes": "", "xml:lang": lang}
 
         const sentenceElement = a
             .docCopy

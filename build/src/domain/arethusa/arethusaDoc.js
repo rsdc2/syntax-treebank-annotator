@@ -220,7 +220,7 @@ ArethusaDoc.incrementSentenceIdsFrom = (startSentenceId) => (a) => {
 };
 ArethusaDoc.insertSentence = (insertFunc) => (refSentenceId) => (a) => {
     const lang = ArethusaDoc.sentenceById(refSentenceId)(a).bind(ArethusaSentence.lang).fromMaybe("unknown");
-    const attrs = { "id": Str.increment(refSentenceId), "xml:lang": lang };
+    const attrs = { "id": Str.increment(refSentenceId), "notes": "", "xml:lang": lang };
     const sentenceElement = a
         .docCopy
         .fmap(XML.createElement("sentence")(attrs));
