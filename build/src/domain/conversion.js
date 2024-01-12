@@ -31,6 +31,7 @@ Conversion.epidocXMLToArethusaXML = (epidocXML) => {
             leiden: token.leidenText,
             lemma: "",
             postag: "",
+            upos: "",
             feats: "",
             relation: "",
             head: "",

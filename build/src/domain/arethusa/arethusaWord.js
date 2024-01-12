@@ -40,6 +40,7 @@ ArethusaWord.createAttrs = (form) => {
         "leiden": "",
         "lemma": "",
         "postag": "",
+        "upos": "",
         "relation": "",
         "head": "",
         "secdeps": "",
@@ -130,6 +131,9 @@ ArethusaWord.toTreeToken = (w) => {
         postag: ArethusaWord
             .postag(w)
             .fromMaybe(""),
+        upos: ArethusaWord
+            .upos(w)
+            .fromMaybe(""),
         feats: ArethusaWord
             .feats(w)
             .fromMaybe(""),
@@ -143,4 +147,8 @@ ArethusaWord.toTreeToken = (w) => {
             TreeTokenType.NonRoot,
         corpusId: w.corpusId
     };
+};
+ArethusaWord.upos = (w) => {
+    return XML.attr("upos")(w._node)
+        .bind(XML.nodeValue);
 };

@@ -56,4 +56,10 @@ var TreeToken;
     TreeToken.type = (token) => {
         return token.type;
     };
+    TreeToken.upos = (token) => {
+        if ('lemma' in token) {
+            return token.upos;
+        }
+        return "";
+    };
 })(TreeToken || (TreeToken = {}));

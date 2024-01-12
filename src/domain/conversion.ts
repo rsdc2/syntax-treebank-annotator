@@ -40,6 +40,7 @@ class Conversion {
                 leiden: token.leidenText,
                 lemma: "",
                 postag: "",
+                upos: "",
                 feats: "",
                 relation: "",
                 head: "",

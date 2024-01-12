@@ -11,6 +11,7 @@ interface IArethusaToken {
 interface IArethusaWord extends IArethusaToken{
     lemma: string,
     postag: string,
+    upos: string
 }
 
 interface IArtificial extends IArethusaToken {

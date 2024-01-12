@@ -17,6 +17,7 @@ interface ITreeWord {
     secondaryDeps: ISecondaryDep[]
     lemma: string,
     postag: string,
+    upos: string,
     feats: string,
     corpusId?: string
 }
@@ -52,6 +53,7 @@ interface ITreeNode extends d3.SimulationNodeDatum {
     lemma: string,
     feats: string,
     postag: string,
+    upos: string,
     type: NodeType,
     insertionId: string,
     artificialType: ArtificialType,

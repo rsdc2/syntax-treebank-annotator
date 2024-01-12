@@ -88,4 +88,13 @@ namespace TreeToken {
         return token.type
     }
     
+
+    export const upos = 
+        (token: ITreeToken): string => 
+    {
+        if ('lemma' in token) {
+            return token.upos;
+        }
+        return "";
+    }
 }

@@ -35,6 +35,7 @@ var TreeNode;
             lemma: "",
             leiden: "",
             postag: "",
+            upos: "",
             feats: "",
             insertionId: "",
             type: NodeType.None,
@@ -190,6 +191,7 @@ var TreeNode;
             leiden: token.leiden,
             lemma: TreeToken.lemma(token),
             postag: TreeToken.postag(token),
+            upos: TreeToken.upos(token),
             feats: TreeToken.feats(token),
             secondaryDeps: token.secondaryDeps,
             distToRoot: TreeEdge.countEdgesToRoot(token.id, tokens),
@@ -244,6 +246,7 @@ var TreeNode;
                 leiden="${node.leiden}" 
                 lemma="${node.lemma}" 
                 postag="${node.postag}" 
+                upos="${node.upos}"
                 feats="${node.feats}"
                 relation="${node.relation}" 
                 head="${node.headTokenId}" 

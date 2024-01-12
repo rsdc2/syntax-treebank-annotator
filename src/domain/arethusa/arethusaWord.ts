@@ -32,6 +32,7 @@ class ArethusaWord implements HasText {
             "leiden": "",
             "lemma": "",
             "postag": "",
+            "upos": "",
             "relation": "",
             "head": "",
             "secdeps": "",
@@ -156,6 +157,9 @@ class ArethusaWord implements HasText {
             postag: ArethusaWord
                 .postag(w)
                 .fromMaybe(""),
+            upos: ArethusaWord
+                .upos(w)
+                .fromMaybe(""),
             feats: ArethusaWord
                 .feats(w)
                 .fromMaybe(""),
@@ -173,6 +177,11 @@ class ArethusaWord implements HasText {
 
     get corpusId(): string {
         return MaybeT.of(this._element.getAttribute("corpusId")).fromMaybe("")
+    }
+
+    static upos = (w: ArethusaWord) => {
+        return XML.attr ("upos") (w._node)
+            .bind(XML.nodeValue)
     }
 
     static get xpathAddress(): string {
