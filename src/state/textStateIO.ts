@@ -903,7 +903,7 @@ class TextStateIO {
         const treeState = this.currentSentence.isNothing ? 
             MaybeT.of(TreeState.of
                     (0) 
-                    ("1", "unknown") 
+                    ("1", "unknown", "") 
                     ([]) 
                     ([]) 
                     (ClickState.none())

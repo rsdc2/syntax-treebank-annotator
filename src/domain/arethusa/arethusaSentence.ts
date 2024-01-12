@@ -540,7 +540,8 @@ class ArethusaSentence implements Word, HasToken, HasText  {
         }
 
         const lang = sentence.lang.value || "unknown"
-        const getTreeSentState = TreeState.ofTokens(id, lang)
+        const notes = sentence.notes.value || ""
+        const getTreeSentState = TreeState.ofTokens(id, lang, notes)
         const tokens = ArethusaSentence.treeTokens(sentence)
 
         return getTreeSentState(tokens)

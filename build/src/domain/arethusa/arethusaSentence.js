@@ -9,6 +9,9 @@ class ArethusaSentence {
     get lang() {
         return ArethusaSentence.lang(this);
     }
+    get notes() {
+        return ArethusaSentence.notes(this);
+    }
     get arethusa() {
         return this.doc
             .bind(XML.documentElement)
@@ -160,6 +163,10 @@ ArethusaSentence.prependArtificial = (artificial) => (sentence) => {
 ArethusaSentence.lang = (sentence) => {
     const node = DXML.node(sentence);
     return XML.attrVal("xml:lang")(node);
+};
+ArethusaSentence.notes = (sentence) => {
+    const node = DXML.node(sentence);
+    return XML.attrVal("notes")(node);
 };
 ArethusaSentence.prependToken = (token) => (sentence) => {
     const tokenNode = DXML
@@ -383,7 +390,8 @@ ArethusaSentence.toTreeSentState = (sentence) => {
         console.error("No sentence ID");
     }
     const lang = sentence.lang.value || "unknown";
-    const getTreeSentState = TreeState.ofTokens(id, lang);
+    const notes = sentence.notes.value || "";
+    const getTreeSentState = TreeState.ofTokens(id, lang, notes);
     const tokens = ArethusaSentence.treeTokens(sentence);
     return getTreeSentState(tokens);
 };
@@ -394,9 +402,10 @@ ArethusaSentence.toTreeSentStateWithNodesFromExistingTree = (nodes) => (sentence
         console.error("No sentence ID");
     }
     const lang = sentence.lang.fromMaybe("unknown");
+    const notes = sentence.notes.fromMaybe("");
     // console.log("hello")
     const treeTokens = ArethusaSentence.treeTokens(sentence);
-    return TreeState.ofTokensWithExistingNodes(nodes)(id, lang)(treeTokens);
+    return TreeState.ofTokensWithExistingNodes(nodes)(id, lang, notes)(treeTokens);
 };
 ArethusaSentence.treeTokens = (sentence) => {
     return MaybeT.of(sentence)

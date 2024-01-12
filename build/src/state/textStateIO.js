@@ -131,7 +131,7 @@ class TextStateIO {
                 ArethusaSentence.toTreeSentState :
                 ArethusaSentence.toTreeSentStateWithNodesFromExistingTree(globalState.simulation.nodes());
             const treeState = this.currentSentence.isNothing ?
-                MaybeT.of(TreeState.of(0)("1", "unknown")([])([])(ClickState.none())) :
+                MaybeT.of(TreeState.of(0)("1", "unknown", "")([])([])(ClickState.none())) :
                 this.currentSentence.fmap(treeStateFunc);
             // Convert wordId to treeNodeId
             const getTreeNodeId = this

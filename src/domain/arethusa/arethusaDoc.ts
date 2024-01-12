@@ -30,9 +30,10 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
 
     static appendSentence = (a: ArethusaDoc) => {
         const lang = ArethusaDoc.lastSentence(a).bind(ArethusaSentence.lang).fromMaybe("unknown")
+
         return ArethusaDoc
             .appendSentenceWithId 
-                (ArethusaDoc.newNextSentenceId(a)) 
+                (ArethusaDoc.newNextSentenceId(a), "") 
                 (lang)
                 (a)
     }

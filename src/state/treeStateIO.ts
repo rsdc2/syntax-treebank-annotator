@@ -15,6 +15,7 @@ class TreeStateIO {
             this.currentSentStateIdx + 1,
             this.currentTreeState._sentence_id,
             this.currentTreeState._lang,
+            this.currentTreeState._notes,
             [],
             nodes,
             this.currentTreeState.clickState
@@ -307,6 +308,7 @@ class TreeStateIO {
             sentState._state_id,
             sentState._sentence_id,
             sentState._lang,
+            sentState._notes,
             tokensWithRoot,
             nodes,
             sentState._clickState
@@ -488,6 +490,7 @@ class TreeStateIO {
             this.currentSentStateIdx + 1,
             this.currentTreeState._sentence_id,
             this.currentTreeState._lang,
+            this.currentTreeState._notes,
             [],
             nodes,
             this.currentTreeState.clickState
@@ -504,6 +507,7 @@ class TreeStateIO {
             state.currentSentStateIdx + 1,
             state.currentTreeState._sentence_id,
             state.currentTreeState._lang,
+            state.currentTreeState._notes,
             [],
             nodes,
             state.currentTreeState.clickState
