@@ -74,8 +74,9 @@ ArethusaDoc.appendArtificialToSentence = (attrs) => (sentenceId) => (a) => {
         .bind(ArethusaSentence.appendArtificialToSentenceFromAttrs(attrs));
 };
 ArethusaDoc.appendSentence = (a) => {
+    const lang = ArethusaDoc.lastSentence(a).bind(ArethusaSentence.lang).fromMaybe("unknown");
     return ArethusaDoc
-        .appendSentenceWithId(ArethusaDoc.newNextSentenceId(a))(a);
+        .appendSentenceWithId(ArethusaDoc.newNextSentenceId(a))(lang)(a);
 };
 ArethusaDoc.appendSentences = (sentences) => (a) => {
     let doc = ArethusaDoc.deepcopy(a);
@@ -90,11 +91,11 @@ ArethusaDoc.appendSentences = (sentences) => (a) => {
     });
     return doc;
 };
-ArethusaDoc.appendSentenceWithId = (sentenceId) => (a) => {
-    const id = { "id": sentenceId };
+ArethusaDoc.appendSentenceWithId = (sentenceId) => (lang) => (a) => {
+    const attrs = { "id": sentenceId, "xml:lang": lang };
     const sentenceElement = a
         .docCopy
-        .fmap(XML.createElement("sentence")(id));
+        .fmap(XML.createElement("sentence")(attrs));
     const appendSentence = sentenceElement
         .fmap(XML.appendChildToNode);
     return a
@@ -105,7 +106,7 @@ ArethusaDoc.appendSentenceWithId = (sentenceId) => (a) => {
         .bind(XML.documentElement)
         .bind(ArethusaDoc.fromNode);
 };
-ArethusaDoc.appendSentenceFromPlainTextStr = (s) => (a) => {
+ArethusaDoc.appendSentenceFromPlainTextStr = (lang) => (s) => (a) => {
     const sentence = ArethusaDoc
         .appendSentence(a)
         .bind(ArethusaDoc.lastSentence);
@@ -218,10 +219,11 @@ ArethusaDoc.incrementSentenceIdsFrom = (startSentenceId) => (a) => {
         .reduce(reduceIncrement, MaybeT.of(a));
 };
 ArethusaDoc.insertSentence = (insertFunc) => (refSentenceId) => (a) => {
-    const id = { "id": Str.increment(refSentenceId) };
+    const lang = ArethusaDoc.sentenceById(refSentenceId)(a).bind(ArethusaSentence.lang).fromMaybe("unknown");
+    const attrs = { "id": Str.increment(refSentenceId), "xml:lang": lang };
     const sentenceElement = a
         .docCopy
-        .fmap(XML.createElement("sentence")(id));
+        .fmap(XML.createElement("sentence")(attrs));
     const insertSentence = sentenceElement
         .fmap(insertFunc);
     const newArethusa = MaybeT.of(a)
