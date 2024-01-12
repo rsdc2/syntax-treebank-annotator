@@ -75,6 +75,7 @@ interface ITreeLink {
 interface ITreeState {
     _state_id: number,
     _sentence_id: string,
+    _lang: string,
     _tokens: ITreeToken[],
     _nodes: ITreeNode[]
     _clickState: ClickState

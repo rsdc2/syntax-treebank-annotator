@@ -61,7 +61,7 @@ class GlobalState {
         this.treeStateIO = this
             .textStateIO
             .bindErr("No text state.", TextStateIO.currentSentence)
-            .bindErr("No current sentence", ArethusaSentence.toTreeSentState)
+            .fmapErr("No current sentence", ArethusaSentence.toTreeSentState)
             .fmapErr("No tree sentence state.", TreeStateIO.of)
     }
 

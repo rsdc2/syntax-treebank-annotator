@@ -163,6 +163,15 @@ class ArethusaSentence implements Word, HasToken, HasText  {
             .bind(ArethusaDoc.fromNode)
     }
 
+    get lang() {
+        return ArethusaSentence.lang(this)
+    }
+    
+    static lang = (sentence: ArethusaSentence) => {
+        const node = DXML.node(sentence)
+        return XML.attrVal("xml:lang")(node)
+    }
+
     static prependToken = 
         (token: ArethusaToken) => 
         (sentence: ArethusaSentence) => 
@@ -514,30 +523,37 @@ class ArethusaSentence implements Word, HasToken, HasText  {
         return ArethusaSentence.tokens(this)
     }
 
-    static toTreeSentState = (sentence: ArethusaSentence) => {
-        const id = sentence._id.fromMaybe("")
-        const lang = sentence.lang.fromMaybe("")
-        const getTreeSentState = sentence._id
-            .fmap(TreeState.ofTokens)
-        
-        return MaybeT.of(
-                ArethusaSentence.treeTokens(sentence)
-            )
-            .applyFmap(getTreeSentState)
+    static toTreeSentState = (sentence: ArethusaSentence): TreeState => {
+        const id = sentence._id.value || ""
+
+        if (id == "") {
+            console.error("No sentence ID")
+        }
+
+        const lang = sentence.lang.value || "unknown"
+        const getTreeSentState = TreeState.ofTokens(id, lang)
+        const tokens = ArethusaSentence.treeTokens(sentence)
+
+        return getTreeSentState(tokens)
     }
 
     static toTreeSentStateWithNodesFromExistingTree = 
         (nodes: ITreeNode[]) => 
-        (sentence: ArethusaSentence) => 
+        (sentence: ArethusaSentence): TreeState => 
         {
         // Nodes from existing tree supplied
 
-        const getTreeSentState = sentence._id
-            .fmap(TreeState.ofTokensWithExistingNodes(nodes))
+        const id = sentence._id.fromMaybe("")
+
+        if (id == "") {
+            console.error("No sentence ID")
+        }
+
+        const lang = sentence.lang.fromMaybe("")
+        const treeTokens = ArethusaSentence.treeTokens(sentence)
+
+        return TreeState.ofTokensWithExistingNodes(nodes)(id, lang)(treeTokens)
         
-        return MaybeT.of(ArethusaSentence
-            .treeTokens(sentence))
-            .applyFmap(getTreeSentState)
     }
 
     static treeTokens = (sentence: ArethusaSentence) => {
