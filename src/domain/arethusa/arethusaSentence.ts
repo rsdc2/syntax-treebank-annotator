@@ -515,6 +515,8 @@ class ArethusaSentence implements Word, HasToken, HasText  {
     }
 
     static toTreeSentState = (sentence: ArethusaSentence) => {
+        const id = sentence._id.fromMaybe("")
+        const lang = sentence.lang.fromMaybe("")
         const getTreeSentState = sentence._id
             .fmap(TreeState.ofTokens)
         

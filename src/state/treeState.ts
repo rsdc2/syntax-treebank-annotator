@@ -5,6 +5,7 @@
 class TreeState implements ITreeState {
     _state_id: number
     _sentence_id: string
+    _lang: string
     _tokens: ITreeToken[]
     _nodes: ITreeNode[]
     _clickState: ClickState = ClickState.of
@@ -15,12 +16,14 @@ class TreeState implements ITreeState {
     constructor(
         state_id: number,
         sentence_id: string,
+        lang: string,
         tokens: ITreeToken[],
         nodes: ITreeNode[],
         clickState: ClickState,
     ) {
         this._state_id = state_id
         this._sentence_id = sentence_id
+        this._lang = lang
         this._tokens = tokens
         this._nodes = nodes
         this._clickState = clickState
@@ -52,7 +55,7 @@ class TreeState implements ITreeState {
     static deepcopy = (t: TreeState) => {
         return TreeState.of
             (t._state_id)
-            (t._sentence_id)
+            (t._sentence_id, t._lang)
             (Obj.deepcopy(t._tokens))
             (Obj.deepcopy(t._nodes))
             (ClickState.of
@@ -152,7 +155,7 @@ class TreeState implements ITreeState {
 
     static of = 
         (stateId: number) =>
-        (sentenceId: string) =>
+        (sentenceId: string, lang: string) =>
         (tokens: ITreeToken[]) =>
         (nodes: ITreeNode[]) =>
         (clickState: ClickState) => 
@@ -161,6 +164,7 @@ class TreeState implements ITreeState {
             return new TreeState(
                 stateId, 
                 sentenceId, 
+                lang,
                 tokens, 
                 nodes, 
                 clickState
@@ -168,7 +172,7 @@ class TreeState implements ITreeState {
         }
 
     static ofTokens = 
-        (sentence_id: string) =>
+        (sentence_id: string, lang: string) =>
         (tokens: ITreeToken[]) => 
     {
         const nodes = tokens
@@ -181,6 +185,7 @@ class TreeState implements ITreeState {
                 .fmap(Num.add(1))
                 .fromMaybe(0), 
             sentence_id, 
+            lang,
             tokens, 
             nodes, 
             ClickState.none()
@@ -189,7 +194,7 @@ class TreeState implements ITreeState {
 
     static ofTokensWithExistingNodes = 
         (nodes: ITreeNode[]) => 
-        (sentence_id: string) =>
+        (sentence_id: string, lang: string) =>
         (tokens: ITreeToken[]) => 
     {
         const tokensWithRoot = Arr
@@ -208,6 +213,7 @@ class TreeState implements ITreeState {
                 .fmap(Num.add(1))
                 .fromMaybe(0),
             sentence_id, 
+            lang,
             tokens, 
             _nodes, 
             ClickState.none()
