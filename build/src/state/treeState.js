@@ -150,7 +150,7 @@ TreeState.toArethusaSentenceXMLStr = (s) => {
     const xmlWords = s
         .nodesNoRoot
         .map(TreeNode.toArethusaWordXMLStr);
-    return `<sentence id="${s._sentence_id}">`
+    return `<sentence id="${s._sentence_id}" xml:lang="${s._lang}">`
         .concat(...xmlWords)
         .concat(`</sentence>`);
 };

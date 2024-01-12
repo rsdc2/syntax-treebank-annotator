@@ -549,7 +549,8 @@ class ArethusaSentence implements Word, HasToken, HasText  {
             console.error("No sentence ID")
         }
 
-        const lang = sentence.lang.fromMaybe("")
+        const lang = sentence.lang.fromMaybe("unknown")
+        // console.log("hello")
         const treeTokens = ArethusaSentence.treeTokens(sentence)
 
         return TreeState.ofTokensWithExistingNodes(nodes)(id, lang)(treeTokens)

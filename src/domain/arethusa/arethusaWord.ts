@@ -139,10 +139,10 @@ class ArethusaWord implements HasText {
         return {
             form: ArethusaWord
                 .form(w)
-                .fromMaybe("[None]"),
+                .fromMaybe(""),
             leiden: ArethusaWord
                 .leiden(w)
-                .fromMaybe("[None]"),
+                .fromMaybe(""),
             headId: ArethusaWord
                 .head(w)
                 .bind(Str.toMaybeNum)
