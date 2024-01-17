@@ -74,7 +74,9 @@ ArethusaDoc.appendArtificialToSentence = (attrs) => (sentenceId) => (a) => {
         .bind(ArethusaSentence.appendArtificialToSentenceFromAttrs(attrs));
 };
 ArethusaDoc.appendSentence = (a) => {
-    const lang = ArethusaDoc.lastSentence(a).bind(ArethusaSentence.lang).fromMaybe("unknown");
+    const lang = ArethusaDoc.lastSentence(a)
+        .bind(ArethusaSentence.lang)
+        .fromMaybe("");
     return ArethusaDoc
         .appendSentenceWithId(ArethusaDoc.newNextSentenceId(a), "")(lang)(a);
 };
@@ -219,7 +221,9 @@ ArethusaDoc.incrementSentenceIdsFrom = (startSentenceId) => (a) => {
         .reduce(reduceIncrement, MaybeT.of(a));
 };
 ArethusaDoc.insertSentence = (insertFunc) => (refSentenceId) => (a) => {
-    const lang = ArethusaDoc.sentenceById(refSentenceId)(a).bind(ArethusaSentence.lang).fromMaybe("unknown");
+    const lang = ArethusaDoc.sentenceById(refSentenceId)(a)
+        .bind(ArethusaSentence.lang)
+        .fromMaybe("");
     const attrs = { "id": Str.increment(refSentenceId), "notes": "", "xml:lang": lang };
     const sentenceElement = a
         .docCopy

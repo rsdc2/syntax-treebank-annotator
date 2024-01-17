@@ -262,7 +262,9 @@ ArethusaSentence.lastTokenId = (sentence) => {
 ArethusaSentence.XMLStrFromPlainTextStr = (a) => (str) => {
     const sentenceElem = a
         .doc
-        .fmapErr("No XML document.", XML.createElement("sentence")({ id: ArethusaDoc.newNextSentenceId(a) }));
+        .fmapErr("No XML document.", XML.createElement("sentence")({ id: ArethusaDoc.newNextSentenceId(a),
+        notes: "",
+        "xml:lang": "" }));
     const doc = MaybeT
         .of(a)
         .fmap(DXML.node)
@@ -389,7 +391,7 @@ ArethusaSentence.toTreeSentState = (sentence) => {
     if (id == "") {
         console.error("No sentence ID");
     }
-    const lang = sentence.lang.value || "unknown";
+    const lang = sentence.lang.value || "";
     const notes = sentence.notes.value || "";
     const getTreeSentState = TreeState.ofTokens(id, lang, notes);
     const tokens = ArethusaSentence.treeTokens(sentence);
@@ -401,9 +403,8 @@ ArethusaSentence.toTreeSentStateWithNodesFromExistingTree = (nodes) => (sentence
     if (id == "") {
         console.error("No sentence ID");
     }
-    const lang = sentence.lang.fromMaybe("unknown");
+    const lang = sentence.lang.fromMaybe("");
     const notes = sentence.notes.fromMaybe("");
-    // console.log("hello")
     const treeTokens = ArethusaSentence.treeTokens(sentence);
     return TreeState.ofTokensWithExistingNodes(nodes)(id, lang, notes)(treeTokens);
 };

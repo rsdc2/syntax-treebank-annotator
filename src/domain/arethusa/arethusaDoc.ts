@@ -29,7 +29,9 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
     }
 
     static appendSentence = (a: ArethusaDoc) => {
-        const lang = ArethusaDoc.lastSentence(a).bind(ArethusaSentence.lang).fromMaybe("unknown")
+        const lang = ArethusaDoc.lastSentence(a)
+                                .bind(ArethusaSentence.lang)
+                                .fromMaybe("")
 
         return ArethusaDoc
             .appendSentenceWithId 
@@ -270,7 +272,9 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
         (a: ArethusaDoc) => 
     {
 
-        const lang = ArethusaDoc.sentenceById(refSentenceId)(a).bind(ArethusaSentence.lang).fromMaybe("unknown")
+        const lang = ArethusaDoc.sentenceById(refSentenceId)(a)
+                                .bind(ArethusaSentence.lang)
+                                .fromMaybe("")
         const attrs = {"id": Str.increment(refSentenceId), "notes": "", "xml:lang": lang}
 
         const sentenceElement = a
