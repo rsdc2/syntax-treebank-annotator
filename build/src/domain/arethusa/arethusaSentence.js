@@ -6,6 +6,12 @@ class ArethusaSentence {
     get attrs() {
         return DOM.Elem.attributes(this._element);
     }
+    get lang() {
+        return ArethusaSentence.lang(this);
+    }
+    get notes() {
+        return ArethusaSentence.notes(this);
+    }
     get arethusa() {
         return this.doc
             .bind(XML.documentElement)
@@ -154,6 +160,14 @@ ArethusaSentence.prependArtificial = (artificial) => (sentence) => {
         .bind(XML.documentElement)
         .bind(ArethusaDoc.fromNode);
 };
+ArethusaSentence.lang = (sentence) => {
+    const node = DXML.node(sentence);
+    return XML.attrVal("xml:lang")(node);
+};
+ArethusaSentence.notes = (sentence) => {
+    const node = DXML.node(sentence);
+    return XML.attrVal("notes")(node);
+};
 ArethusaSentence.prependToken = (token) => (sentence) => {
     const tokenNode = DXML
         .node(token)
@@ -248,7 +262,9 @@ ArethusaSentence.lastTokenId = (sentence) => {
 ArethusaSentence.XMLStrFromPlainTextStr = (a) => (str) => {
     const sentenceElem = a
         .doc
-        .fmapErr("No XML document.", XML.createElement("sentence")({ id: ArethusaDoc.newNextSentenceId(a) }));
+        .fmapErr("No XML document.", XML.createElement("sentence")({ id: ArethusaDoc.newNextSentenceId(a),
+        notes: "",
+        "xml:lang": "" }));
     const doc = MaybeT
         .of(a)
         .fmap(DXML.node)
@@ -371,18 +387,26 @@ ArethusaSentence.setDocId = (id) => (sentence) => {
         .fmap(ArethusaSentence.fromXMLNode);
 };
 ArethusaSentence.toTreeSentState = (sentence) => {
-    const getTreeSentState = sentence._id
-        .fmap(TreeState.ofTokens);
-    return MaybeT.of(ArethusaSentence.treeTokens(sentence))
-        .applyFmap(getTreeSentState);
+    const id = sentence._id.value || "";
+    if (id == "") {
+        console.error("No sentence ID");
+    }
+    const lang = sentence.lang.value || "";
+    const notes = sentence.notes.value || "";
+    const getTreeSentState = TreeState.ofTokens(id, lang, notes);
+    const tokens = ArethusaSentence.treeTokens(sentence);
+    return getTreeSentState(tokens);
 };
 ArethusaSentence.toTreeSentStateWithNodesFromExistingTree = (nodes) => (sentence) => {
     // Nodes from existing tree supplied
-    const getTreeSentState = sentence._id
-        .fmap(TreeState.ofTokensWithExistingNodes(nodes));
-    return MaybeT.of(ArethusaSentence
-        .treeTokens(sentence))
-        .applyFmap(getTreeSentState);
+    const id = sentence._id.fromMaybe("");
+    if (id == "") {
+        console.error("No sentence ID");
+    }
+    const lang = sentence.lang.fromMaybe("");
+    const notes = sentence.notes.fromMaybe("");
+    const treeTokens = ArethusaSentence.treeTokens(sentence);
+    return TreeState.ofTokensWithExistingNodes(nodes)(id, lang, notes)(treeTokens);
 };
 ArethusaSentence.treeTokens = (sentence) => {
     return MaybeT.of(sentence)

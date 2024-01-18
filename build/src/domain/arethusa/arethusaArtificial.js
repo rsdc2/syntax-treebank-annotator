@@ -101,10 +101,10 @@ ArethusaArtificial.toTreeToken = (w) => {
     return {
         form: ArethusaArtificial
             .form(w)
-            .fromMaybe("[None]"),
+            .fromMaybe(""),
         leiden: ArethusaArtificial
             .form(w)
-            .fromMaybe("[None]"),
+            .fromMaybe(""),
         headId: ArethusaArtificial
             .head(w)
             .bind(Str.toMaybeNum)

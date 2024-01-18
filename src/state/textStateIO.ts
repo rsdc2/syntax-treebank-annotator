@@ -903,12 +903,12 @@ class TextStateIO {
         const treeState = this.currentSentence.isNothing ? 
             MaybeT.of(TreeState.of
                     (0) 
-                    ("1") 
+                    ("1", "unknown", "") 
                     ([]) 
                     ([]) 
                     (ClickState.none())
             ) :
-            this.currentSentence.bind(treeStateFunc)
+            this.currentSentence.fmap(treeStateFunc)
 
         // Convert wordId to treeNodeId
         const getTreeNodeId = this

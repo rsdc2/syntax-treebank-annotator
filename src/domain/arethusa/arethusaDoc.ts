@@ -29,9 +29,14 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
     }
 
     static appendSentence = (a: ArethusaDoc) => {
+        const lang = ArethusaDoc.lastSentence(a)
+                                .bind(ArethusaSentence.lang)
+                                .fromMaybe("")
+
         return ArethusaDoc
             .appendSentenceWithId 
-                (ArethusaDoc.newNextSentenceId(a)) 
+                (ArethusaDoc.newNextSentenceId(a), "") 
+                (lang)
                 (a)
     }
 
@@ -56,13 +61,14 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
     }
 
     static appendSentenceWithId = 
-        (sentenceId: string) => 
+        (sentenceId: string, notes: string) => 
+        (lang: string) =>
         (a: ArethusaDoc) => 
     {
-        const id = {"id": sentenceId}
+        const attrs = {"id": sentenceId, "xml:lang": lang, "notes": notes}
         const sentenceElement = a
             .docCopy
-            .fmap(XML.createElement("sentence")(id))
+            .fmap(XML.createElement("sentence")(attrs))
 
         const appendSentence = sentenceElement
             .fmap(XML.appendChildToNode)
@@ -76,7 +82,7 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
             .bind(ArethusaDoc.fromNode)
     }
 
-    static appendSentenceFromPlainTextStr = (s: string) => (a: ArethusaDoc) => {
+    static appendSentenceFromPlainTextStr = (lang: string) => (s: string) => (a: ArethusaDoc) => {
         const sentence = ArethusaDoc
             .appendSentence(a)
             .bind(ArethusaDoc.lastSentence)
@@ -266,10 +272,14 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
         (a: ArethusaDoc) => 
     {
 
-        const id = {"id": Str.increment(refSentenceId)}
+        const lang = ArethusaDoc.sentenceById(refSentenceId)(a)
+                                .bind(ArethusaSentence.lang)
+                                .fromMaybe("")
+        const attrs = {"id": Str.increment(refSentenceId), "notes": "", "xml:lang": lang}
+
         const sentenceElement = a
             .docCopy
-            .fmap(XML.createElement("sentence")(id))
+            .fmap(XML.createElement("sentence")(attrs))
 
         const insertSentence = sentenceElement
             .fmap(insertFunc)

@@ -4,7 +4,7 @@
 var _a;
 class TreeStateIO {
     addSentStateFromNodes(nodes, update) {
-        const newSentState = new TreeState(this.currentSentStateIdx + 1, this.currentTreeState._sentence_id, [], nodes, this.currentTreeState.clickState);
+        const newSentState = new TreeState(this.currentSentStateIdx + 1, this.currentTreeState._sentence_id, this.currentTreeState._lang, this.currentTreeState._notes, [], nodes, this.currentTreeState.clickState);
         this.push(newSentState)(false)(update);
     }
     get arethusaSentence() {
@@ -128,7 +128,7 @@ class TreeStateIO {
             .unshift(Obj.deepcopy(sentState._tokens), Constants.rootToken);
         const nodes = TreeNode
             .tokensToTreeNodes(tokensWithRoot);
-        const newSentState = new TreeState(sentState._state_id, sentState._sentence_id, tokensWithRoot, nodes, sentState._clickState);
+        const newSentState = new TreeState(sentState._state_id, sentState._sentence_id, sentState._lang, sentState._notes, tokensWithRoot, nodes, sentState._clickState);
         this._treeState = newSentState;
         this.currentSentStateIdx = 0;
     }
@@ -152,7 +152,7 @@ class TreeStateIO {
         return this.currentTreeState.nodes;
     }
     replaceSentStateFromNodes(nodes, update, idx) {
-        const newSentState = new TreeState(this.currentSentStateIdx + 1, this.currentTreeState._sentence_id, [], nodes, this.currentTreeState.clickState);
+        const newSentState = new TreeState(this.currentSentStateIdx + 1, this.currentTreeState._sentence_id, this.currentTreeState._lang, this.currentTreeState._notes, [], nodes, this.currentTreeState.clickState);
         this.replace(newSentState, update, idx);
     }
     get slashes() {
@@ -330,7 +330,7 @@ TreeStateIO.removeSlashBySlashIdFromTreeNodeIds = (slashId) => (state) => {
     node.fmap(state.changeNode);
 };
 TreeStateIO.replaceSentStateFromNodes = (nodes, update, idx) => (state) => {
-    const newSentState = new TreeState(state.currentSentStateIdx + 1, state.currentTreeState._sentence_id, [], nodes, state.currentTreeState.clickState);
+    const newSentState = new TreeState(state.currentSentStateIdx + 1, state.currentTreeState._sentence_id, state.currentTreeState._lang, state.currentTreeState._notes, [], nodes, state.currentTreeState.clickState);
     state.replace(newSentState, update, idx);
 };
 TreeStateIO.undo = (state) => {

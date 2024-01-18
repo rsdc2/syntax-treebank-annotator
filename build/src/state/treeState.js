@@ -2,7 +2,7 @@
  * Holds all information pertinent to a given tree representation.
  */
 class TreeState {
-    constructor(state_id, sentence_id, tokens, nodes, clickState) {
+    constructor(state_id, sentence_id, lang, notes, tokens, nodes, clickState) {
         this._clickState = ClickState.of(Nothing.of())(TreeLabelType.Unknown)(ClickType.Unknown);
         this.nodeByTokenId = (depIdx) => {
             return TreeState.nodeByTokenId(depIdx)(this);
@@ -31,6 +31,8 @@ class TreeState {
         };
         this._state_id = state_id;
         this._sentence_id = sentence_id;
+        this._lang = lang;
+        this._notes = notes;
         this._tokens = tokens;
         this._nodes = nodes;
         this._clickState = clickState;
@@ -89,7 +91,7 @@ TreeState.setClickState = (value) => (treeState) => {
     treeState.clickState = value;
 };
 TreeState.deepcopy = (t) => {
-    return TreeState.of(t._state_id)(t._sentence_id)(Obj.deepcopy(t._tokens))(Obj.deepcopy(t._nodes))(ClickState.of(t._clickState._lastClickedTreeNodeId)(t._clickState._elementType)(t._clickState._clickType));
+    return TreeState.of(t._state_id)(t._sentence_id, t._lang, t._notes)(Obj.deepcopy(t._tokens))(Obj.deepcopy(t._nodes))(ClickState.of(t._clickState._lastClickedTreeNodeId)(t._clickState._elementType)(t._clickState._clickType));
 };
 TreeState.nodeByTokenId = (tokenId) => (sentState) => {
     return TreeNode.nodeByTokenId(tokenId)(sentState.nodes);
@@ -117,19 +119,19 @@ TreeState.nodeRelation = (depIdx) => (sentState) => {
         .nodeByTreeNodeId(depIdx)(sentState)
         .fmap(TreeNode.relation);
 };
-TreeState.of = (stateId) => (sentenceId) => (tokens) => (nodes) => (clickState) => {
-    return new TreeState(stateId, sentenceId, tokens, nodes, clickState);
+TreeState.of = (stateId) => (sentenceId, lang, notes) => (tokens) => (nodes) => (clickState) => {
+    return new TreeState(stateId, sentenceId, notes, lang, tokens, nodes, clickState);
 };
-TreeState.ofTokens = (sentence_id) => (tokens) => {
+TreeState.ofTokens = (sentence_id, lang, notes) => (tokens) => {
     const nodes = tokens
         .map(TreeNode.tokenToTreeNode);
     return new TreeState(globalState
         .treeStateIO
         .fmap(TreeStateIO.currentStateId)
         .fmap(Num.add(1))
-        .fromMaybe(0), sentence_id, tokens, nodes, ClickState.none());
+        .fromMaybe(0), sentence_id, lang, notes, tokens, nodes, ClickState.none());
 };
-TreeState.ofTokensWithExistingNodes = (nodes) => (sentence_id) => (tokens) => {
+TreeState.ofTokensWithExistingNodes = (nodes) => (sentence_id, lang, notes) => (tokens) => {
     const tokensWithRoot = Arr
         .unshift(Obj.deepcopy(tokens), Constants.rootToken);
     const _nodes = tokensWithRoot
@@ -138,7 +140,7 @@ TreeState.ofTokensWithExistingNodes = (nodes) => (sentence_id) => (tokens) => {
         .treeStateIO
         .fmap(TreeStateIO.currentStateId)
         .fmap(Num.add(1))
-        .fromMaybe(0), sentence_id, tokens, _nodes, ClickState.none());
+        .fromMaybe(0), sentence_id, lang, notes, tokens, _nodes, ClickState.none());
 };
 TreeState.tokenIdToTreeNodeId = (tokenId) => (treeState) => {
     return treeState
@@ -149,7 +151,7 @@ TreeState.toArethusaSentenceXMLStr = (s) => {
     const xmlWords = s
         .nodesNoRoot
         .map(TreeNode.toArethusaWordXMLStr);
-    return `<sentence id="${s._sentence_id}">`
+    return `<sentence id="${s._sentence_id}" notes="${s._notes}" xml:lang="${s._lang}">`
         .concat(...xmlWords)
         .concat(`</sentence>`);
 };
