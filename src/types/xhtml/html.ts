@@ -80,6 +80,14 @@ namespace HTML {
             return getAttr("hidden")(elem)
         }
 
+        /**
+         * Remove an element from the DOM. Cf. https://developer.mozilla.org/en-US/docs/Web/API/Element/remove
+         * @param elem Element
+         */
+        export const remove = (elem: Element) => {
+            elem.remove()
+        }
+
         export const removeAttr = (qualifiedName: string) => (elem: Element) => {
             elem.removeAttribute(qualifiedName)
             return elem

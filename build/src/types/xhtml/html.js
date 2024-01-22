@@ -56,6 +56,13 @@ var HTML;
         Elem.getHidden = (elem) => {
             return Elem.getAttr("hidden")(elem);
         };
+        /**
+         * Remove an element from the DOM. Cf. https://developer.mozilla.org/en-US/docs/Web/API/Element/remove
+         * @param elem Element
+         */
+        Elem.remove = (elem) => {
+            elem.remove();
+        };
         Elem.removeAttr = (qualifiedName) => (elem) => {
             elem.removeAttribute(qualifiedName);
             return elem;

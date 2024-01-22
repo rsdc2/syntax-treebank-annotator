@@ -17,10 +17,10 @@ namespace FileHandling {
 
         HTML.Elem
             .create('a')
-            .fmap(HTML.Elem.setAttr("style")("display: none"))
             .applyFmap(setUrl)
             .fmap(HTML.Elem.setAttr("download")(`${filename}.xml`))
             .fmap(HTML.Elem.click)
+            .fmap(HTML.Elem.remove)
       
         url.fmap(HTML.URL.revokeObjectURL);
     }
@@ -38,6 +38,7 @@ namespace FileHandling {
             .fmapErr("Error", HTML.Elem.setAttr('accept')(fileFormat))
             .fmap(setOnChangeFunc)
             .fmapErr("Error", HTML.Elem.click)
+            .fmap(HTML.Elem.remove)
     }
 
     export namespace TextFile {

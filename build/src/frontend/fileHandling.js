@@ -11,10 +11,10 @@ var FileHandling;
         const setUrl = url.fmap(HTML.Elem.setAttr("href"));
         HTML.Elem
             .create('a')
-            .fmap(HTML.Elem.setAttr("style")("display: none"))
             .applyFmap(setUrl)
             .fmap(HTML.Elem.setAttr("download")(`${filename}.xml`))
-            .fmap(HTML.Elem.click);
+            .fmap(HTML.Elem.click)
+            .fmap(HTML.Elem.remove);
         url.fmap(HTML.URL.revokeObjectURL);
     };
     FileHandling.loadFromDialog = (fileFormat) => (callback) => {
@@ -25,7 +25,8 @@ var FileHandling;
             .fmapErr("Error", HTML.Elem.setAttr('type')('file'))
             .fmapErr("Error", HTML.Elem.setAttr('accept')(fileFormat))
             .fmap(setOnChangeFunc)
-            .fmapErr("Error", HTML.Elem.click);
+            .fmapErr("Error", HTML.Elem.click)
+            .fmap(HTML.Elem.remove);
     };
     let TextFile;
     (function (TextFile) {
