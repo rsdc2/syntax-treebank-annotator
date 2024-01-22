@@ -42,6 +42,7 @@ var HTML;
     (function (Elem) {
         Elem.click = (elem) => {
             elem.click();
+            return elem;
         };
         Elem.classList = (elem) => {
             return elem.classList;

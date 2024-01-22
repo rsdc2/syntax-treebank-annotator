@@ -61,6 +61,7 @@ namespace HTML {
 
         export const click = (elem: HTMLElement) => {
             elem.click();
+            return elem;
         }
 
         export const classList = (elem: Element) => {
