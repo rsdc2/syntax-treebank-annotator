@@ -459,12 +459,14 @@ class Frontend {
             Frontend.processArethusa(arethusaUglifiedExample)
         }
 
-        const downloadArethusaBtn = (e: Event) => {
-            Frontend.downloadArethusa()
-        }
-
         const loadArethusaBtnFunc = (e: Event) => {
            FileHandling.loadFromDialog('.xml')(MaybeT.of(Frontend.processArethusa))
+        }
+
+        const loadEpiDocBtnFunc = (e: Event) => {
+            FileHandling.loadFromDialog
+                      ('.xml')
+                      (MaybeT.of(Frontend.processEpiDoc))
         }
 
         const loadTextBtnFunc = (e: Event) => {
@@ -623,12 +625,40 @@ class Frontend {
             .fmap(HTML.Elem.setOnClickFunc(arethusaExampleBtnFunc))
 
         Frontend
+            .buttonById("FormatInputArethusa")
+            .fmap(HTML.Elem.setOnClickFunc(Frontend.formatInputArethusa))
+
+        Frontend
+            .buttonById("FormatInputEpiDoc")
+            .fmap(HTML.Elem.setOnClickFunc(Frontend.formatInputEpiDoc))
+
+        Frontend
             .loadArethusaBtn
             .fmap(HTML.Elem.setOnClickFunc(loadArethusaBtnFunc))
 
         Frontend
+            .buttonById("loadEpiDocFile")
+            .fmap(HTML.Elem.setOnClickFunc(loadEpiDocBtnFunc))
+        
+        Frontend
             .loadTextBtn
             .fmap(HTML.Elem.setOnClickFunc(loadTextBtnFunc))
+
+        Frontend
+            .buttonById("MoveGraphDown")
+            .fmap(HTML.Elem.setOnClickFunc( () => TreeStateIO.moveGraph(SVG.ViewBox.incrMinY) ))
+
+        Frontend
+            .buttonById("MoveGraphLeft")
+            .fmap(HTML.Elem.setOnClickFunc( () => TreeStateIO.moveGraph(SVG.ViewBox.decrMinX) ))
+
+        Frontend
+            .buttonById("MoveGraphRight")
+            .fmap(HTML.Elem.setOnClickFunc( () => TreeStateIO.moveGraph(SVG.ViewBox.incrMinX) ))
+
+        Frontend
+            .buttonById("MoveGraphUp")
+            .fmap(HTML.Elem.setOnClickFunc( () => TreeStateIO.moveGraph(SVG.ViewBox.decrMinY) ))
 
         Frontend
             .undoBtn
@@ -703,6 +733,28 @@ class Frontend {
         Frontend
             .epidocInputShowBtn
             .fmap(HTML.Elem.setOnClickFunc(Frontend.toggleShowInputEpiDoc))
+
+        Frontend
+            .buttonById("ToggleShowInput")
+            .fmap(HTML.Elem.setOnClickFunc(Frontend.toggleShowInput))
+
+        Frontend
+            .buttonById("ToggleShowInputText")
+            .fmap(HTML.Elem.setOnClickFunc(Frontend.toggleShowInputText))
+
+        Frontend
+            .buttonById("ToggleShowOutputArethusa")
+            .fmap(HTML.Elem.setOnClickFunc(Frontend.toggleShowOutputArethusa))
+
+        Frontend
+            .buttonById("ZoomIn")
+            .fmap(HTML.Elem.setOnClickFunc( () => TreeStateIO.moveGraph(SVG.ViewBox.zoomIn) ))
+
+        Frontend
+            .buttonById("ZoomOut")
+            .fmap(HTML.Elem.setOnClickFunc( () => TreeStateIO.moveGraph(SVG.ViewBox.zoomOut) ))
+
+
     }
 
     static get splitSentenceBtn() {

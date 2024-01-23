@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://d3js.org 'sha256-AsBing+OROn4oj79i1McYY1lPcuhBPrT15PfKUjuHIY='" />
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://d3js.org" />
 
     <link rel="stylesheet" href="styles/styles.css" />
     <link rel="stylesheet" href="styles/sections.css" />
@@ -19,39 +19,13 @@
       <div class="divided left">
         <div class="top toolbar">
           <ul class="top toolbar">
-            <li>
-              <button id="UndoTextEdit">Undo</button>
-            </li>
-            <li>
-              <button id="RedoTextEdit">Redo</button>
-            </li>
-            <li>
-              <button
-                class="toggle active"
-                id="ToggleShowInput"
-                onclick="Frontend.toggleShowInput()"
-              >
-                View Input
-              </button>
-            </li>
-            <li>
-              <button
-                class="toggle active"
-                id="ToggleShowOutputArethusa"
-                onclick="Frontend.toggleShowOutputArethusa()"
-              >
-                View Output XML
-              </button>
-            </li>
-            <li>
-              <button class="toggle" id="btnAbout">About</button>
-            </li>
-            <li>
-              <button id="PrevSentence">←</button>
-            </li>
-            <li>
-              <button id="NextSentence">→</button>
-            </li>  
+            <li><button id="UndoTextEdit">Undo</button></li>
+            <li><button id="RedoTextEdit">Redo</button></li>
+            <li><button class="toggle active" id="ToggleShowInput">View Input</button></li>
+            <li><button class="toggle active" id="ToggleShowOutputArethusa">View Output XML</button></li>
+            <li><button class="toggle" id="btnAbout">About</button></li>
+            <li><button id="PrevSentence">←</button></li>
+            <li><button id="NextSentence">→</button></li>  
 
             <!-- <li>
               <button id="Download EpiDoc" onclick="Frontend.downloadEpiDoc()">
@@ -87,15 +61,7 @@
         <div class="input" id="InputDiv">
           <div class="input toolbar">
             <ul class="relative input toolbar">
-              <li>
-                <button
-                  class="toggle active"
-                  id="ToggleShowInputText"
-                  onclick="Frontend.toggleShowInputText()"
-                >
-                  Plain Text
-                </button>
-              </li>
+              <li><button class="toggle active" id="ToggleShowInputText">Plain Text</button></li>
               <li>
                 <button
                   class="toggle"
@@ -152,10 +118,7 @@
                   <button id="DrawTreeEpiDoc">Render</button>
                 </li>
                 <li>
-                  <button
-                    id="FormatInputEpiDoc"
-                    onclick="Frontend.formatInputEpiDoc()"
-                  >
+                  <button id="FormatInputEpiDoc">
                     Prettyprint XML and Render
                   </button>
                 </li>
@@ -163,14 +126,7 @@
                   <button id="ExampleEpiDoc">Example</button>
                 </li>
                 <li>
-                  <button
-                    id="loadEpiDocFile"
-                    onclick="FileHandling.loadFromDialog
-                      ('.xml')
-                      (MaybeT.of(Frontend.processEpiDoc))"
-                  >
-                    Load
-                  </button>
+                  <button id="loadEpiDocFile">Load</button>
                 </li>
               </ul>
             </div>
@@ -190,10 +146,7 @@
                   <button id="DrawTreeArethusa">Render</button>
                 </li>
                 <li>
-                  <button
-                    id="FormatInputArethusa"
-                    onclick="Frontend.formatInputArethusa()"
-                  >
+                  <button id="FormatInputArethusa">
                     Prettyprint XML and Render
                   </button>
                 </li>
@@ -274,50 +227,12 @@
       <div class="divided right">
         <div class="tree toolbar">
           <ul class="tree toolbar">
-            <li>
-              <button
-                id="MoveGraphUp"
-                onclick="TreeStateIO.moveGraph(SVG.ViewBox.decrMinY)"
-              >
-                Up
-              </button>
-            </li>
-            <li>
-              <button
-                id="MoveGraphDown"
-                onclick="TreeStateIO.moveGraph(SVG.ViewBox.incrMinY)"
-              >
-                Down
-              </button>
-            </li>
-            <li>
-              <button
-                id="MoveGraphLeft"
-                onclick="TreeStateIO.moveGraph(SVG.ViewBox.decrMinX)"
-              >
-                Left
-              </button>
-            </li>
-            <li>
-              <button
-                id="MoveGraphRight"
-                onclick="TreeStateIO.moveGraph(SVG.ViewBox.incrMinX)"
-              >
-                Right
-              </button>
-            </li>
-            <li>
-              <button id="ZoomIn" onclick="TreeStateIO.moveGraph(SVG.ViewBox.zoomIn)">
-                Zoom In
-              </button>
-            </li>
-            <li>
-              <button
-                id="ZoomOut"
-                onclick="TreeStateIO.moveGraph(SVG.ViewBox.zoomOut)"
-              >
-                Zoom Out
-              </button>
+            <li><button id="MoveGraphUp">Up</button></li>
+            <li><button id="MoveGraphDown">Down</button></li>
+            <li><button id="MoveGraphLeft">Left</button></li>
+            <li><button id="MoveGraphRight">Right</button></li>
+            <li><button id="ZoomIn">Zoom In</button></li>
+            <li><button id="ZoomOut">Zoom Out</button>
             </li>
           </ul>
         </div>
