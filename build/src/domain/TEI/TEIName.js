@@ -1,4 +1,6 @@
 class TEIName {
+    _node;
+    _element;
     constructor(node) {
         this._node = node;
         this._element = DOM.Node_.element(node).fromMaybeErr();
@@ -6,6 +8,12 @@ class TEIName {
     get attrs() {
         return DOM.Elem.attributes(this._element);
     }
+    static getLeidenText = (token) => {
+        return token.leidenText;
+    };
+    static getNormalizedText = (token) => {
+        return token.normalizedText;
+    };
     get leidenText() {
         return TEIToken.getLeidenText(this);
     }
@@ -34,9 +42,3 @@ class TEIName {
         return Edition.xpathAddress + "[self::t:name]";
     }
 }
-TEIName.getLeidenText = (token) => {
-    return token.leidenText;
-};
-TEIName.getNormalizedText = (token) => {
-    return token.normalizedText;
-};

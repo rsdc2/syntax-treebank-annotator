@@ -20,6 +20,8 @@ class HasTokensT {
     }
 }
 class Word {
+    _node;
+    _element;
     constructor(node) {
         this._node = node;
         this._element = DOM.Node_.element(this._node).fromMaybeErr();
@@ -38,6 +40,8 @@ class Word {
     }
 }
 class Multiword {
+    _node;
+    _element;
     constructor(node) {
         this._node = node;
         this._element = DOM.Node_.element(this._node).fromMaybeErr();
@@ -125,6 +129,21 @@ class XML {
         }
         return _appendChild;
     }
+    static appendChildToNode = (child) => (parent) => {
+        return XML._appendNodeChild(parent, child);
+    };
+    static prependChildToNode = (child) => (parent) => {
+        // NB! Insert before deep copies the child
+        parent.firstChild === null ?
+            XML.appendChildToNode(child)(parent) :
+            XML.insertBefore(child)(parent.firstChild);
+        return parent;
+    };
+    static appendChildrenToNode = (children) => (parent) => {
+        return children.reduce((acc, sentNode) => {
+            return acc.bind(XML.appendChildToNode(sentNode));
+        }, MaybeT.of(parent));
+    };
     static _appendNodeText(node, s) {
         const textelem = MaybeT.of(node.ownerDocument)
             .fmap(XML.createTextElementFromDoc(s));
@@ -142,6 +161,9 @@ class XML {
         }
         return _appendChild;
     }
+    static attr = (attrName) => (node) => {
+        return MaybeT.of(XML.attrs(node)[attrName]);
+    };
     static attrs(node) {
         return XML
             .xpathMaybeC("attribute::*")(MaybeT.of(node))
@@ -157,6 +179,36 @@ class XML {
         }
         return _attr;
     }
+    static childById = (id) => (parent) => {
+        const children = XML.xpathMaybeC(`child::*[@id="${id}"]`)(MaybeT.of(parent));
+        return children.bind(Arr.head);
+    };
+    static childNodes = (node) => {
+        let _nodes = [];
+        node.childNodes.forEach((node) => {
+            _nodes.push(node);
+        });
+        return _nodes;
+    };
+    static childNodesByTagName = (tagName) => (node) => {
+        let _nodes = [];
+        node.childNodes.forEach((node) => {
+            if (node.nodeName === tagName) {
+                _nodes.push(node);
+            }
+        });
+        return _nodes;
+    };
+    static concatText = (textNodes) => {
+        return textNodes.map(XML.textContent).join("");
+    };
+    static createElement = (elementName) => (attrs) => (xmldoc) => {
+        const e = xmldoc.createElement(elementName);
+        Object.keys(attrs).forEach(k => {
+            e.setAttribute(k, attrs[k]);
+        });
+        return e;
+    };
     static createTextElementFromDoc(text) {
         function _createElement(xmldoc) {
             return xmldoc.createTextNode(text);
@@ -186,6 +238,10 @@ class XML {
         }
         return _getParent(MaybeT.of(node), 0);
     }
+    static descendantById = (id) => (node) => {
+        return XML.xpathMaybeC(`descendant::*[@id="${id}"]`)(MaybeT.of(node))
+            .bind(Arr.head);
+    };
     static descendants(node) {
         return XML.xpathMaybeC('descendant::*')(MaybeT.of(node));
     }
@@ -207,10 +263,30 @@ class XML {
     static firstDocChild(doc) {
         return MaybeT.of(doc.firstChild);
     }
+    static followingTextNodesWithAncestorByAncestorId = (ancestorName) => (attrName) => (attrVal) => (node) => {
+        return XML.xpathMaybeC(`following::text()[ancestor::${ancestorName}[@${attrName}="${attrVal}"]]`)(MaybeT.of(node))
+            .fromMaybe([]);
+    };
+    static followingTextNodesWithAncestorByAncestorName = (ancestorName) => (node) => {
+        return XML.xpathMaybeC(`following::text()[ancestor::${ancestorName}]`)(MaybeT.of(node))
+            .fromMaybe([]);
+    };
     static fromXMLStr(xml) {
         return new DOMParser()
             .parseFromString(xml, "text/xml");
     }
+    static getAttrVal = (namespace) => (localName) => (token) => {
+        const attrs = token.attrs;
+        return DOM.NamedNodeMap
+            .getNamedItemNS(namespace, localName, attrs)
+            .fmap(DOM.Attr.value);
+    };
+    static hasAncestor = (tagName) => (node) => {
+        const ancestors = XML
+            .xpath(`ancestor::t:${tagName}`)(node)
+            .fromMaybe([]);
+        return ancestors.length > 0;
+    };
     static hasAttr(attr) {
         function _hasAttr(node) {
             const attributes = XML.xpathMaybeC(`attribute::${attr}`)(MaybeT.of(node)).fromMaybe([]);
@@ -238,12 +314,35 @@ class XML {
         }
         return __insertBefore;
     }
+    static insertBefore = (nodeToInsert) => (refNode) => {
+        function _insertBefore(parentNode) {
+            const _nodeToInsert = XML.deepcopy(nodeToInsert);
+            const insertNewNode = MaybeT.of(refNode)
+                .fmap(XML._insertBefore(_nodeToInsert));
+            const insertedNode = parentNode
+                .applyFmap(insertNewNode);
+            return insertedNode
+                .bind(XML.parent);
+        }
+        const _parentNode = MaybeT.of(refNode).bind(XML.parent);
+        return _insertBefore(_parentNode);
+    };
+    static insertAfter = (nodeToInsert) => (refNode) => {
+        const _refNode = MaybeT.of(refNode.nextSibling);
+        const parentNode = MaybeT.of(refNode).bind(XML.parent);
+        // Need to get the value out of _refNode because 
+        // if the reference node is null, the method
+        // .insertBefore automatically inserts the node last
+        // see https://stackoverflow.com/questions/4793604/how-to-insert-an-element-after-another-element-in-javascript-without-using-a-lib
+        const insertNewNode = XML._insertBefore(nodeToInsert)(_refNode.value);
+        const insertedNode = parentNode.fmap(insertNewNode);
+        return insertedNode.bind(XML.parent);
+    };
     static isDocument(node) {
         return node.nodeName === "#document";
     }
     static isParseError(doc) {
-        var _a;
-        return ((_a = doc.firstChild) === null || _a === void 0 ? void 0 : _a.nodeName) === "html";
+        return doc.firstChild?.nodeName === "html";
     }
     static isRoot(node) {
         return node === node.getRootNode();
@@ -256,6 +355,15 @@ class XML {
     static lastChild(node) {
         return MaybeT.of(node.lastChild);
     }
+    static next = (node) => {
+        return (XML.xpathMaybeC("following::*")(MaybeT.of(node)).fromMaybe([]));
+    };
+    static nextNode = (node) => {
+        return (XML.xpathMaybeC("following::node()")(MaybeT.of(node)).fromMaybe([]));
+    };
+    static nextSibling = (node) => {
+        return Arr.head(XML.xpathMaybeC("following-sibling::*")(MaybeT.of(node)).fromMaybe([]));
+    };
     static nextSiblingElements(node) {
         return XML.xpathMaybeC('following-sibling::*')(MaybeT.of(node));
     }
@@ -279,6 +387,12 @@ class XML {
     static ownerDocument(node) {
         return MaybeT.of(node.ownerDocument);
     }
+    static ownerDocumentOfNodeOrDoc = (nodeOrDoc) => {
+        const doc = XML.isDocument(nodeOrDoc) ?
+            nodeOrDoc :
+            nodeOrDoc.ownerDocument;
+        return MaybeT.of(doc);
+    };
     static parent(n) {
         return MaybeT.of(n.parentNode);
     }
@@ -291,16 +405,87 @@ class XML {
         }
         return _parents([], MaybeT.of(node.parentNode));
     }
+    static previous = (node) => {
+        return (XML.xpathMaybeC("preceding::*")(MaybeT.of(node)).fromMaybe([]));
+    };
+    static previousNode = (node) => {
+        return (XML.xpathMaybeC("preceding::node()")(MaybeT.of(node)).fromMaybe([]));
+    };
+    static previousSibling = (node) => {
+        const sib = Arr.last(XML.xpathMaybeC("preceding-sibling::*")(MaybeT.of(node)).fromMaybe([]));
+        return sib;
+    };
+    static previousSiblings = (node) => {
+        return (XML.xpathMaybeC("preceding-sibling::*")(MaybeT.of(node)).fromMaybe([]));
+    };
     static previousSiblingTextNodes(node) {
         return XML.xpathMaybeC('preceding-sibling::text()')(MaybeT.of(node))
             .fromMaybe([]);
     }
+    static previousTextNodes = (node) => {
+        return XML.xpathMaybeC("preceding::text()")(MaybeT.of(node))
+            .fromMaybe([]);
+    };
+    static previousTextNodesWithAncestorByAncestorId = (ancestorName) => (attrName) => (attrVal) => (node) => {
+        return XML.xpathMaybeC(`preceding::text()[ancestor::${ancestorName}[@${attrName}="${attrVal}"]]`)(MaybeT.of(node))
+            .fromMaybe([]);
+    };
+    static precedingTextNodesWithAncestorByAncestorName = (ancestorName) => (node) => {
+        return XML.xpathMaybeC(`preceding::text()[ancestor::${ancestorName}]`)(MaybeT.of(node))
+            .fromMaybe([]);
+    };
+    static buildRegExp = (genericTagRegExp) => (tagName) => {
+        return new RegExp(genericTagRegExp.replace("{name}", tagName), "g");
+    };
+    static removeChild = (child) => (parent) => {
+        parent.removeChild(child);
+        return parent;
+    };
+    static removeChildById = (childId) => (parent) => {
+        const child = XML.childById(childId)(parent);
+        const removeChild = child.fmap(XML.removeChild);
+        MaybeT.of(parent).applyFmap(removeChild);
+        return MaybeT.of(parent);
+    };
+    static replaceText = (pattern) => (newText) => (textElem) => {
+        textElem.textContent = MaybeT.of(textElem.textContent)
+            .fmap(Str.replace(pattern)(newText))
+            .unpack(textElem.textContent);
+        return textElem;
+    };
+    static stripText = (textElem) => {
+        textElem.textContent = MaybeT.of(textElem.textContent)
+            .fmap(Str.replace(/^[\s]+$/g)(""))
+            .unpack(textElem.textContent);
+        return textElem;
+    };
     static root(node) {
         return node.getRootNode();
     }
     static get tagFragNames() {
         return Object.keys(XMLTagFragRegExps);
     }
+    static otherTagFragments = (tagFragmentName) => {
+        const tagIdx = MaybeT.ofNonNeg(XML.tagFragNames.findIndex((x) => x === tagFragmentName));
+        return tagIdx
+            .fmap(Arr.removeByIdx(XML.tagFragNames))
+            .fromMaybe([]);
+    };
+    static setAttr = (attrName) => (attrVal) => (n) => {
+        n.setAttribute(attrName, attrVal);
+        return n;
+    };
+    static setId = (id) => (n) => {
+        return XML.setAttr("id")(id)(n);
+    };
+    static tagNameFromTagStr = (tagStr) => {
+        return Arr.head(Str.matches(XMLTagRegExps.tagWithNameGroup)(tagStr))
+            .fmap(RegexMatchT.groups)
+            .bind(Arr.head);
+    };
+    static textContent = (text) => {
+        return MaybeT.of(text.textContent);
+    };
     static toStr(root) {
         return new XMLSerializer().serializeToString(root);
     }
@@ -312,6 +497,23 @@ class XML {
         }
         return _xpath;
     }
+    static xpathMaybe = (xpathstr) => (xmldoc) => {
+        return xmldoc
+            .bind(XML.xpathEval(xpathstr))
+            .fmap(XML.xpathResultToNodeArr);
+    };
+    static xpath = (xpathstr) => (node) => {
+        return MaybeT.of(node)
+            .bind(XML.xpathEval(xpathstr))
+            .fmap(XML.xpathResultToNodeArr);
+    };
+    static xpathEval = (xpathstr) => (nodeOrDoc) => {
+        return XML.ownerDocumentOfNodeOrDoc(nodeOrDoc)
+            .fmap(XML._xpathEval(xpathstr)(nodeOrDoc));
+    };
+    static _xpathEval = (xpathstr) => (nodeOrDoc) => (owner) => {
+        return owner.evaluate(xpathstr, nodeOrDoc, XML.nsResolver, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+    };
     static xpathResultToNodeArr(xpathResult) {
         let results = [];
         const length = xpathResult.snapshotLength;
@@ -327,202 +529,3 @@ class XML {
         return results;
     }
 }
-XML.appendChildToNode = (child) => (parent) => {
-    return XML._appendNodeChild(parent, child);
-};
-XML.prependChildToNode = (child) => (parent) => {
-    // NB! Insert before deep copies the child
-    parent.firstChild === null ?
-        XML.appendChildToNode(child)(parent) :
-        XML.insertBefore(child)(parent.firstChild);
-    return parent;
-};
-XML.appendChildrenToNode = (children) => (parent) => {
-    return children.reduce((acc, sentNode) => {
-        return acc.bind(XML.appendChildToNode(sentNode));
-    }, MaybeT.of(parent));
-};
-XML.attr = (attrName) => (node) => {
-    return MaybeT.of(XML.attrs(node)[attrName]);
-};
-XML.childById = (id) => (parent) => {
-    const children = XML.xpathMaybeC(`child::*[@id="${id}"]`)(MaybeT.of(parent));
-    return children.bind(Arr.head);
-};
-XML.childNodes = (node) => {
-    let _nodes = [];
-    node.childNodes.forEach((node) => {
-        _nodes.push(node);
-    });
-    return _nodes;
-};
-XML.childNodesByTagName = (tagName) => (node) => {
-    let _nodes = [];
-    node.childNodes.forEach((node) => {
-        if (node.nodeName === tagName) {
-            _nodes.push(node);
-        }
-    });
-    return _nodes;
-};
-XML.concatText = (textNodes) => {
-    return textNodes.map(XML.textContent).join("");
-};
-XML.createElement = (elementName) => (attrs) => (xmldoc) => {
-    const e = xmldoc.createElement(elementName);
-    Object.keys(attrs).forEach(k => {
-        e.setAttribute(k, attrs[k]);
-    });
-    return e;
-};
-XML.descendantById = (id) => (node) => {
-    return XML.xpathMaybeC(`descendant::*[@id="${id}"]`)(MaybeT.of(node))
-        .bind(Arr.head);
-};
-XML.followingTextNodesWithAncestorByAncestorId = (ancestorName) => (attrName) => (attrVal) => (node) => {
-    return XML.xpathMaybeC(`following::text()[ancestor::${ancestorName}[@${attrName}="${attrVal}"]]`)(MaybeT.of(node))
-        .fromMaybe([]);
-};
-XML.followingTextNodesWithAncestorByAncestorName = (ancestorName) => (node) => {
-    return XML.xpathMaybeC(`following::text()[ancestor::${ancestorName}]`)(MaybeT.of(node))
-        .fromMaybe([]);
-};
-XML.getAttrVal = (namespace) => (localName) => (token) => {
-    const attrs = token.attrs;
-    return DOM.NamedNodeMap
-        .getNamedItemNS(namespace, localName, attrs)
-        .fmap(DOM.Attr.value);
-};
-XML.hasAncestor = (tagName) => (node) => {
-    const ancestors = XML
-        .xpath(`ancestor::t:${tagName}`)(node)
-        .fromMaybe([]);
-    return ancestors.length > 0;
-};
-XML.insertBefore = (nodeToInsert) => (refNode) => {
-    function _insertBefore(parentNode) {
-        const _nodeToInsert = XML.deepcopy(nodeToInsert);
-        const insertNewNode = MaybeT.of(refNode)
-            .fmap(XML._insertBefore(_nodeToInsert));
-        const insertedNode = parentNode
-            .applyFmap(insertNewNode);
-        return insertedNode
-            .bind(XML.parent);
-    }
-    const _parentNode = MaybeT.of(refNode).bind(XML.parent);
-    return _insertBefore(_parentNode);
-};
-XML.insertAfter = (nodeToInsert) => (refNode) => {
-    const _refNode = MaybeT.of(refNode.nextSibling);
-    const parentNode = MaybeT.of(refNode).bind(XML.parent);
-    // Need to get the value out of _refNode because 
-    // if the reference node is null, the method
-    // .insertBefore automatically inserts the node last
-    // see https://stackoverflow.com/questions/4793604/how-to-insert-an-element-after-another-element-in-javascript-without-using-a-lib
-    const insertNewNode = XML._insertBefore(nodeToInsert)(_refNode.value);
-    const insertedNode = parentNode.fmap(insertNewNode);
-    return insertedNode.bind(XML.parent);
-};
-XML.next = (node) => {
-    return (XML.xpathMaybeC("following::*")(MaybeT.of(node)).fromMaybe([]));
-};
-XML.nextNode = (node) => {
-    return (XML.xpathMaybeC("following::node()")(MaybeT.of(node)).fromMaybe([]));
-};
-XML.nextSibling = (node) => {
-    return Arr.head(XML.xpathMaybeC("following-sibling::*")(MaybeT.of(node)).fromMaybe([]));
-};
-XML.ownerDocumentOfNodeOrDoc = (nodeOrDoc) => {
-    const doc = XML.isDocument(nodeOrDoc) ?
-        nodeOrDoc :
-        nodeOrDoc.ownerDocument;
-    return MaybeT.of(doc);
-};
-XML.previous = (node) => {
-    return (XML.xpathMaybeC("preceding::*")(MaybeT.of(node)).fromMaybe([]));
-};
-XML.previousNode = (node) => {
-    return (XML.xpathMaybeC("preceding::node()")(MaybeT.of(node)).fromMaybe([]));
-};
-XML.previousSibling = (node) => {
-    const sib = Arr.last(XML.xpathMaybeC("preceding-sibling::*")(MaybeT.of(node)).fromMaybe([]));
-    return sib;
-};
-XML.previousSiblings = (node) => {
-    return (XML.xpathMaybeC("preceding-sibling::*")(MaybeT.of(node)).fromMaybe([]));
-};
-XML.previousTextNodes = (node) => {
-    return XML.xpathMaybeC("preceding::text()")(MaybeT.of(node))
-        .fromMaybe([]);
-};
-XML.previousTextNodesWithAncestorByAncestorId = (ancestorName) => (attrName) => (attrVal) => (node) => {
-    return XML.xpathMaybeC(`preceding::text()[ancestor::${ancestorName}[@${attrName}="${attrVal}"]]`)(MaybeT.of(node))
-        .fromMaybe([]);
-};
-XML.precedingTextNodesWithAncestorByAncestorName = (ancestorName) => (node) => {
-    return XML.xpathMaybeC(`preceding::text()[ancestor::${ancestorName}]`)(MaybeT.of(node))
-        .fromMaybe([]);
-};
-XML.buildRegExp = (genericTagRegExp) => (tagName) => {
-    return new RegExp(genericTagRegExp.replace("{name}", tagName), "g");
-};
-XML.removeChild = (child) => (parent) => {
-    parent.removeChild(child);
-    return parent;
-};
-XML.removeChildById = (childId) => (parent) => {
-    const child = XML.childById(childId)(parent);
-    const removeChild = child.fmap(XML.removeChild);
-    MaybeT.of(parent).applyFmap(removeChild);
-    return MaybeT.of(parent);
-};
-XML.replaceText = (pattern) => (newText) => (textElem) => {
-    textElem.textContent = MaybeT.of(textElem.textContent)
-        .fmap(Str.replace(pattern)(newText))
-        .unpack(textElem.textContent);
-    return textElem;
-};
-XML.stripText = (textElem) => {
-    textElem.textContent = MaybeT.of(textElem.textContent)
-        .fmap(Str.replace(/^[\s]+$/g)(""))
-        .unpack(textElem.textContent);
-    return textElem;
-};
-XML.otherTagFragments = (tagFragmentName) => {
-    const tagIdx = MaybeT.ofNonNeg(XML.tagFragNames.findIndex((x) => x === tagFragmentName));
-    return tagIdx
-        .fmap(Arr.removeByIdx(XML.tagFragNames))
-        .fromMaybe([]);
-};
-XML.setAttr = (attrName) => (attrVal) => (n) => {
-    n.setAttribute(attrName, attrVal);
-    return n;
-};
-XML.setId = (id) => (n) => {
-    return XML.setAttr("id")(id)(n);
-};
-XML.tagNameFromTagStr = (tagStr) => {
-    return Arr.head(Str.matches(XMLTagRegExps.tagWithNameGroup)(tagStr))
-        .fmap(RegexMatchT.groups)
-        .bind(Arr.head);
-};
-XML.textContent = (text) => {
-    return MaybeT.of(text.textContent);
-};
-XML.xpathMaybe = (xpathstr) => (xmldoc) => {
-    return xmldoc
-        .bind(XML.xpathEval(xpathstr))
-        .fmap(XML.xpathResultToNodeArr);
-};
-XML.xpath = (xpathstr) => (node) => {
-    return MaybeT.of(node)
-        .bind(XML.xpathEval(xpathstr))
-        .fmap(XML.xpathResultToNodeArr);
-};
-XML.xpathEval = (xpathstr) => (nodeOrDoc) => {
-    return XML.ownerDocumentOfNodeOrDoc(nodeOrDoc)
-        .fmap(XML._xpathEval(xpathstr)(nodeOrDoc));
-};
-XML._xpathEval = (xpathstr) => (nodeOrDoc) => (owner) => {
-    return owner.evaluate(xpathstr, nodeOrDoc, XML.nsResolver, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-};

@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "outDir": "build",
-        "target": "ES2019",
+        "target": "ES2022",
         "skipLibCheck": false,
         "strictNullChecks": true
     },

@@ -1,4 +1,14 @@
 class XMLFormatter {
+    static deprettifyFromRoot = (deepcopy) => (node) => {
+        const _node = deepcopy ? XML.deepcopy(node.getRootNode()) : node.getRootNode();
+        XML.descendantTextNodes(_node)
+            .fromMaybe([])
+            .filter(XMLFormatter.notInXMLSpacePreserve)
+            .map(XML.replaceText(/\s{2}/g)("\t"))
+            .map(XML.replaceText(/[\n\t]/g)(""))
+            .map(XML.stripText);
+        return _node;
+    };
     static inXMLSpacePreserve(node) {
         const parents = XML.parents(node)
             .filter(XML.hasAttrVal("xml:space")("preserve"));
@@ -44,13 +54,3 @@ class XMLFormatter {
         return _prettifyFromRoot;
     }
 }
-XMLFormatter.deprettifyFromRoot = (deepcopy) => (node) => {
-    const _node = deepcopy ? XML.deepcopy(node.getRootNode()) : node.getRootNode();
-    XML.descendantTextNodes(_node)
-        .fromMaybe([])
-        .filter(XMLFormatter.notInXMLSpacePreserve)
-        .map(XML.replaceText(/\s{2}/g)("\t"))
-        .map(XML.replaceText(/[\n\t]/g)(""))
-        .map(XML.stripText);
-    return _node;
-};

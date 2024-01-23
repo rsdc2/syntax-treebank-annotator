@@ -1,8 +1,6 @@
 class ArrMaybe {
+    _array;
     constructor(array) {
-        this.removeNothings = () => {
-            return Arr.removeNothings(this._array);
-        };
         const arr = array;
     }
     get array() {
@@ -20,17 +18,26 @@ class ArrMaybe {
     defaultT(defaultVal) {
         return [...this._array].map((value) => value.value !== null && value.value !== undefined ? value.value : defaultVal);
     }
+    static of = (array) => {
+        return new ArrMaybe(array.map(MaybeT.of));
+    };
+    removeNothings = () => {
+        return Arr.removeNothings(this._array);
+    };
 }
-ArrMaybe.of = (array) => {
-    return new ArrMaybe(array.map(MaybeT.of));
-};
 class Arr {
+    static arrify = (item) => {
+        return [item];
+    };
     static byIdx(idx) {
         function _byIdx(array) {
             return MaybeT.of(array[idx]);
         }
         return _byIdx;
     }
+    static concat = (_array1) => (_array2) => {
+        return _array1.concat(_array2);
+    };
     static concatMaybe(array2) {
         function _concat(array1) {
             const reduceFunc = (acc, array2Item) => {
@@ -46,6 +53,11 @@ class Arr {
     static len(array) {
         return array.length;
     }
+    static push = (item) => (array) => {
+        const _array = [...array];
+        _array.push(item);
+        return _array;
+    };
     static range(start, end) {
         const _start = start < end ? start : end;
         const _end = start < end ? end : start;
@@ -74,6 +86,63 @@ class Arr {
         }
         return Nothing.of();
     }
+    static removeByIdx = (array) => (idx) => {
+        return apply(MaybeT.of)(array.reduce((acc, item, _idx) => {
+            if (_idx !== idx) {
+                return Arr.push(item)(acc);
+            }
+            return acc;
+        }, new Array))
+            .fromMaybe(array);
+    };
+    static removeNothingReduce = (acc, item) => {
+        if (item.value !== null) {
+            acc.push(item.value);
+            return acc;
+        }
+        else {
+            return acc;
+        }
+    };
+    static removeNothings = (array) => {
+        return array.reduce(Arr.removeNothingReduce, new Array);
+    };
+    static removeEmptyStrsReduce = (acc, item) => {
+        if (item !== "") {
+            acc.push(item);
+            return acc;
+        }
+        else {
+            return acc;
+        }
+    };
+    static removeEmptyStrs = (array) => {
+        return array.reduce(Arr.removeEmptyStrsReduce, new Array);
+    };
+    static removeByItem = (array) => (item) => {
+        return array.reduce((acc, _item) => {
+            if (_item !== item) {
+                return Arr.push(item)(acc);
+            }
+        }, new Array);
+    };
+    static replaceByIdx = (array) => (newItem) => (idx) => {
+        return apply(MaybeT.of)(array.reduce((acc, item, _idx) => {
+            if (_idx !== idx) {
+                return Arr.push(item)(acc);
+            }
+            return Arr.push(newItem)(acc);
+        }, new Array))
+            .fromMaybe(array);
+    };
+    static reverse = (array) => {
+        const copy = [...array];
+        return copy.reverse();
+    };
+    static slice = (start) => (end) => (array) => {
+        const arrayCopy = [...array];
+        return arrayCopy.slice(start, end);
+    };
     static arrFunc(funcName, arr, newElem) {
         const newArr = [...arr];
         newArr[funcName](newElem);
@@ -83,71 +152,3 @@ class Arr {
         return Arr.arrFunc(ArrayFunc.Unshift, arr, newElem);
     }
 }
-Arr.arrify = (item) => {
-    return [item];
-};
-Arr.concat = (_array1) => (_array2) => {
-    return _array1.concat(_array2);
-};
-Arr.push = (item) => (array) => {
-    const _array = [...array];
-    _array.push(item);
-    return _array;
-};
-Arr.removeByIdx = (array) => (idx) => {
-    return apply(MaybeT.of)(array.reduce((acc, item, _idx) => {
-        if (_idx !== idx) {
-            return Arr.push(item)(acc);
-        }
-        return acc;
-    }, new Array))
-        .fromMaybe(array);
-};
-Arr.removeNothingReduce = (acc, item) => {
-    if (item.value !== null) {
-        acc.push(item.value);
-        return acc;
-    }
-    else {
-        return acc;
-    }
-};
-Arr.removeNothings = (array) => {
-    return array.reduce(Arr.removeNothingReduce, new Array);
-};
-Arr.removeEmptyStrsReduce = (acc, item) => {
-    if (item !== "") {
-        acc.push(item);
-        return acc;
-    }
-    else {
-        return acc;
-    }
-};
-Arr.removeEmptyStrs = (array) => {
-    return array.reduce(Arr.removeEmptyStrsReduce, new Array);
-};
-Arr.removeByItem = (array) => (item) => {
-    return array.reduce((acc, _item) => {
-        if (_item !== item) {
-            return Arr.push(item)(acc);
-        }
-    }, new Array);
-};
-Arr.replaceByIdx = (array) => (newItem) => (idx) => {
-    return apply(MaybeT.of)(array.reduce((acc, item, _idx) => {
-        if (_idx !== idx) {
-            return Arr.push(item)(acc);
-        }
-        return Arr.push(newItem)(acc);
-    }, new Array))
-        .fromMaybe(array);
-};
-Arr.reverse = (array) => {
-    const copy = [...array];
-    return copy.reverse();
-};
-Arr.slice = (start) => (end) => (array) => {
-    const arrayCopy = [...array];
-    return arrayCopy.slice(start, end);
-};

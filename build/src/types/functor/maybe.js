@@ -1,4 +1,5 @@
 class Just {
+    _value;
     constructor(value) {
         this._value = value;
     }
@@ -67,6 +68,7 @@ class Just {
     }
 }
 class Nothing {
+    _value;
     constructor() {
         this._value = null;
     }
@@ -133,6 +135,51 @@ class Nothing {
     }
 }
 class MaybeT {
+    static comp = (x) => (f) => (y) => {
+        return y.applyFmap(x.fmap(f)).fromMaybe(false);
+    };
+    static isNearest = (direction) => (x) => (y) => {
+        return y.every((item) => {
+            return MaybeT.isNearer(direction)(x)(item);
+        });
+    };
+    static isNearer = (direction) => (x) => (y) => {
+        switch (direction) {
+            case Dir.Left: {
+                if (x.value === null && y.value === null) {
+                    return false;
+                }
+                else if (x.value !== null && y.value === null) {
+                    return true;
+                }
+                else if (x.value === null && y.value !== null) {
+                    return false;
+                }
+                else if (x.value !== null && y.value !== null && x.value > y.value) {
+                    return true;
+                }
+                return false;
+            }
+            case Dir.Right: {
+                if (x.value === null && y.value === null) {
+                    return false;
+                }
+                else if (x.value !== null && y.value === null) {
+                    return true;
+                }
+                else if (x.value === null && y.value !== null) {
+                    return false;
+                }
+                else if (x.value !== null && y.value !== null && x.value < y.value) {
+                    return true;
+                }
+                return false;
+            }
+        }
+    };
+    static isSomething = (maybe) => {
+        return maybe.isSomething;
+    };
     static of(val) {
         if (val === null || val === undefined) {
             return new Nothing();
@@ -162,48 +209,3 @@ class MaybeT {
         return val.fromMaybe([]);
     }
 }
-MaybeT.comp = (x) => (f) => (y) => {
-    return y.applyFmap(x.fmap(f)).fromMaybe(false);
-};
-MaybeT.isNearest = (direction) => (x) => (y) => {
-    return y.every((item) => {
-        return MaybeT.isNearer(direction)(x)(item);
-    });
-};
-MaybeT.isNearer = (direction) => (x) => (y) => {
-    switch (direction) {
-        case Dir.Left: {
-            if (x.value === null && y.value === null) {
-                return false;
-            }
-            else if (x.value !== null && y.value === null) {
-                return true;
-            }
-            else if (x.value === null && y.value !== null) {
-                return false;
-            }
-            else if (x.value !== null && y.value !== null && x.value > y.value) {
-                return true;
-            }
-            return false;
-        }
-        case Dir.Right: {
-            if (x.value === null && y.value === null) {
-                return false;
-            }
-            else if (x.value !== null && y.value === null) {
-                return true;
-            }
-            else if (x.value === null && y.value !== null) {
-                return false;
-            }
-            else if (x.value !== null && y.value !== null && x.value < y.value) {
-                return true;
-            }
-            return false;
-        }
-    }
-};
-MaybeT.isSomething = (maybe) => {
-    return maybe.isSomething;
-};

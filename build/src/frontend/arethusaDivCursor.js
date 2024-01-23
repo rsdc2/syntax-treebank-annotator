@@ -149,6 +149,23 @@ class AthDivCurs {
             return Nothing.of();
         }
     }
+    /**
+     * Gets current cursor position from AthDivCurs.preText / postText
+     * @param leftTagFragName
+     * @returns
+     */
+    static checkCursorXMLTagPosition = (leftTagFragName) => (rightTagFragName) => {
+        const leftTagFragPos = AthDivCurs
+            .nearestXMLTagFragBoundary(End.Start)(Dir.Left)(XMLTagFragRegExps[leftTagFragName]);
+        const rightTagFragPos = AthDivCurs
+            .nearestXMLTagFragBoundary(End.Start)(Dir.Right)(XMLTagFragRegExps[rightTagFragName]);
+        const otherLeftTagFrags = XML.otherTagFragments(leftTagFragName);
+        const otherRightTagFrags = XML.otherTagFragments(rightTagFragName);
+        const otherLeftTagFragPos = AthDivCurs.XMLTagFragBoundaries(End.Start)(Dir.Left)(otherLeftTagFrags);
+        const otherRightTagFragPos = AthDivCurs.XMLTagFragBoundaries(End.Start)(Dir.Right)(otherRightTagFrags);
+        return MaybeT.isNearest(Dir.Left)(leftTagFragPos)(otherLeftTagFragPos)
+            && MaybeT.isNearest(Dir.Right)(rightTagFragPos)(otherRightTagFragPos);
+    };
     // static get betweenNonAtomicTags(): boolean {
     //     return AthDivCurs.checkCursorTagPosition 
     //         (XMLTagFragAlias[">"]) 
@@ -182,6 +199,16 @@ class AthDivCurs {
         }
         return [Nothing.of(), Nothing.of()];
     }
+    static currentXMLTagRangeByAlias = (leftTagFragAlias) => (rightTagFragAlias) => {
+        const leftBound = AthDivCurs.nearestXMLTagFragBoundary(End.Start)(Dir.Left)(XMLTagFragRegExps[XMLTagFragAlias[leftTagFragAlias]]);
+        const rightBound = AthDivCurs.nearestXMLTagFragBoundary(End.End)(Dir.Right)(XMLTagFragRegExps[XMLTagFragAlias[rightTagFragAlias]])
+            .applyFmap(AthDivCurs.preTextLength.fmap(Num.add));
+        return [leftBound, rightBound];
+    };
+    static currentXMLTagTextByAlias = (leftTagFragAlias) => (rightTagFragAlias) => {
+        const [leftBound, rightBound] = AthDivCurs.currentXMLTagRangeByAlias(leftTagFragAlias)(rightTagFragAlias);
+        return Div.textFromRangeMaybes(ArethusaDiv.control)(leftBound)(rightBound);
+    };
     static get currentXMLTagAsStr() {
         const cursorTagPosition = AthDivCurs
             .currentXMLTagType
@@ -236,6 +263,20 @@ class AthDivCurs {
             || AthDivCurs.checkCursorXMLTagPosition(XMLTagFragAlias["/>"])(XMLTagFragAlias["<"])
             || AthDivCurs.checkCursorXMLTagPosition(XMLTagFragAlias[">"])(XMLTagFragAlias["</"]);
     }
+    static nearestXMLTagFragBoundary = (matchEnd) => (dir) => (regexp) => {
+        const matchFunc = dir === Dir.Left ?
+            Str.lastMatch(regexp) :
+            Str.firstMatch(regexp);
+        const text = dir === Dir.Left ?
+            AthDivCurs.preText :
+            AthDivCurs.postText;
+        const getIndexFunc = matchEnd === End.Start ?
+            RegexMatchT.firstIndex :
+            RegexMatchT.lastIndex;
+        return text
+            .bind(matchFunc)
+            .fmap(getIndexFunc);
+    };
     static get postText() {
         const textFromRange = flip_1_to_3(Div.textFromRange);
         return ArethusaDiv
@@ -266,91 +307,50 @@ class AthDivCurs {
             .arethusaOutputDiv
             .bind(getTextFromRange);
     }
+    static setCursorPosFromAthDivOffset = (divOffset) => {
+        const anchorInfo = AthDivCurs.textNodeOfIdx(divOffset);
+        const createCursorPos = CursorPos.of(divOffset - anchorInfo.startIdx);
+        const cursorPos = anchorInfo.maybeText.fmap(createCursorPos);
+        MaybeT.of(window.getSelection())
+            .applyFmap(cursorPos.fmap(Sel.setCursorPos));
+    };
     static get textLength() {
         return ArethusaDiv
             .textContent
             .fmap(Str.len)
             .unpack(0);
     }
+    static textNodeOfIdx = (idx) => {
+        const textNodes = ArethusaDiv
+            .control
+            .bind(XML.descendantTextNodes)
+            .fromMaybe([]);
+        return textNodes.reduce((nodeInfo, textNode) => {
+            const newTotalLength = nodeInfo.totalLength + textNode.length;
+            if (idx > nodeInfo.totalLength && idx < newTotalLength) {
+                return {
+                    totalLength: newTotalLength,
+                    maybeText: MaybeT.of(textNode),
+                    startIdx: nodeInfo.totalLength,
+                    endIdx: newTotalLength
+                };
+            }
+            return { totalLength: newTotalLength, maybeText: nodeInfo.maybeText, startIdx: nodeInfo.startIdx, endIdx: nodeInfo.endIdx };
+        }, { totalLength: 0, maybeText: Nothing.of(), startIdx: 0, endIdx: 0 });
+    };
+    static textToPreCursorPos = (div) => (preCursorPos) => {
+        return Div.textFromRange(div)(0)(preCursorPos);
+    };
+    static textFromPostCursorPos = (div) => (postCursorPos) => {
+        const divTextLength = Div
+            .textContent(div)
+            .fmap(Str.len);
+        return divTextLength.bind(Div.textFromRange(div)(postCursorPos));
+    };
+    static XMLTagFragBoundaries = (end) => (dir) => (tagFragNames) => {
+        return tagFragNames.map((tagFragName) => {
+            const regexp = XMLTagFragRegExps[tagFragName];
+            return AthDivCurs.nearestXMLTagFragBoundary(end)(dir)(regexp);
+        });
+    };
 }
-/**
- * Gets current cursor position from AthDivCurs.preText / postText
- * @param leftTagFragName
- * @returns
- */
-AthDivCurs.checkCursorXMLTagPosition = (leftTagFragName) => (rightTagFragName) => {
-    const leftTagFragPos = AthDivCurs
-        .nearestXMLTagFragBoundary(End.Start)(Dir.Left)(XMLTagFragRegExps[leftTagFragName]);
-    const rightTagFragPos = AthDivCurs
-        .nearestXMLTagFragBoundary(End.Start)(Dir.Right)(XMLTagFragRegExps[rightTagFragName]);
-    const otherLeftTagFrags = XML.otherTagFragments(leftTagFragName);
-    const otherRightTagFrags = XML.otherTagFragments(rightTagFragName);
-    const otherLeftTagFragPos = AthDivCurs.XMLTagFragBoundaries(End.Start)(Dir.Left)(otherLeftTagFrags);
-    const otherRightTagFragPos = AthDivCurs.XMLTagFragBoundaries(End.Start)(Dir.Right)(otherRightTagFrags);
-    return MaybeT.isNearest(Dir.Left)(leftTagFragPos)(otherLeftTagFragPos)
-        && MaybeT.isNearest(Dir.Right)(rightTagFragPos)(otherRightTagFragPos);
-};
-AthDivCurs.currentXMLTagRangeByAlias = (leftTagFragAlias) => (rightTagFragAlias) => {
-    const leftBound = AthDivCurs.nearestXMLTagFragBoundary(End.Start)(Dir.Left)(XMLTagFragRegExps[XMLTagFragAlias[leftTagFragAlias]]);
-    const rightBound = AthDivCurs.nearestXMLTagFragBoundary(End.End)(Dir.Right)(XMLTagFragRegExps[XMLTagFragAlias[rightTagFragAlias]])
-        .applyFmap(AthDivCurs.preTextLength.fmap(Num.add));
-    return [leftBound, rightBound];
-};
-AthDivCurs.currentXMLTagTextByAlias = (leftTagFragAlias) => (rightTagFragAlias) => {
-    const [leftBound, rightBound] = AthDivCurs.currentXMLTagRangeByAlias(leftTagFragAlias)(rightTagFragAlias);
-    return Div.textFromRangeMaybes(ArethusaDiv.control)(leftBound)(rightBound);
-};
-AthDivCurs.nearestXMLTagFragBoundary = (matchEnd) => (dir) => (regexp) => {
-    const matchFunc = dir === Dir.Left ?
-        Str.lastMatch(regexp) :
-        Str.firstMatch(regexp);
-    const text = dir === Dir.Left ?
-        AthDivCurs.preText :
-        AthDivCurs.postText;
-    const getIndexFunc = matchEnd === End.Start ?
-        RegexMatchT.firstIndex :
-        RegexMatchT.lastIndex;
-    return text
-        .bind(matchFunc)
-        .fmap(getIndexFunc);
-};
-AthDivCurs.setCursorPosFromAthDivOffset = (divOffset) => {
-    const anchorInfo = AthDivCurs.textNodeOfIdx(divOffset);
-    const createCursorPos = CursorPos.of(divOffset - anchorInfo.startIdx);
-    const cursorPos = anchorInfo.maybeText.fmap(createCursorPos);
-    MaybeT.of(window.getSelection())
-        .applyFmap(cursorPos.fmap(Sel.setCursorPos));
-};
-AthDivCurs.textNodeOfIdx = (idx) => {
-    const textNodes = ArethusaDiv
-        .control
-        .bind(XML.descendantTextNodes)
-        .fromMaybe([]);
-    return textNodes.reduce((nodeInfo, textNode) => {
-        const newTotalLength = nodeInfo.totalLength + textNode.length;
-        if (idx > nodeInfo.totalLength && idx < newTotalLength) {
-            return {
-                totalLength: newTotalLength,
-                maybeText: MaybeT.of(textNode),
-                startIdx: nodeInfo.totalLength,
-                endIdx: newTotalLength
-            };
-        }
-        return { totalLength: newTotalLength, maybeText: nodeInfo.maybeText, startIdx: nodeInfo.startIdx, endIdx: nodeInfo.endIdx };
-    }, { totalLength: 0, maybeText: Nothing.of(), startIdx: 0, endIdx: 0 });
-};
-AthDivCurs.textToPreCursorPos = (div) => (preCursorPos) => {
-    return Div.textFromRange(div)(0)(preCursorPos);
-};
-AthDivCurs.textFromPostCursorPos = (div) => (postCursorPos) => {
-    const divTextLength = Div
-        .textContent(div)
-        .fmap(Str.len);
-    return divTextLength.bind(Div.textFromRange(div)(postCursorPos));
-};
-AthDivCurs.XMLTagFragBoundaries = (end) => (dir) => (tagFragNames) => {
-    return tagFragNames.map((tagFragName) => {
-        const regexp = XMLTagFragRegExps[tagFragName];
-        return AthDivCurs.nearestXMLTagFragBoundary(end)(dir)(regexp);
-    });
-};

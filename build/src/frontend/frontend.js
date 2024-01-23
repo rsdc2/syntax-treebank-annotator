@@ -83,6 +83,94 @@ class Frontend {
             .inputPlainText
             .fmap(TextArea.value);
     }
+    static formatInputEpiDoc = () => {
+        Frontend
+            .epidocInputTextArea
+            .fmap(TextArea.value)
+            .fmap(Frontend.processEpiDoc);
+        globalState
+            .textStateIO
+            .fmapErr("No textStateIO", TextStateIO.formatInputEpiDoc);
+    };
+    static formatInputArethusa = () => {
+        Frontend
+            .arethusaInputTextArea
+            .fmap(TextArea.value)
+            .fmap(Frontend.processArethusa);
+        globalState
+            .textStateIO
+            .fmapErr("No textStateIO", TextStateIO.formatInputArethusa);
+    };
+    static saveCurrentState = () => {
+        if (globalState.textStateIO.isNothing) {
+            globalState.createTextStateIO(Nothing.of(), Nothing.of(), Nothing.of());
+        }
+        const textState = TextState.of(globalState
+            .textStateIO
+            .bind(TextStateIO.currentState)
+            .bind(TextState.viewState), globalState
+            .textStateIO
+            .bind(TextStateIO.currentState)
+            .bind(TextState.sentenceVSDeep), Nothing.of(), Frontend.plainText, Frontend.inputArethusa, globalState
+            .textStateIO
+            .bind(TextStateIO.currentState)
+            .bind(TextState.outputArethusaDeep), Frontend.epidoc);
+        globalState
+            .textStateIO
+            .fmapErr("No textStateIO", TextStateIO.appendNewState(false)(textState));
+    };
+    static processEpiDoc = (epidocStr) => {
+        Frontend.saveCurrentState();
+        const epidoc = EpiDoc.fromXMLStr(epidocStr);
+        const arethusa = MaybeT
+            .of(epidocStr)
+            .bind(Conversion.epidocXMLToArethusa);
+        const textState = TextState.of(arethusa.fmap(ViewState.of("1")("1")), Nothing.of(), Nothing.of(), Nothing.of(), arethusa, arethusa, epidoc);
+        globalState
+            .textStateIO
+            .fmapErr("No textStateIO", TextStateIO.appendNewState(false)(textState));
+        globalState.createTreeStateIO();
+        globalState.graph();
+    };
+    static processArethusa = (arethusaStr) => {
+        Frontend.saveCurrentState();
+        const arethusa = MaybeT
+            .of(arethusaStr)
+            .bind(ArethusaDoc.fromXMLStr)
+            .bind(ArethusaDoc.renumberTokenIds(true));
+        const textstate = TextState.of(arethusa.fmap(ViewState.of("1")("1")), Nothing.of(), Nothing.of(), Nothing.of(), arethusa, arethusa, Nothing.of());
+        globalState
+            .textStateIO
+            .fmapErr("No textStateIO", TextStateIO.appendNewState(false)(textstate));
+        globalState.createTreeStateIO();
+        globalState.graph();
+    };
+    static processText = (textStr) => {
+        Frontend.saveCurrentState();
+        const arethusa = MaybeT
+            .of(textStr)
+            .bind(ArethusaDoc.fromPlainTextStr);
+        const textstate = TextState.of(arethusa.fmap(ViewState.of("1")("1")), Nothing.of(), Nothing.of(), MaybeT.of(textStr), arethusa, arethusa, Nothing.of());
+        globalState
+            .textStateIO
+            .fmapErr("No textStateIO", TextStateIO.appendNewState(false)(textstate));
+        globalState.createTreeStateIO();
+        globalState.graph();
+    };
+    static pushPlainTextToFrontend = (textStateIO) => {
+        const plainText = textStateIO
+            .currentState
+            .bind(TextState.plainText);
+        if (plainText.isNothing) {
+            Frontend
+                .textInputTextArea
+                .applyFmap(MaybeT.of("").fmap(Frontend.updateTextArea));
+            return;
+        }
+        Frontend
+            .textInputTextArea
+            .applyBind(plainText.fmap(Frontend.updateTextArea));
+    };
     static get insertSentenceBtn() {
         return Frontend.buttonById("InsertSentence");
     }
@@ -91,6 +179,12 @@ class Frontend {
     }
     static get leftBoundaryDiv() {
         return HTML.q("div.left.boundary");
+    }
+    static get loadArethusaBtn() {
+        return Frontend.buttonById("loadFile");
+    }
+    static get loadTextBtn() {
+        return Frontend.buttonById("loadTextFile");
     }
     static get moveWordToNextSentenceBtn() {
         return Frontend.buttonById("PushToNextSentence");
@@ -128,6 +222,26 @@ class Frontend {
     static get sentencesDiv() {
         return MaybeT.of(document.getElementById("sentencesDiv"));
     }
+    static downloadArethusa = () => {
+        const arethusa = globalState
+            .textStateIO
+            .bind(TextStateIO.currentState)
+            .bind(TextState.outputArethusaDeep);
+        const docId = arethusa
+            .bind(ArethusaDoc.docId)
+            .fromMaybe("tree");
+        arethusa
+            .fmap(ArethusaDoc.toXMLStr)
+            .fmap(FileHandling.download(docId));
+    };
+    static resetViewBox = () => {
+        Graph.svg().fmap(SVG.ViewBox.setViewBoxVal(Constants.defaultViewBox));
+    };
+    static showMessage = (message) => {
+        HTML.q("div.message")
+            .bindErr("No message element", HTML.setInnerHTML(message))
+            .fmap(HTML.Elem.unsetHidden);
+    };
     static hideMessage() {
         HTML.q("div.message")
             .bindErr("No message element", HTML.setInnerHTML(""))
@@ -198,6 +312,15 @@ class Frontend {
                 .arethusaInputTextArea
                 .fmap(TextArea.setValue(arethusaUglifiedExample));
             Frontend.processArethusa(arethusaUglifiedExample);
+        };
+        const downloadArethusaBtn = (e) => {
+            Frontend.downloadArethusa();
+        };
+        const loadArethusaBtnFunc = (e) => {
+            FileHandling.loadFromDialog('.xml')(MaybeT.of(Frontend.processArethusa));
+        };
+        const loadTextBtnFunc = (e) => {
+            FileHandling.loadFromDialog('.txt')(MaybeT.of(Frontend.processText));
         };
         const undoFunc = (e) => {
             e.stopPropagation();
@@ -307,6 +430,9 @@ class Frontend {
             .inputShowBtn
             .fmap(HTML.Elem.setOnClickFunc(Frontend.toggleShowInput));
         Frontend
+            .buttonById("saveArethusaFile")
+            .fmapErr("No download Arethusa button", HTML.Elem.setOnClickFunc(Frontend.downloadArethusa));
+        Frontend
             .buttonById("DrawTreeArethusa")
             .fmap(HTML.Elem.setOnClickFunc(processArethusaInputFunc));
         Frontend
@@ -321,6 +447,12 @@ class Frontend {
         Frontend
             .arethusaExampleBtn
             .fmap(HTML.Elem.setOnClickFunc(arethusaExampleBtnFunc));
+        Frontend
+            .loadArethusaBtn
+            .fmap(HTML.Elem.setOnClickFunc(loadArethusaBtnFunc));
+        Frontend
+            .loadTextBtn
+            .fmap(HTML.Elem.setOnClickFunc(loadTextBtnFunc));
         Frontend
             .undoBtn
             .fmap(HTML.Elem.setOnClickFunc(undoFunc));
@@ -369,6 +501,9 @@ class Frontend {
         Frontend
             .moveDownBtn
             .fmap(HTML.Elem.setOnClickFunc(moveTokenDownFunc));
+        Frontend
+            .arethusaInputShowBtn
+            .fmap(HTML.Elem.setOnClickFunc(Frontend.toggleShowInputArethusa));
     }
     static get splitSentenceBtn() {
         return HTML.q("button#SplitSentence");
@@ -376,231 +511,123 @@ class Frontend {
     static get undoBtn() {
         return HTML.id("UndoTextEdit");
     }
-}
-Frontend.formatInputEpiDoc = () => {
-    Frontend
-        .epidocInputTextArea
-        .fmap(TextArea.value)
-        .fmap(Frontend.processEpiDoc);
-    globalState
-        .textStateIO
-        .fmapErr("No textStateIO", TextStateIO.formatInputEpiDoc);
-};
-Frontend.formatInputArethusa = () => {
-    Frontend
-        .arethusaInputTextArea
-        .fmap(TextArea.value)
-        .fmap(Frontend.processArethusa);
-    globalState
-        .textStateIO
-        .fmapErr("No textStateIO", TextStateIO.formatInputArethusa);
-};
-Frontend.saveCurrentState = () => {
-    if (globalState.textStateIO.isNothing) {
-        globalState.createTextStateIO(Nothing.of(), Nothing.of(), Nothing.of());
-    }
-    const textState = TextState.of(globalState
-        .textStateIO
-        .bind(TextStateIO.currentState)
-        .bind(TextState.viewState), globalState
-        .textStateIO
-        .bind(TextStateIO.currentState)
-        .bind(TextState.sentenceVSDeep), Nothing.of(), Frontend.plainText, Frontend.inputArethusa, globalState
-        .textStateIO
-        .bind(TextStateIO.currentState)
-        .bind(TextState.outputArethusaDeep), Frontend.epidoc);
-    globalState
-        .textStateIO
-        .fmapErr("No textStateIO", TextStateIO.appendNewState(false)(textState));
-};
-Frontend.processEpiDoc = (epidocStr) => {
-    Frontend.saveCurrentState();
-    const epidoc = EpiDoc.fromXMLStr(epidocStr);
-    const arethusa = MaybeT
-        .of(epidocStr)
-        .bind(Conversion.epidocXMLToArethusa);
-    const textState = TextState.of(arethusa.fmap(ViewState.of("1")("1")), Nothing.of(), Nothing.of(), Nothing.of(), arethusa, arethusa, epidoc);
-    globalState
-        .textStateIO
-        .fmapErr("No textStateIO", TextStateIO.appendNewState(false)(textState));
-    globalState.createTreeStateIO();
-    globalState.graph();
-};
-Frontend.processArethusa = (arethusaStr) => {
-    Frontend.saveCurrentState();
-    const arethusa = MaybeT
-        .of(arethusaStr)
-        .bind(ArethusaDoc.fromXMLStr)
-        .bind(ArethusaDoc.renumberTokenIds(true));
-    const textstate = TextState.of(arethusa.fmap(ViewState.of("1")("1")), Nothing.of(), Nothing.of(), Nothing.of(), arethusa, arethusa, Nothing.of());
-    globalState
-        .textStateIO
-        .fmapErr("No textStateIO", TextStateIO.appendNewState(false)(textstate));
-    globalState.createTreeStateIO();
-    globalState.graph();
-};
-Frontend.processText = (textStr) => {
-    Frontend.saveCurrentState();
-    const arethusa = MaybeT
-        .of(textStr)
-        .bind(ArethusaDoc.fromPlainTextStr);
-    const textstate = TextState.of(arethusa.fmap(ViewState.of("1")("1")), Nothing.of(), Nothing.of(), MaybeT.of(textStr), arethusa, arethusa, Nothing.of());
-    globalState
-        .textStateIO
-        .fmapErr("No textStateIO", TextStateIO.appendNewState(false)(textstate));
-    globalState.createTreeStateIO();
-    globalState.graph();
-};
-Frontend.pushPlainTextToFrontend = (textStateIO) => {
-    const plainText = textStateIO
-        .currentState
-        .bind(TextState.plainText);
-    if (plainText.isNothing) {
+    static toggleShowInput = () => {
         Frontend
-            .textInputTextArea
-            .applyFmap(MaybeT.of("").fmap(Frontend.updateTextArea));
-        return;
-    }
-    Frontend
-        .textInputTextArea
-        .applyBind(plainText.fmap(Frontend.updateTextArea));
-};
-Frontend.downloadArethusa = () => {
-    const arethusa = globalState
-        .textStateIO
-        .bind(TextStateIO.currentState)
-        .bind(TextState.outputArethusaDeep);
-    const docId = arethusa
-        .bind(ArethusaDoc.docId)
-        .fromMaybe("tree");
-    arethusa
-        .fmap(ArethusaDoc.toXMLStr)
-        .fmap(FileHandling.download(docId));
-};
-Frontend.resetViewBox = () => {
-    Graph.svg().fmap(SVG.ViewBox.setViewBoxVal(Constants.defaultViewBox));
-};
-Frontend.showMessage = (message) => {
-    HTML.q("div.message")
-        .bindErr("No message element", HTML.setInnerHTML(message))
-        .fmap(HTML.Elem.unsetHidden);
-};
-Frontend.toggleShowInput = () => {
-    Frontend
-        .inputShowBtn
-        .fmap(HTML.Elem.Class.toggle("active"));
-    // Frontend
-    //     .epidocInputShowBtn
-    //     .fmap(HTML.Elem.toggleHidden)
-    // Frontend
-    //     .arethusaInputShowBtn
-    //     .fmap(HTML.Elem.toggleHidden)
-    // Frontend
-    //     .textInputShowBtn
-    //     .fmap(HTML.Elem.toggleHidden)
-    Frontend
-        .divById("InputDiv")
-        .fmap(HTML.Elem.toggleHidden);
-};
-Frontend.toggleShowInputText = () => {
-    // Arethusa
-    Frontend
-        .divByQ("arethusa.input")
-        .fmap(HTML.Elem.setHidden);
-    Frontend
-        .arethusaInputShowBtn
-        .fmap(HTML.Elem.Class.remove("active"));
-    // EpiDoc
-    Frontend
-        .divByQ("epidoc.input")
-        .fmap(HTML.Elem.setHidden);
-    Frontend
-        .epidocInputShowBtn
-        .fmap(HTML.Elem.Class.remove("active"));
-    // Text
-    Frontend
-        .divByQ("sentence-text.input")
-        .fmap(HTML.Elem.unsetHidden);
-    Frontend
-        .buttonById("ToggleShowInputText")
-        .fmap(HTML.Elem.Class.add("active"));
-};
-Frontend.toggleShowInputEpiDoc = () => {
-    // Arethusa
-    Frontend
-        .divByQ("arethusa.input")
-        .fmap(HTML.Elem.setHidden);
-    Frontend
-        .arethusaInputShowBtn
-        .fmap(HTML.Elem.Class.remove("active"));
-    // Text
-    Frontend
-        .divByQ("sentence-text.input")
-        .fmap(HTML.Elem.setHidden);
-    Frontend
-        .buttonById("ToggleShowInputText")
-        .fmap(HTML.Elem.Class.remove("active"));
-    // EpiDoc
-    Frontend
-        .divByQ("epidoc.input")
-        .fmap(HTML.Elem.unsetHidden);
-    Frontend
-        .epidocInputShowBtn
-        .fmap(HTML.Elem.Class.add("active"));
-};
-Frontend.toggleShowInputArethusa = () => {
-    // EpiDoc
-    Frontend
-        .divByQ("epidoc.input")
-        .fmap(HTML.Elem.setHidden);
-    Frontend
-        .epidocInputShowBtn
-        .fmap(HTML.Elem.Class.remove("active"));
-    // Text
-    Frontend
-        .divByQ("sentence-text.input")
-        .fmap(HTML.Elem.setHidden);
-    Frontend
-        .textInputShowBtn
-        .fmap(HTML.Elem.Class.remove("active"));
-    // Arethusa
-    Frontend
-        .divByQ("arethusa.input")
-        .fmap(HTML.Elem.unsetHidden);
-    Frontend
-        .arethusaInputShowBtn
-        .fmap(HTML.Elem.Class.add("active"));
-};
-Frontend.toggleShowOutputArethusa = () => {
-    Frontend
-        .arethusaOutputDiv
-        .fmap(HTML.Elem.toggleHidden);
-    Frontend
-        .arethusaOutputToolbar
-        .fmap(HTML.Elem.toggleHidden);
-    Frontend
-        .arethusaOutputShowBtn
-        .fmap(HTML.Elem.Class.toggle("active"));
-};
-Frontend.updateArethusaDiv = (newXML) => (xmlToHighlight) => 
-// (wordNodesXML: string[]) => 
-(arethusaDiv) => {
-    // const formattedWordNodes = wordNodesXML
-    //     .map(ArethusaDiv.formatXMLForDiv)
-    const formattedHighlighted = xmlToHighlight
-        .fmap(ArethusaDiv.formatXMLForDiv)
-        .fromMaybe("");
-    const setTextContent = MaybeT.of(newXML)
-        .fmap(ArethusaDiv.formatXMLForDiv)
-        .fmap(Str.replace(formattedHighlighted)('<span style="color:blue" class="selected">' + formattedHighlighted + "</span>"))
-        .fmap(Div.setInnerHTML);
-    MaybeT.of(arethusaDiv)
-        .applyFmap(setTextContent);
-};
-Frontend.updateTextArea = (newText) => (control) => {
-    const setToNewText = TextArea.setValue(newText);
-    const updatedTextarea = MaybeT.of(control)
-        .fmap(TextArea.setValue(""))
-        .fmap(setToNewText);
-    return updatedTextarea;
-};
+            .inputShowBtn
+            .fmap(HTML.Elem.Class.toggle("active"));
+        // Frontend
+        //     .epidocInputShowBtn
+        //     .fmap(HTML.Elem.toggleHidden)
+        // Frontend
+        //     .arethusaInputShowBtn
+        //     .fmap(HTML.Elem.toggleHidden)
+        // Frontend
+        //     .textInputShowBtn
+        //     .fmap(HTML.Elem.toggleHidden)
+        Frontend
+            .divById("InputDiv")
+            .fmap(HTML.Elem.toggleHidden);
+    };
+    static toggleShowInputText = () => {
+        // Arethusa
+        Frontend
+            .divByQ("arethusa.input")
+            .fmap(HTML.Elem.setHidden);
+        Frontend
+            .arethusaInputShowBtn
+            .fmap(HTML.Elem.Class.remove("active"));
+        // EpiDoc
+        Frontend
+            .divByQ("epidoc.input")
+            .fmap(HTML.Elem.setHidden);
+        Frontend
+            .epidocInputShowBtn
+            .fmap(HTML.Elem.Class.remove("active"));
+        // Text
+        Frontend
+            .divByQ("sentence-text.input")
+            .fmap(HTML.Elem.unsetHidden);
+        Frontend
+            .buttonById("ToggleShowInputText")
+            .fmap(HTML.Elem.Class.add("active"));
+    };
+    static toggleShowInputEpiDoc = () => {
+        // Arethusa
+        Frontend
+            .divByQ("arethusa.input")
+            .fmap(HTML.Elem.setHidden);
+        Frontend
+            .arethusaInputShowBtn
+            .fmap(HTML.Elem.Class.remove("active"));
+        // Text
+        Frontend
+            .divByQ("sentence-text.input")
+            .fmap(HTML.Elem.setHidden);
+        Frontend
+            .buttonById("ToggleShowInputText")
+            .fmap(HTML.Elem.Class.remove("active"));
+        // EpiDoc
+        Frontend
+            .divByQ("epidoc.input")
+            .fmap(HTML.Elem.unsetHidden);
+        Frontend
+            .epidocInputShowBtn
+            .fmap(HTML.Elem.Class.add("active"));
+    };
+    static toggleShowInputArethusa = () => {
+        // EpiDoc
+        Frontend
+            .divByQ("epidoc.input")
+            .fmap(HTML.Elem.setHidden);
+        Frontend
+            .epidocInputShowBtn
+            .fmap(HTML.Elem.Class.remove("active"));
+        // Text
+        Frontend
+            .divByQ("sentence-text.input")
+            .fmap(HTML.Elem.setHidden);
+        Frontend
+            .textInputShowBtn
+            .fmap(HTML.Elem.Class.remove("active"));
+        // Arethusa
+        Frontend
+            .divByQ("arethusa.input")
+            .fmap(HTML.Elem.unsetHidden);
+        Frontend
+            .arethusaInputShowBtn
+            .fmap(HTML.Elem.Class.add("active"));
+    };
+    static toggleShowOutputArethusa = () => {
+        Frontend
+            .arethusaOutputDiv
+            .fmap(HTML.Elem.toggleHidden);
+        Frontend
+            .arethusaOutputToolbar
+            .fmap(HTML.Elem.toggleHidden);
+        Frontend
+            .arethusaOutputShowBtn
+            .fmap(HTML.Elem.Class.toggle("active"));
+    };
+    static updateArethusaDiv = (newXML) => (xmlToHighlight) => 
+    // (wordNodesXML: string[]) => 
+    (arethusaDiv) => {
+        // const formattedWordNodes = wordNodesXML
+        //     .map(ArethusaDiv.formatXMLForDiv)
+        const formattedHighlighted = xmlToHighlight
+            .fmap(ArethusaDiv.formatXMLForDiv)
+            .fromMaybe("");
+        const setTextContent = MaybeT.of(newXML)
+            .fmap(ArethusaDiv.formatXMLForDiv)
+            .fmap(Str.replace(formattedHighlighted)('<span style="color:blue" class="selected">' + formattedHighlighted + "</span>"))
+            .fmap(Div.setInnerHTML);
+        MaybeT.of(arethusaDiv)
+            .applyFmap(setTextContent);
+    };
+    static updateTextArea = (newText) => (control) => {
+        const setToNewText = TextArea.setValue(newText);
+        const updatedTextarea = MaybeT.of(control)
+            .fmap(TextArea.setValue(""))
+            .fmap(setToNewText);
+        return updatedTextarea;
+    };
+}

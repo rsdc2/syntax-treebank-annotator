@@ -1,4 +1,6 @@
 class Edition {
+    _node;
+    _element;
     constructor(node) {
         this._node = node;
         this._element = DOM.Node_.element(node).fromMaybeErr();
@@ -6,6 +8,9 @@ class Edition {
     get attrs() {
         return DOM.Elem.attributes(this._element);
     }
+    static getTokens = (edition) => {
+        return edition.tokens;
+    };
     get names() {
         return DXML.wordsFromXmlDoc(TEIName, MaybeT.of(this._node.ownerDocument));
     }
@@ -22,6 +27,3 @@ class Edition {
         return ".//t:div[@type='edition']";
     }
 }
-Edition.getTokens = (edition) => {
-    return edition.tokens;
-};

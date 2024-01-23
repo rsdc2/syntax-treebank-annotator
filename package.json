@@ -7,6 +7,7 @@
   "author": "Robert Crellin",
   "license": "MIT",
   "dependencies": {
+    "http-server": "^14.1.1"
   },
   "devDependencies": {
     "@types/d3": "^7.4.0",

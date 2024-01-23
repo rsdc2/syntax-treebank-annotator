@@ -5,6 +5,9 @@ var ViewType;
     ViewType["Unknown"] = "unknown";
 })(ViewType || (ViewType = {}));
 class ViewState {
+    _tokenId;
+    _sentenceId;
+    _arethusa;
     constructor(tokenId, sentenceId, arethusa) {
         const getTokenId = tokenId.fmap(ArethusaDoc.sentenceIdByTokenId);
         const sentenceIdFromWord = arethusa
@@ -27,6 +30,18 @@ class ViewState {
     set currentSentenceId(value) {
         this._sentenceId = value;
     }
+    static currentSentenceId = (vs) => {
+        return vs._sentenceId;
+    };
+    static currentTokenId = (state) => {
+        return state._tokenId;
+    };
+    static deepcopy = (s) => {
+        return new ViewState(s._tokenId, s._sentenceId, s._arethusa.bind(ArethusaDoc.deepcopy));
+    };
+    static sentencesSame = (s1) => (s2) => {
+        return s1.sentenceId.fromMaybe("") == s2.sentenceId.fromMaybe("");
+    };
     get isSentence() {
         return this.currentSentenceId.value !== Nothing.of().value
             && !this.isWord;
@@ -34,9 +49,21 @@ class ViewState {
     get isWord() {
         return this.currentWordId.value !== Nothing.of().value;
     }
+    static of = (wordId) => (sentenceId) => (arethusa) => {
+        return new ViewState(MaybeT.of(wordId), MaybeT.of(sentenceId), MaybeT.of(arethusa));
+    };
     get sentenceId() {
         return this._sentenceId;
     }
+    static sentenceId = (vs) => {
+        return vs.sentenceId;
+    };
+    static setCurrentSentenceId = (value) => (s) => {
+        s._sentenceId = value;
+    };
+    static setCurrentWordId = (value) => (s) => {
+        s._tokenId = value;
+    };
     get viewType() {
         if (this.isWord) {
             return ViewType.Word;
@@ -55,31 +82,7 @@ class ViewState {
         }
         return Nothing.of();
     }
+    static viewType = (vs) => {
+        return vs.viewType;
+    };
 }
-ViewState.currentSentenceId = (vs) => {
-    return vs._sentenceId;
-};
-ViewState.currentTokenId = (state) => {
-    return state._tokenId;
-};
-ViewState.deepcopy = (s) => {
-    return new ViewState(s._tokenId, s._sentenceId, s._arethusa.bind(ArethusaDoc.deepcopy));
-};
-ViewState.sentencesSame = (s1) => (s2) => {
-    return s1.sentenceId.fromMaybe("") == s2.sentenceId.fromMaybe("");
-};
-ViewState.of = (wordId) => (sentenceId) => (arethusa) => {
-    return new ViewState(MaybeT.of(wordId), MaybeT.of(sentenceId), MaybeT.of(arethusa));
-};
-ViewState.sentenceId = (vs) => {
-    return vs.sentenceId;
-};
-ViewState.setCurrentSentenceId = (value) => (s) => {
-    s._sentenceId = value;
-};
-ViewState.setCurrentWordId = (value) => (s) => {
-    s._tokenId = value;
-};
-ViewState.viewType = (vs) => {
-    return vs.viewType;
-};

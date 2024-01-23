@@ -1,4 +1,6 @@
 class TEIToken {
+    _node;
+    _element;
     constructor(node) {
         this._node = node;
         this._element = DOM.Node_.element(node).fromMaybeErr();
@@ -6,6 +8,27 @@ class TEIToken {
     get attrs() {
         return DOM.Elem.attributes(this._element);
     }
+    static getLeidenText = (token) => {
+        // Returns the Leiden text of a token
+        // Includes line breaks and interpuncts
+        return token.textNodes
+            .filter(TextNode.filterByNotAncestor(["g", "reg", "corr", "am"]))
+            .map((textNode) => TextNode.bracketExpansion(textNode))
+            .map((textNode) => TextNode.bracketSupplied(textNode))
+            .map((textNode) => TextNode.bracketDel(textNode))
+            .map((textNode) => TextNode.bracketSurplus(textNode))
+            .map((textNode) => TextNode.getTextFromNonTextNode(["|"])(["g", "lb", "gap"])([" · ", "|", "[-?-]"])(textNode))
+            .map(XML.textContent)
+            .map((maybeStr) => { return maybeStr.fromMaybe(""); })
+            .join("")
+            .replace(/\t/g, "")
+            .replace(/\n+/g, "|")
+            .replace(/\|+/g, "|")
+            .replace(/(?<!·)\s(?!·)/g, "");
+    };
+    static getNormalizedText = (token) => {
+        return token.normalizedText;
+    };
     get leidenText() {
         return TEIToken.getLeidenText(this);
     }
@@ -36,27 +59,6 @@ class TEIToken {
         return Edition.xpathAddress + "//*[self::t:w|self::t:name|self::t:num]";
     }
 }
-TEIToken.getLeidenText = (token) => {
-    // Returns the Leiden text of a token
-    // Includes line breaks and interpuncts
-    return token.textNodes
-        .filter(TextNode.filterByNotAncestor(["g", "reg", "corr", "am"]))
-        .map((textNode) => TextNode.bracketExpansion(textNode))
-        .map((textNode) => TextNode.bracketSupplied(textNode))
-        .map((textNode) => TextNode.bracketDel(textNode))
-        .map((textNode) => TextNode.bracketSurplus(textNode))
-        .map((textNode) => TextNode.getTextFromNonTextNode(["|"])(["g", "lb", "gap"])([" · ", "|", "[-?-]"])(textNode))
-        .map(XML.textContent)
-        .map((maybeStr) => { return maybeStr.fromMaybe(""); })
-        .join("")
-        .replace(/\t/g, "")
-        .replace(/\n+/g, "|")
-        .replace(/\|+/g, "|")
-        .replace(/(?<!·)\s(?!·)/g, "");
-};
-TEIToken.getNormalizedText = (token) => {
-    return token.normalizedText;
-};
 var TEITokenFuncs;
 (function (TEITokenFuncs) {
     /**
@@ -113,7 +115,6 @@ var TextNode;
         const precedingItems = XML.previousNode(text);
         const followingItems = XML.nextNode(text);
         const _reduceTextToAdd = (acc, node) => {
-            var _a, _b;
             if (Arr.last(acc).value === "[stop]") {
                 return acc;
             }
@@ -121,12 +122,12 @@ var TextNode;
                 return acc;
             }
             if (localNames.includes(node.nodeName) ||
-                (node.nodeName === "#text" && localNames.includes(((_a = node.parentNode) === null || _a === void 0 ? void 0 : _a.nodeName) || ""))) {
+                (node.nodeName === "#text" && localNames.includes(node.parentNode?.nodeName || ""))) {
                 const localNameIdx = localNames.findIndex((value) => value === node.nodeName);
                 const stringRep = stringReps[localNameIdx] || "";
                 return Arr.concat(acc)([stringRep]);
             }
-            else if (((_b = node.textContent) === null || _b === void 0 ? void 0 : _b.trim()) === "") {
+            else if (node.textContent?.trim() === "") {
                 return acc;
             }
             else {

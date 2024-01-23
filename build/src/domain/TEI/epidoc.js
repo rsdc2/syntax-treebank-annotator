@@ -1,4 +1,6 @@
 class EpiDoc {
+    _node;
+    _element;
     constructor(epidocXML) {
         this._node = XML.fromXMLStr(epidocXML).documentElement;
         this._element = DOM.Node_.element(this._node).fromMaybeErr();
@@ -6,9 +8,15 @@ class EpiDoc {
     get attrs() {
         return this._element.attributes;
     }
+    static deepcopy = (epidoc) => {
+        return MaybeT.of(epidoc)
+            .fmap(EpiDoc.toXMLStr)
+            .bind(EpiDoc.fromXMLStr);
+    };
     get editions() {
         return EpiDoc.getEditions(this);
     }
+    static editionsFromArray = map(Edition.of);
     static fromXMLStr(epidocXML) {
         return MaybeT.of(new EpiDoc(epidocXML));
     }
@@ -23,10 +31,18 @@ class EpiDoc {
             .fmap(EpiDoc.editionsFromArray)
             .fromMaybe([]);
     }
+    static filenameId = (epidoc) => {
+        const xpath = ".//t:publicationStmt/t:idno[@type='filename']/text()";
+        return MaybeT.of(epidoc.node)
+            .bind(XML.xpath(xpath))
+            .bind(Arr.head)
+            .bind(XML.nodeValue);
+    };
     get names() {
         return DXML
             .wordsFromXmlDoc(TEIName, MaybeT.of(this._node.ownerDocument));
     }
+    static namesFromArray = map(TEIName.of);
     get node() {
         return this._node;
     }
@@ -47,6 +63,7 @@ class EpiDoc {
             .epidocInputTextArea
             .fmap(Frontend.updateTextArea(xml));
     }
+    static TEIwordsFromArray = map(TEIToken.of);
     get text() {
         return MaybeT.of(this._node.textContent);
     }
@@ -58,18 +75,3 @@ class EpiDoc {
             .wordsFromXmlDoc(TEIToken, MaybeT.of(this._node.ownerDocument));
     }
 }
-EpiDoc.deepcopy = (epidoc) => {
-    return MaybeT.of(epidoc)
-        .fmap(EpiDoc.toXMLStr)
-        .bind(EpiDoc.fromXMLStr);
-};
-EpiDoc.editionsFromArray = map(Edition.of);
-EpiDoc.filenameId = (epidoc) => {
-    const xpath = ".//t:publicationStmt/t:idno[@type='filename']/text()";
-    return MaybeT.of(epidoc.node)
-        .bind(XML.xpath(xpath))
-        .bind(Arr.head)
-        .bind(XML.nodeValue);
-};
-EpiDoc.namesFromArray = map(TEIName.of);
-EpiDoc.TEIwordsFromArray = map(TEIToken.of);

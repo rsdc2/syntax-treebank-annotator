@@ -283,6 +283,14 @@ class Frontend {
         return HTML.q("div.left.boundary") as Maybe<HTMLDivElement>
     }
 
+    static get loadArethusaBtn() {
+        return Frontend.buttonById("loadFile")
+    }
+
+    static get loadTextBtn() {
+        return Frontend.buttonById("loadTextFile")
+    }
+
     static get moveWordToNextSentenceBtn() {
         return Frontend.buttonById("PushToNextSentence")
     }
@@ -451,6 +459,18 @@ class Frontend {
             Frontend.processArethusa(arethusaUglifiedExample)
         }
 
+        const downloadArethusaBtn = (e: Event) => {
+            Frontend.downloadArethusa()
+        }
+
+        const loadArethusaBtnFunc = (e: Event) => {
+           FileHandling.loadFromDialog('.xml')(MaybeT.of(Frontend.processArethusa))
+        }
+
+        const loadTextBtnFunc = (e: Event) => {
+            FileHandling.loadFromDialog('.txt')(MaybeT.of(Frontend.processText))
+        }
+
         const undoFunc = (e: Event) => {
             e.stopPropagation()
             globalState.undo()
@@ -579,6 +599,10 @@ class Frontend {
             .fmap(HTML.Elem.setOnClickFunc(Frontend.toggleShowInput))
 
         Frontend
+            .buttonById("saveArethusaFile")
+            .fmapErr("No download Arethusa button", HTML.Elem.setOnClickFunc(Frontend.downloadArethusa))
+
+        Frontend
             .buttonById("DrawTreeArethusa")
             .fmap(HTML.Elem.setOnClickFunc(processArethusaInputFunc))
 
@@ -597,6 +621,14 @@ class Frontend {
         Frontend
             .arethusaExampleBtn
             .fmap(HTML.Elem.setOnClickFunc(arethusaExampleBtnFunc))
+
+        Frontend
+            .loadArethusaBtn
+            .fmap(HTML.Elem.setOnClickFunc(loadArethusaBtnFunc))
+
+        Frontend
+            .loadTextBtn
+            .fmap(HTML.Elem.setOnClickFunc(loadTextBtnFunc))
 
         Frontend
             .undoBtn
@@ -663,6 +695,14 @@ class Frontend {
         Frontend
             .moveDownBtn
             .fmap(HTML.Elem.setOnClickFunc(moveTokenDownFunc))
+
+        Frontend
+            .arethusaInputShowBtn
+            .fmap(HTML.Elem.setOnClickFunc(Frontend.toggleShowInputArethusa))
+
+        Frontend
+            .epidocInputShowBtn
+            .fmap(HTML.Elem.setOnClickFunc(Frontend.toggleShowInputEpiDoc))
     }
 
     static get splitSentenceBtn() {

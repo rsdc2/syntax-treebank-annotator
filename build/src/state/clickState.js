@@ -6,12 +6,20 @@ var ClickType;
     ClickType["Unknown"] = "unknown";
 })(ClickType || (ClickType = {}));
 class ClickState {
+    _lastClickedTreeNodeId = Nothing.of();
+    _elementType;
+    _clickType;
     constructor(lastClickedId, elementType, clickType) {
-        this._lastClickedTreeNodeId = Nothing.of();
         this._lastClickedTreeNodeId = lastClickedId;
         this._elementType = elementType;
         this._clickType = clickType;
     }
+    static of = (lastLeftClickedTreeNodeId) => (elementType) => (clickType) => {
+        return new ClickState(lastLeftClickedTreeNodeId, elementType, clickType);
+    };
+    static none = () => {
+        return ClickState.of(Nothing.of())(TreeLabelType.Unknown)(ClickType.Unknown);
+    };
     get edgeLabelElement() {
         if (this._elementType === TreeLabelType.EdgeLabel) {
             return Graph.edgeLabelById(this._lastClickedTreeNodeId);
@@ -56,18 +64,12 @@ class ClickState {
     get lastClickedId() {
         return this._lastClickedTreeNodeId;
     }
+    static unclicked = (clickState) => {
+        clickState
+            .currentClickedLabelElem
+            .fmap(HTML.Elem.Class.remove("clicked"));
+        clickState
+            .currentClickedCircleElem
+            .fmap(HTML.Elem.Class.remove("clicked"));
+    };
 }
-ClickState.of = (lastLeftClickedTreeNodeId) => (elementType) => (clickType) => {
-    return new ClickState(lastLeftClickedTreeNodeId, elementType, clickType);
-};
-ClickState.none = () => {
-    return ClickState.of(Nothing.of())(TreeLabelType.Unknown)(ClickType.Unknown);
-};
-ClickState.unclicked = (clickState) => {
-    clickState
-        .currentClickedLabelElem
-        .fmap(HTML.Elem.Class.remove("clicked"));
-    clickState
-        .currentClickedCircleElem
-        .fmap(HTML.Elem.Class.remove("clicked"));
-};
