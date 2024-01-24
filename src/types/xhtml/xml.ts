@@ -382,7 +382,7 @@ class XML {
         return XML.xpathMaybeC(`following::text()[ancestor::${ancestorName}]`) (MaybeT.of(node))
             .fromMaybe([]) as Text[]
     }
-
+    
     static fromXMLStr(xml: string): XMLDocument {
         if (xml === '') {
             return new DOMParser().parseFromString('<?xml version="1.0" encoding="UTF-8"?><empty/>', "application/xml")
