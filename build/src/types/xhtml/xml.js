@@ -275,23 +275,19 @@ class XML {
         if (xml === '') {
             return new DOMParser().parseFromString('<?xml version="1.0" encoding="UTF-8"?><empty/>', "application/xml");
         }
-        // if (xml.includes("error")) {
-        //     return new DOMParser().parseFromString('<?xml version="1.0" encoding="UTF-8"?><empty/>', "application/xml")
-        // }
         if (xml === "<empty/>") {
             return new DOMParser().parseFromString('<?xml version="1.0" encoding="UTF-8"?><empty/>', "application/xml");
         }
-        // return new DOMParser().parseFromString('<?xml version="1.0" encoding="UTF-8"?><empty/>', "application/xml")
-        // try {
         const result = new DOMParser()
             .parseFromString(xml, "application/xml");
+        // NB This produces a Content Security Policy error on Chrome if the result 
+        // is the parser error response (i.e. invalid XML)
+        // See https://github.com/Azure/azure-sdk-for-js/issues/13268
         if (result.querySelector("parsererror")) {
+            // Cf. https://developer.mozilla.org/en-US/docs/Web/API/DOMParser/parseFromString
             console.log("Parser error");
         }
         return result;
-        // } catch (error) {
-        //     return new DOMParser().parseFromString('<?xml version="1.0" encoding="UTF-8"?><empty/>', "application/xml")
-        // }
     }
     static getAttrVal = (namespace) => (localName) => (token) => {
         const attrs = token.attrs;

@@ -53,11 +53,16 @@ var FileHandling;
             return MaybeT.of(elem.files);
         };
         FileInput.onchange = (callback) => (e) => {
-            MaybeT.of(e.target)
+            const file = MaybeT.of(e.target)
                 .bind(FileInput.files)
                 .fmap(Arr.fromIterable)
-                .bind(Arr.head)
-                .fmap(TextFile.process(callback)('UTF-8'));
+                .bind(Arr.head);
+            if (file.value?.size !== undefined && file.value.size < 100000) {
+                file.fmap(TextFile.process(callback)('UTF-8'));
+            }
+            else {
+                console.log('File too large');
+            }
         };
     })(FileInput = FileHandling.FileInput || (FileHandling.FileInput = {}));
 })(FileHandling || (FileHandling = {}));

@@ -74,11 +74,16 @@ namespace FileHandling {
         }
 
         export const onchange = (callback: Maybe<(a: string) => any>) => (e: Event) => {
-            MaybeT.of(e.target as HTMLInputElement | null)
+            const file = MaybeT.of(e.target as HTMLInputElement | null)
                 .bind(FileInput.files)
                 .fmap(Arr.fromIterable)
                 .bind(Arr.head)
-                .fmap(TextFile.process (callback) ('UTF-8'))
+            
+            if (file.value?.size !== undefined && file.value.size < 100000) {
+                file.fmap(TextFile.process (callback) ('UTF-8'))
+            } else {
+                console.log('File too large')
+            }
         }
         
     }
