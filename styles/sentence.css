@@ -15,3 +15,7 @@ div.Sentences {
     font-size: medium;
     border-radius: 3.5px;
 }
+
+div.Sentences.set {
+    white-space: pre-wrap;
+}

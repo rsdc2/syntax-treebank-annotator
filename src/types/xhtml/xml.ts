@@ -385,15 +385,30 @@ class XML {
 
     static fromXMLStr(xml: string): XMLDocument {
         if (xml === '') {
-            return ''
+            return new DOMParser().parseFromString('<?xml version="1.0" encoding="UTF-8"?><empty/>', "application/xml")
         }
 
-        if (xml.includes("error")) {
-            return new XMLDocument()
-        }
+        // if (xml.includes("error")) {
+        //     return new DOMParser().parseFromString('<?xml version="1.0" encoding="UTF-8"?><empty/>', "application/xml")
+        // }
 
-        return new DOMParser()
-            .parseFromString(xml, "text/xml")
+        if (xml === "<empty/>") {
+            return new DOMParser().parseFromString('<?xml version="1.0" encoding="UTF-8"?><empty/>', "application/xml")
+        }
+        // return new DOMParser().parseFromString('<?xml version="1.0" encoding="UTF-8"?><empty/>', "application/xml")
+
+        // try {
+            const result = new DOMParser()
+                .parseFromString(xml, "application/xml")
+            
+            if (result.querySelector("parsererror")) {
+                Frontend.showMessage("Input is not valid XML.")
+            }
+            return result
+
+        // } catch (error) {
+        //     return new DOMParser().parseFromString('<?xml version="1.0" encoding="UTF-8"?><empty/>', "application/xml")
+        // }
     }
 
     static getAttrVal = (namespace: string) => (localName: string) => (token: HasElement): Maybe<string> => {

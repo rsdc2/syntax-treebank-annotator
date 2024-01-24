@@ -92,14 +92,14 @@ var HTML;
             elem.setAttribute(qualifiedName, value);
             return elem;
         };
-        Elem.appendStyle = (styleName) => (styleValue) => (elem) => {
-            // NB untested
-            const setAttrFunc = flip_2_to_3(HTML.Elem.setAttr);
-            return HTML.Elem
-                .getAttr("style")(elem)
-                .fmap(Str.join(";")(styleValue))
-                .fmap(setAttrFunc(styleName)(elem));
-        };
+        // export const appendStyle = (styleName: string) => (styleValue: string) => (elem: Element) => {
+        //     // NB untested
+        //     const setAttrFunc = flip_2_to_3(HTML.Elem.setAttr)
+        //     return HTML.Elem
+        //         .getAttr("style")(elem)
+        //         .fmap(Str.join(";")(styleValue))
+        //         .fmap(setAttrFunc(styleName)(elem))
+        // }
         Elem.getStyle = (styleName) => (elem) => {
             const value = elem.style[styleName];
             return MaybeT.of(value);

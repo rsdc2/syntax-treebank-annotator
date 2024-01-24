@@ -227,6 +227,10 @@ class Frontend {
     }
 
     static processText = (textStr: string) => {
+
+        if (textStr === "") {
+            return
+        }
         Frontend.saveCurrentState()
 
         const arethusa = MaybeT

@@ -273,13 +273,25 @@ class XML {
     };
     static fromXMLStr(xml) {
         if (xml === '') {
-            return new XMLDocument();
+            return new DOMParser().parseFromString('<?xml version="1.0" encoding="UTF-8"?><empty/>', "application/xml");
         }
-        if (xml.includes("error")) {
-            return new XMLDocument();
+        // if (xml.includes("error")) {
+        //     return new DOMParser().parseFromString('<?xml version="1.0" encoding="UTF-8"?><empty/>', "application/xml")
+        // }
+        if (xml === "<empty/>") {
+            return new DOMParser().parseFromString('<?xml version="1.0" encoding="UTF-8"?><empty/>', "application/xml");
         }
-        return new DOMParser()
-            .parseFromString(xml, "text/xml");
+        // return new DOMParser().parseFromString('<?xml version="1.0" encoding="UTF-8"?><empty/>', "application/xml")
+        // try {
+        const result = new DOMParser()
+            .parseFromString(xml, "application/xml");
+        if (result.querySelector("parsererror")) {
+            Frontend.showMessage("Input is not valid XML.");
+        }
+        return result;
+        // } catch (error) {
+        //     return new DOMParser().parseFromString('<?xml version="1.0" encoding="UTF-8"?><empty/>', "application/xml")
+        // }
     }
     static getAttrVal = (namespace) => (localName) => (token) => {
         const attrs = token.attrs;

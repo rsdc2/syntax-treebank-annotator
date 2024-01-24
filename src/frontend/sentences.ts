@@ -14,7 +14,7 @@ class SentencesDiv {
         SentencesDiv
             .control
             .fmap(Div.setTextContent(text))
-            .fmap(HTML.Elem.setAttr("style")("white-space: pre;"))
+            .fmap(HTML.Elem.Class.add('set'))
     }
 
 

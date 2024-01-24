@@ -388,7 +388,7 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
         if (inputArethusaXML.includes("parsererror")) {
             Frontend
                 .arethusaInputTextArea
-                .fmap( Frontend.updateTextArea("") ) 
+                .fmap( Frontend.updateTextArea("ERROR: invalid XML") ) 
 
             Frontend.showMessage("Input Arethusa is not valid XML.")
 
@@ -402,7 +402,7 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
         if (outputArethusaXML.includes("parsererror")) {
             Frontend
                 .arethusaOutputDiv
-                .fmap(Frontend.updateArethusaDiv ("") (Nothing.of()))
+                .fmap(Frontend.updateArethusaDiv ("ERROR: invalid XML") (Nothing.of()))
         } else {
             const highlighted = textStateIO
                 .highlightedNodeStr

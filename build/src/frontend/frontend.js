@@ -146,6 +146,9 @@ class Frontend {
         globalState.graph();
     };
     static processText = (textStr) => {
+        if (textStr === "") {
+            return;
+        }
         Frontend.saveCurrentState();
         const arethusa = MaybeT
             .of(textStr)

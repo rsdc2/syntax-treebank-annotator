@@ -124,17 +124,17 @@ namespace HTML {
             return elem
         }
 
-        export const appendStyle = (styleName: string) => (styleValue: string) => (elem: Element) => {
+        // export const appendStyle = (styleName: string) => (styleValue: string) => (elem: Element) => {
 
-            // NB untested
+        //     // NB untested
 
-            const setAttrFunc = flip_2_to_3(HTML.Elem.setAttr)
+        //     const setAttrFunc = flip_2_to_3(HTML.Elem.setAttr)
 
-            return HTML.Elem
-                .getAttr("style")(elem)
-                .fmap(Str.join(";")(styleValue))
-                .fmap(setAttrFunc(styleName)(elem))
-        }
+        //     return HTML.Elem
+        //         .getAttr("style")(elem)
+        //         .fmap(Str.join(";")(styleValue))
+        //         .fmap(setAttrFunc(styleName)(elem))
+        // }
 
         export const getStyle = (styleName: string) => (elem: HTMLElement) => {
             const value = elem.style[styleName]
