@@ -402,7 +402,7 @@ class XML {
                 .parseFromString(xml, "application/xml")
             
             if (result.querySelector("parsererror")) {
-                Frontend.showMessage("Input is not valid XML.")
+                console.log("Parser error")
             }
             return result
 
