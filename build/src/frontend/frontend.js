@@ -657,7 +657,7 @@ class Frontend {
             .fromMaybe("");
         const setTextContent = MaybeT.of(newXML)
             .fmap(ArethusaDiv.formatXMLForDiv)
-            .fmap(Str.replace(formattedHighlighted)('<span style="color:blue" class="selected">' + formattedHighlighted + "</span>"))
+            .fmap(Str.replace(formattedHighlighted)('<span class="selected">' + formattedHighlighted + "</span>"))
             .fmap(Div.setInnerHTML);
         MaybeT.of(arethusaDiv)
             .applyFmap(setTextContent);

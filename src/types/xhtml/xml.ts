@@ -384,6 +384,14 @@ class XML {
     }
 
     static fromXMLStr(xml: string): XMLDocument {
+        if (xml === '') {
+            return ''
+        }
+
+        if (xml.includes("error")) {
+            return new XMLDocument()
+        }
+
         return new DOMParser()
             .parseFromString(xml, "text/xml")
     }

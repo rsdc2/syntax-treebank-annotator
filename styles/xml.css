@@ -38,3 +38,7 @@ textarea.input {
   scrollbar-width: 45vw;
   resize: vertical;
 }
+
+span.selected {
+  color: blue
+}

@@ -272,6 +272,12 @@ class XML {
             .fromMaybe([]);
     };
     static fromXMLStr(xml) {
+        if (xml === '') {
+            return new XMLDocument();
+        }
+        if (xml.includes("error")) {
+            return new XMLDocument();
+        }
         return new DOMParser()
             .parseFromString(xml, "text/xml");
     }
