@@ -484,8 +484,9 @@ class Frontend {
             Frontend.processArethusa(arethusaUglifiedExample)
         }
 
-        const loadArethusaBtnFunc = (e: Event) => {
-           FileHandling.loadFromDialog('.xml')(MaybeT.of(Frontend.processArethusa))
+        const loadArethusaBtnFunc = () => {
+            FileHandling.loadFromDialog('.xml')(MaybeT.of(Frontend.processArethusa))
+
         }
 
         const loadEpiDocBtnFunc = (e: Event) => {

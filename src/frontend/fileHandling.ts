@@ -79,11 +79,25 @@ namespace FileHandling {
                 .fmap(Arr.fromIterable)
                 .bind(Arr.head)
             
-            if (file.value?.size !== undefined && file.value.size < 100000) {
-                file.fmap(TextFile.process (callback) ('UTF-8'))
-            } else {
-                console.log('File too large')
+            try {
+                if (file.value?.size !== undefined && file.value.size < 100000) {
+                    file.fmap(TextFile.process (callback) ('UTF-8'))
+                } else {
+                    throw new FileSizeError("File is too large. Files must be below 100KB")
+                }
+            } catch (error) {
+                if (error instanceof FileSizeError) {
+                    const outputArethusaDiv = ArethusaDiv.control._value
+                    if (outputArethusaDiv != null) {
+                        outputArethusaDiv.replaceChildren("ERROR: " + error.message)
+                    } else {
+                        throw new Error("Missing output div element")
+                    }
+                } else {
+                    throw error
+                }
             }
+
         }
         
     }
