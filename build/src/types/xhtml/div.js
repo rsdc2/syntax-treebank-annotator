@@ -56,9 +56,6 @@ class Div {
     static innerText = (div) => {
         return div.innerText;
     };
-    static setInnerHTML = (s) => (div) => {
-        div.innerHTML = s;
-    };
     static setTextContent = (s) => (div) => {
         div.textContent = s;
         return div;

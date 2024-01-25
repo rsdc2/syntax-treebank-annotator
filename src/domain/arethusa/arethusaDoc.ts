@@ -378,9 +378,6 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
 
     static pushToFrontend = (textStateIO: TextStateIO) => {
 
-        const outputArethusa = textStateIO.outputArethusaP
-
-
         const outputArethusaXML = textStateIO
             .outputArethusaXML
             .unpack("")

@@ -260,7 +260,6 @@ class ArethusaDoc {
         return ArethusaDoc.sentences(this);
     }
     static pushToFrontend = (textStateIO) => {
-        const outputArethusa = textStateIO.outputArethusaP;
         const outputArethusaXML = textStateIO
             .outputArethusaXML
             .unpack("");

@@ -89,10 +89,6 @@ class Div {
     static innerText = (div: HTMLDivElement) => {
         return div.innerText
     }
-
-    static setInnerHTML = (s: string) => (div: HTMLDivElement) => {
-        div.innerHTML = s
-    }
     
     static setTextContent = (s: string) => (div: HTMLDivElement) => {
         div.textContent = s

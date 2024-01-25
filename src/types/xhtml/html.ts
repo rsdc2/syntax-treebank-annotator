@@ -29,15 +29,6 @@ namespace HTML {
         }
         return _setValue
     }
-
-    export const setInnerHTML = (html: string) => 
-        (elem: HTMLElement) => 
-    {
-        elem.innerHTML = html
-        return MaybeT.of(elem)
-    }
-
-
     
     export const value = (elem: HTMLInputElement | HTMLTextAreaElement) => {
         return elem.value

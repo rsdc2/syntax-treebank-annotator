@@ -22,10 +22,6 @@ var HTML;
         }
         return _setValue;
     };
-    HTML.setInnerHTML = (html) => (elem) => {
-        elem.innerHTML = html;
-        return MaybeT.of(elem);
-    };
     HTML.value = (elem) => {
         return elem.value;
     };

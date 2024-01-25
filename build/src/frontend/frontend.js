@@ -241,19 +241,30 @@ class Frontend {
         Graph.svg().fmap(SVG.ViewBox.setViewBoxVal(Constants.defaultViewBox));
     };
     static showMessage = (message) => {
-        HTML.q("div.message")
-            .bindErr("No message element", HTML.setInnerHTML(message))
-            .fmap(HTML.Elem.unsetHidden);
+        const elem = document.querySelector("div.message");
+        if (elem == null) {
+            throw new Error("No message element");
+        }
+        elem.textContent = message;
+        // Show the message
+        HTML.Elem.unsetHidden(elem);
     };
     static hideMessage() {
-        HTML.q("div.message")
-            .bindErr("No message element", HTML.setInnerHTML(""))
-            .fmap(HTML.Elem.setHidden);
+        const elem = document.querySelector("div.message");
+        if (elem == null) {
+            throw new Error("No message element");
+        }
+        elem.textContent = "";
+        // Show the message
+        HTML.Elem.setHidden(elem);
     }
     static toggleMessage(message) {
-        HTML.q("div.message")
-            .bindErr("No message element", HTML.setInnerHTML(message))
-            .fmap(HTML.Elem.toggleHidden);
+        const elem = document.querySelector("div.message");
+        if (elem == null) {
+            throw new Error("No message element");
+        }
+        elem.textContent = message;
+        HTML.Elem.toggleHidden(elem);
     }
     static toggleAbout(e) {
         e.stopPropagation();
@@ -650,22 +661,6 @@ class Frontend {
             .arethusaOutputShowBtn
             .fmap(HTML.Elem.Class.toggle("active"));
     };
-    // static updateArethusaDiv = (newXML: string) => 
-    //     (xmlToHighlight: Maybe<string>) => 
-    //     // (wordNodesXML: string[]) => 
-    //     (arethusaDiv: HTMLDivElement) => {
-    //     // const formattedWordNodes = wordNodesXML
-    //     //     .map(ArethusaDiv.formatXMLForDiv)
-    //     const formattedHighlighted = xmlToHighlight
-    //         .fmap(ArethusaDiv.formatXMLForDiv)
-    //         .fromMaybe("")
-    //     const setTextContent = MaybeT.of(newXML)
-    //         .fmap(ArethusaDiv.formatXMLForDiv)
-    //         .fmap(Str.replace(formattedHighlighted) ('<span class="selected">' + formattedHighlighted + "</span>"))
-    //         .fmap(Div.setInnerHTML)
-    //     MaybeT.of(arethusaDiv)
-    //         .applyFmap(setTextContent)
-    // }
     /**
      * Highlights the text in xmlToHighLight in the arethusaDiv element
      * @param arethusaDocXMLStr the XML string of the whole Arethusa XML document
