@@ -17,14 +17,17 @@ namespace DXML {
         return maybe (new Array<HasToken>) (components)
     }
 
+    /**
+     *
+     * @param n an object containing a Node object, e.g. ...
+     * @returns the .node property of n, the object containing a Node object
+     */
     export function node(n: HasNode) {
         return n._node
     }
 
-    export const nodeXMLStr = (n: HasNode) => {
-        return MaybeT.of(n)
-            .fmap(DXML.node)
-            .fmap(XML.toStr)
+    export const nodeXMLStr = (n: HasNode): Maybe<string> => {
+        return MaybeT.of(XML.toStr(n._node))
     }
 
     export function wordsFromArray(component: WordType): (a: Node[]) => HasText[] {

@@ -684,8 +684,14 @@ class XML {
         return MaybeT.of(text.textContent)
     }
 
-    static toStr(root: Node) {
-        return new XMLSerializer().serializeToString(root)
+    /**
+     * Serialize an XML Node to a string representation,
+     * using XMLSerializer().serializeToString
+     * @param node 
+     * @returns 
+     */
+    static toStr(node: Node) {
+        return new XMLSerializer().serializeToString(node)
     }
 
     static xpathMaybeC(xpathstr: string) {

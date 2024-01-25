@@ -501,8 +501,14 @@ class XML {
     static textContent = (text) => {
         return MaybeT.of(text.textContent);
     };
-    static toStr(root) {
-        return new XMLSerializer().serializeToString(root);
+    /**
+     * Serialize an XML Node to a string representation,
+     * using XMLSerializer().serializeToString
+     * @param node
+     * @returns
+     */
+    static toStr(node) {
+        return new XMLSerializer().serializeToString(node);
     }
     static xpathMaybeC(xpathstr) {
         function _xpath(xmldoc) {

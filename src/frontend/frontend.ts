@@ -893,25 +893,57 @@ class Frontend {
             .fmap(HTML.Elem.Class.toggle("active"))
     }
 
-    static updateArethusaDiv = (newXML: string) => 
-        (xmlToHighlight: Maybe<string>) => 
-        // (wordNodesXML: string[]) => 
-        (arethusaDiv: HTMLDivElement) => {
+    // static updateArethusaDiv = (newXML: string) => 
+    //     (xmlToHighlight: Maybe<string>) => 
+    //     // (wordNodesXML: string[]) => 
+    //     (arethusaDiv: HTMLDivElement) => {
 
-        // const formattedWordNodes = wordNodesXML
-        //     .map(ArethusaDiv.formatXMLForDiv)
+    //     // const formattedWordNodes = wordNodesXML
+    //     //     .map(ArethusaDiv.formatXMLForDiv)
         
-        const formattedHighlighted = xmlToHighlight
-            .fmap(ArethusaDiv.formatXMLForDiv)
-            .fromMaybe("")
+    //     const formattedHighlighted = xmlToHighlight
+    //         .fmap(ArethusaDiv.formatXMLForDiv)
+    //         .fromMaybe("")
 
-        const setTextContent = MaybeT.of(newXML)
-            .fmap(ArethusaDiv.formatXMLForDiv)
-            .fmap(Str.replace(formattedHighlighted) ('<span class="selected">' + formattedHighlighted + "</span>"))
-            .fmap(Div.setInnerHTML)
+    //     const setTextContent = MaybeT.of(newXML)
+    //         .fmap(ArethusaDiv.formatXMLForDiv)
+    //         .fmap(Str.replace(formattedHighlighted) ('<span class="selected">' + formattedHighlighted + "</span>"))
+    //         .fmap(Div.setInnerHTML)
 
-        MaybeT.of(arethusaDiv)
-            .applyFmap(setTextContent)
+    //     MaybeT.of(arethusaDiv)
+    //         .applyFmap(setTextContent)
+    // }
+
+    /**
+     * Highlights the text in xmlToHighLight in the arethusaDiv element
+     * @param arethusaDocXMLStr the XML string of the whole Arethusa XML document
+     * @returns 
+     */
+    static updateArethusaDiv = 
+        (arethusaDocXMLStr: string) => 
+        (nodeToHighlight: Maybe<ArethusaWord | ArethusaSentence>) => 
+        (arethusaDiv: HTMLDivElement): void => {
+
+        if (nodeToHighlight.value == null) {
+            return
+        }
+        const node = nodeToHighlight.value
+        const text = XML.toStr(node._node)
+        
+        const firstIndexOf = arethusaDocXMLStr.indexOf(text)
+        const lastIndexOf = firstIndexOf + text.length
+
+        const textToPrepend = arethusaDocXMLStr.substring(0, firstIndexOf)
+
+        const spanText = arethusaDocXMLStr.substring(firstIndexOf, lastIndexOf + 1)
+        const textToAppend = arethusaDocXMLStr.substring(lastIndexOf + 1)
+
+        const span = document.createElement("span")
+        span.classList.add("selected")
+        span.append(spanText)
+
+        arethusaDiv.replaceChildren("")
+        arethusaDiv.append(textToPrepend, span, textToAppend)
     }
 
     static updateTextArea = (newText: string) => 

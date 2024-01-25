@@ -77,6 +77,11 @@ class Div {
         return previousTextLength + extentNodeOffset
     }
 
+    /**
+     * Return innerHTML of Div element
+     * @param div 
+     * @returns 
+     */
     static innerHTML = (div: HTMLDivElement) => {
         return div.innerHTML
     } 

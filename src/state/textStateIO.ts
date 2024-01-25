@@ -424,12 +424,53 @@ class TextStateIO {
         s.pushEpiDoc(newEpiDoc)
     } 
 
-    get highlightedNodeStr () {
+    /**
+     * Return as an ArethusaWord or ArthusaSentence 
+     * the currently selected (highlighted) XML node
+     */
+    get highlightedNode(): Maybe<ArethusaWord | ArethusaSentence> {
         switch (this
             .viewState
             .fmap(ViewState.viewType)
-            .fromMaybe(ViewType.Unknown))
-            {
+            .fromMaybe(ViewType.Unknown)) {
+
+            case (ViewType.Word): {
+                const getWord = this
+                    .currentTokenId
+                    .fmap(ArethusaDoc.wordById)
+                
+                return this
+                    .outputArethusaP
+                    .applyBind(getWord)
+            }
+
+            case (ViewType.Sentence): {
+                const getSentence = this
+                    .currentSentenceId
+                    .fmap(ArethusaDoc.sentenceById)
+                
+                return this
+                    .outputArethusaP
+                    .applyBind(getSentence)
+            }
+
+            default: {
+                return Nothing.of<ArethusaWord | ArethusaSentence>()
+            }
+        }
+
+    }
+
+    /**
+     * Returns as a string the XML node 
+     * to be highlighed
+     */
+    get highlightedNodeStr(): Maybe<string> {
+        switch (this
+            .viewState
+            .fmap(ViewState.viewType)
+            .fromMaybe(ViewType.Unknown)) {
+
             case (ViewType.Word): {
                 const getWord = this
                     .currentTokenId

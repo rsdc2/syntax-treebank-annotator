@@ -260,6 +260,40 @@ class TextStateIO {
             .bindErr("No formatted EpiDoc XML string.", EpiDoc.fromXMLStr);
         s.pushEpiDoc(newEpiDoc);
     };
+    /**
+     * Return as an ArethusaWord or ArthusaSentence
+     * the currently selected (highlighted) XML node
+     */
+    get highlightedNode() {
+        switch (this
+            .viewState
+            .fmap(ViewState.viewType)
+            .fromMaybe(ViewType.Unknown)) {
+            case (ViewType.Word): {
+                const getWord = this
+                    .currentTokenId
+                    .fmap(ArethusaDoc.wordById);
+                return this
+                    .outputArethusaP
+                    .applyBind(getWord);
+            }
+            case (ViewType.Sentence): {
+                const getSentence = this
+                    .currentSentenceId
+                    .fmap(ArethusaDoc.sentenceById);
+                return this
+                    .outputArethusaP
+                    .applyBind(getSentence);
+            }
+            default: {
+                return Nothing.of();
+            }
+        }
+    }
+    /**
+     * Returns as a string the XML node
+     * to be highlighed
+     */
     get highlightedNodeStr() {
         switch (this
             .viewState

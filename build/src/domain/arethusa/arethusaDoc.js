@@ -260,6 +260,7 @@ class ArethusaDoc {
         return ArethusaDoc.sentences(this);
     }
     static pushToFrontend = (textStateIO) => {
+        const outputArethusa = textStateIO.outputArethusaP;
         const outputArethusaXML = textStateIO
             .outputArethusaXML
             .unpack("");
@@ -281,14 +282,13 @@ class ArethusaDoc {
         if (outputArethusaXML.includes("parsererror")) {
             Frontend
                 .arethusaOutputDiv
-                .fmap(Frontend.updateArethusaDiv("ERROR: invalid XML")(Nothing.of()));
+                .fmap(Frontend.updateArethusaDiv(outputArethusaXML)(Nothing.of()));
         }
         else {
-            const highlighted = textStateIO
-                .highlightedNodeStr;
+            const highlightedNode = textStateIO.highlightedNode;
             Frontend
                 .arethusaOutputDiv
-                .fmap(Frontend.updateArethusaDiv(outputArethusaXML)(highlighted));
+                .fmap(Frontend.updateArethusaDiv(outputArethusaXML)(highlightedNode));
         }
     };
     static pushTokenToSentence = (addFunc) => (tokenId) => (newSentenceId) => (a) => {

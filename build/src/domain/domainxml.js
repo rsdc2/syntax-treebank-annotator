@@ -15,14 +15,17 @@ var DXML;
         return maybe(new Array)(components);
     }
     DXML.multiwordsFromXmlDoc = multiwordsFromXmlDoc;
+    /**
+     *
+     * @param n an object containing a Node object, e.g. ...
+     * @returns the .node property of n, the object containing a Node object
+     */
     function node(n) {
         return n._node;
     }
     DXML.node = node;
     DXML.nodeXMLStr = (n) => {
-        return MaybeT.of(n)
-            .fmap(DXML.node)
-            .fmap(XML.toStr);
+        return MaybeT.of(XML.toStr(n._node));
     };
     function wordsFromArray(component) {
         return map(component.of);
