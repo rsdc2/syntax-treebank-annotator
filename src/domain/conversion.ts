@@ -47,11 +47,6 @@ class Conversion {
                 secdeps: "",
                 corpusId: XML.getAttrVal("http://www.w3.org/XML/1998/namespace")("id")(token).fromMaybe("")
             }
-            // console.log(attr)
-
-            // if (attr.form === "") {
-            //     return acc
-            // } 
 
             return [...acc, attr]
 

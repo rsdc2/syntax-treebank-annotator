@@ -271,6 +271,7 @@ class ArethusaDoc {
                 .arethusaInputTextArea
                 .fmap(Frontend.updateTextArea("ERROR: invalid XML"));
             Frontend.showMessage("Input Arethusa is not valid XML.");
+            Frontend.arethusaOutputDiv.value?.replaceChildren("");
         }
         else {
             Frontend.hideMessage();
@@ -279,9 +280,7 @@ class ArethusaDoc {
                 .fmap(Frontend.updateTextArea(inputArethusaXML));
         }
         if (outputArethusaXML.includes("parsererror")) {
-            Frontend
-                .arethusaOutputDiv
-                .fmap(Frontend.updateArethusaDiv(outputArethusaXML)(Nothing.of()));
+            Frontend.arethusaOutputDiv.value?.replaceChildren("");
         }
         else {
             const highlightedNode = textStateIO.highlightedNode;

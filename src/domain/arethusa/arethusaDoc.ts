@@ -392,6 +392,7 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
                 .fmap( Frontend.updateTextArea("ERROR: invalid XML") ) 
 
             Frontend.showMessage("Input Arethusa is not valid XML.")
+            Frontend.arethusaOutputDiv.value?.replaceChildren("")
 
         } else {
             Frontend.hideMessage()
@@ -401,9 +402,7 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
         }
         
         if (outputArethusaXML.includes("parsererror")) {
-            Frontend
-                .arethusaOutputDiv
-                .fmap(Frontend.updateArethusaDiv (outputArethusaXML) (Nothing.of()))
+            Frontend.arethusaOutputDiv.value?.replaceChildren("")
         } else {
             const highlightedNode = textStateIO.highlightedNode
 
@@ -616,8 +615,6 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
                     .unpack("")
 
                 changes.push([tokenSentenceId, Str.fromNum(currentId), Str.fromNum(newId)])
-
-                // console.log(changes)
 
                 // Renumber token ids
                 const newToken = MaybeT.ofThrow("Could not create Maybe<Word>.", DXML.node(w))

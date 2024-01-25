@@ -41,8 +41,6 @@ class TextStateIO {
             s.bind(TextState.epidocDeep)
         )
 
-        // console.log('appendNewState', newState.outputArethusa.value?.node)
-
         if (newState._sentenceVS.isNothing) {
             if (this.currentState.value?._sentenceVS != null) {
                 newState._sentenceVS = this
@@ -57,7 +55,6 @@ class TextStateIO {
         
         if (!maybeNS.fmap(TextState.hasNothing).fromMaybe(true)) {
             maybeNS.fmap(this.push)
-            // console.log('Has TS')
             this.currentStateIdx = this.lastStateIdx
         }
 
@@ -209,9 +206,6 @@ class TextStateIO {
             .outputArethusaP
             .bind(flip(ArethusaDoc.replaceSentence)(newS))
 
-        // console.log('changeArethusaSentence', s.outputArethusaP.value?.node)
-        // console.log('newArethusa', newArethusa.value?.node)
-
         s.pushOutputArethusa
             (ext)
             (new ViewState (
@@ -312,12 +306,6 @@ class TextStateIO {
             .bind(TextState.sentenceVS)
             .bind(setViewBox)
         
-        // console.log(
-        //     globalState
-        //         .textStateIO
-        //         .bind(TextStateIO.sentenceViewState)
-        //         .fmap(SentenceViewState.viewstates)
-        // )
         return x
     }
 
