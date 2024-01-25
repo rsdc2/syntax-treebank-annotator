@@ -45,14 +45,6 @@ class Div {
             .reduce((acc, item) => acc + item.length, 0);
         return previousTextLength + extentNodeOffset;
     };
-    /**
-     * Return innerHTML of Div element
-     * @param div
-     * @returns
-     */
-    static innerHTML = (div) => {
-        return div.innerHTML;
-    };
     static innerText = (div) => {
         return div.innerText;
     };
