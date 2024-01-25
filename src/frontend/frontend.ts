@@ -445,7 +445,17 @@ class Frontend {
         }
 
         ArethusaDiv.control
-            .fmapErr("No Arethusa Div", HTML.Elem.setOnClickFunc(arethusaDivClickFunc))
+            .fmapErr("No Arethusa Div", HTML.Elem.setOnClickFunc(
+                arethusaDivClickFunc
+            )
+        )
+
+        HTML.q("div.message")
+            .fmap(HTML.Elem.setOnClickFunc(
+                (e: MouseEvent) => e.stopPropagation()
+            )
+        )
+            
 
     }
 
@@ -622,7 +632,9 @@ class Frontend {
 
         Frontend
             .buttonById("btnAbout")
-            .fmapErr("No about button", HTML.Elem.setOnClickFunc(Frontend.toggleAbout))
+            .fmapErr("No about button", HTML.Elem.setOnClickFunc(
+                Frontend.toggleAbout
+            ))
 
         Frontend
             .inputShowBtn

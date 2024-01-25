@@ -206,6 +206,9 @@ namespace UserInput {
     export function setClickOutMessageBox() {
         window.onclick = (ev: MouseEvent) => {
             Frontend.hideMessage()
+            Frontend
+                .buttonById("btnAbout")
+                .fmap(HTML.Elem.Class.remove("active"))
         }
     }
 }

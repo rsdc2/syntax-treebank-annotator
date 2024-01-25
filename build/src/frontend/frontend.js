@@ -313,6 +313,8 @@ class Frontend {
         };
         ArethusaDiv.control
             .fmapErr("No Arethusa Div", HTML.Elem.setOnClickFunc(arethusaDivClickFunc));
+        HTML.q("div.message")
+            .fmap(HTML.Elem.setOnClickFunc((e) => e.stopPropagation()));
     }
     static setTextAreaClickEvents() {
         const inputTextAreaClickFunc = (e) => {
