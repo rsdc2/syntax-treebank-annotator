@@ -22,10 +22,6 @@ class SelRange implements ISelRange {
         this.focusNode = focusNode
         this.focusExtent = focusExtent
     }
-
-    // static ofMaybes (anchorNode: Maybe<Node>) => (anchorExtent: Maybe<number>) => (focusNode: Maybe<Node>) => (focusExtent: Maybe<number>) => {
-
-    // }
 }
 
 class CursorPos implements ICursorPos {
@@ -85,17 +81,5 @@ class Sel {
         )
     }
 
-
-
-    // static setCursorPosFromTextNodeInfo = (textNodeInfo: DivTextNodeInfo) => (sel: Selection) => {
-    //     const anchorNode = textNodeInfo.maybeText
-
-    //     const createCursorPos = textNodeInfo
-    //         .maybeText
-    //         .fmap(CursorPos.of)
-
-    //     const cursorPos = textNodeInfo
-    //         .
-    // }
 
 }
