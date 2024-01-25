@@ -83,12 +83,18 @@ class ArethusaDoc {
             .docCopy
             .bind(ArethusaDoc.fromNode);
     };
+    get deepcopy() {
+        return ArethusaDoc.deepcopy(this);
+    }
     get doc() {
         if (XML.isDocument(this.node)) {
             return MaybeT.of(this.node);
         }
         return MaybeT.of(this._node.ownerDocument);
     }
+    /**
+     * Deep copy of the Arethusa document
+     */
     get docCopy() {
         return this.doc.fmap(XML.deepcopy);
     }
@@ -160,15 +166,33 @@ class ArethusaDoc {
         const sentenceElemsNoNothings = Arr.removeNothings(sentenceElems);
         const arethusaXMLNodeWithChildren = arethusaXMLNode
             .bind(XML.appendChildrenToNode(sentenceElemsNoNothings));
-        return arethusaXMLNodeWithChildren
+        const arethusaDoc = arethusaXMLNodeWithChildren
             .bind(ArethusaDoc.fromNode)
             .bind(ArethusaDoc.renumberSentenceIds)
-            .bind(ArethusaDoc.renumberTokenIds(false));
+            .bind(ArethusaDoc.renumberTokenIds(false))
+            .value;
+        if (arethusaDoc == null) {
+            return Nothing.of();
+        }
+        if (arethusaDoc.tokens.length > Constants.MAXTOKENS) {
+            throw new TokenCountError(`Too many tokens. ` +
+                `Must be ${Constants.MAXTOKENS} or fewer`);
+        }
+        return MaybeT.of(arethusaDoc);
     };
     static fromXMLStr = (arethusaXML) => {
         const xmldoc = XML.fromXMLStr(arethusaXML);
-        return XML.documentElement(xmldoc)
-            .bind(ArethusaDoc.fromNode);
+        const arethusaDoc = XML.documentElement(xmldoc)
+            .bind(ArethusaDoc.fromNode).value;
+        if (arethusaDoc == null) {
+            return Nothing.of();
+        }
+        // Check not too many tokens
+        if (arethusaDoc.tokens.length > Constants.MAXTOKENS) {
+            throw new TokenCountError(`Too many tokens. ` +
+                `Must be ${Constants.MAXTOKENS} or fewer`);
+        }
+        return MaybeT.of(arethusaDoc);
     };
     static incrementSentenceIdsFrom = (startSentenceId) => (a) => {
         const reduceIncrement = (a, id) => {
@@ -398,6 +422,14 @@ class ArethusaDoc {
      */
     static renumberTokenIds = (renumberHeads) => (a) => {
         const changes = new Array(); // Stores a map of id changes from old to new
+        const arethusa_ = a.deepcopy.value;
+        if (arethusa_ == null)
+            return Nothing.of();
+        // Check not too many tokens
+        if (arethusa_.tokens.length > Constants.MAXTOKENS) {
+            throw new TokenCountError(`Too many tokens. ` +
+                `Must be ${Constants.MAXTOKENS} or fewer`);
+        }
         const maybeWords = MaybeT.of(a)
             .bindErr("No Arethusa.", ArethusaDoc.deepcopy)
             .fmapErr("No words in Arethusa.", ArethusaDoc.tokens)

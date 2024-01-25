@@ -120,17 +120,34 @@ class Frontend {
             .fmapErr("No textStateIO", TextStateIO.appendNewState(false)(textState));
     };
     static processEpiDoc = (epidocStr) => {
-        Frontend.saveCurrentState();
-        const epidoc = EpiDoc.fromXMLStr(epidocStr);
-        const arethusa = MaybeT
-            .of(epidocStr)
-            .bind(Conversion.epidocXMLToArethusa);
-        const textState = TextState.of(arethusa.fmap(ViewState.of("1")("1")), Nothing.of(), Nothing.of(), Nothing.of(), arethusa, arethusa, epidoc);
-        globalState
-            .textStateIO
-            .fmapErr("No textStateIO", TextStateIO.appendNewState(false)(textState));
-        globalState.createTreeStateIO();
-        globalState.graph();
+        try {
+            Frontend.saveCurrentState();
+            const epidoc = EpiDoc.fromXMLStr(epidocStr);
+            const arethusa = MaybeT
+                .of(epidocStr)
+                .bind(Conversion.epidocXMLToArethusa);
+            const textState = TextState.of(arethusa.fmap(ViewState.of("1")("1")), Nothing.of(), Nothing.of(), Nothing.of(), arethusa, arethusa, epidoc);
+            globalState
+                .textStateIO
+                .fmapErr("No textStateIO", TextStateIO.appendNewState(false)(textState));
+            globalState.createTreeStateIO();
+            globalState.graph();
+        }
+        catch (error) {
+            const outputArethusaDiv = ArethusaDiv.control._value;
+            if (outputArethusaDiv == null) {
+                throw new Error("No output Arethusa <div> element");
+            }
+            if (error instanceof XMLParseError) {
+                outputArethusaDiv.replaceChildren(error.message);
+            }
+            else if (error instanceof TokenCountError) {
+                outputArethusaDiv.replaceChildren(error.message);
+            }
+            else {
+                throw error;
+            }
+        }
     };
     static processArethusa = (arethusaStr) => {
         try {
@@ -146,14 +163,15 @@ class Frontend {
             globalState.graph();
         }
         catch (error) {
+            const outputArethusaDiv = ArethusaDiv.control._value;
+            if (outputArethusaDiv == null) {
+                throw new Error("No output Arethusa <div> element");
+            }
             if (error instanceof XMLParseError) {
-                const outputArethusaDiv = ArethusaDiv.control._value;
-                if (outputArethusaDiv != null) {
-                    outputArethusaDiv.replaceChildren("ERROR: Could not parse XML, likely because the XML contains an error.");
-                }
-                else {
-                    throw new Error("Missing output div element");
-                }
+                outputArethusaDiv.replaceChildren(error.message);
+            }
+            else if (error instanceof TokenCountError) {
+                outputArethusaDiv.replaceChildren(error.message);
             }
             else {
                 throw error;
@@ -164,16 +182,33 @@ class Frontend {
         if (textStr === "") {
             return;
         }
-        Frontend.saveCurrentState();
-        const arethusa = MaybeT
-            .of(textStr)
-            .bind(ArethusaDoc.fromPlainTextStr);
-        const textstate = TextState.of(arethusa.fmap(ViewState.of("1")("1")), Nothing.of(), Nothing.of(), MaybeT.of(textStr), arethusa, arethusa, Nothing.of());
-        globalState
-            .textStateIO
-            .fmapErr("No textStateIO", TextStateIO.appendNewState(false)(textstate));
-        globalState.createTreeStateIO();
-        globalState.graph();
+        try {
+            Frontend.saveCurrentState();
+            const arethusa = MaybeT
+                .of(textStr)
+                .bind(ArethusaDoc.fromPlainTextStr);
+            const textstate = TextState.of(arethusa.fmap(ViewState.of("1")("1")), Nothing.of(), Nothing.of(), MaybeT.of(textStr), arethusa, arethusa, Nothing.of());
+            globalState
+                .textStateIO
+                .fmapErr("No textStateIO", TextStateIO.appendNewState(false)(textstate));
+            globalState.createTreeStateIO();
+            globalState.graph();
+        }
+        catch (error) {
+            const outputArethusaDiv = ArethusaDiv.control._value;
+            if (outputArethusaDiv == null) {
+                throw new Error("No output Arethusa <div> element");
+            }
+            if (error instanceof XMLParseError) {
+                outputArethusaDiv.replaceChildren(error.message);
+            }
+            else if (error instanceof TokenCountError) {
+                outputArethusaDiv.replaceChildren(error.message);
+            }
+            else {
+                throw error;
+            }
+        }
     };
     static pushPlainTextToFrontend = (textStateIO) => {
         const plainText = textStateIO
