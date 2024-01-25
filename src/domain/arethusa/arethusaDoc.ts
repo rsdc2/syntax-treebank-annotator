@@ -138,6 +138,10 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
             .bind(ArethusaDoc.fromNode)
     }
 
+    get deepcopy() {
+        return ArethusaDoc.deepcopy(this)
+    }
+
     get doc(): Maybe<XMLDocument | Node> {
         if (XML.isDocument(this.node)) {
             return MaybeT.of(this.node)
@@ -145,6 +149,9 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
         return MaybeT.of(this._node.ownerDocument)
     }
 
+    /**
+     * Deep copy of the Arethusa document
+     */
     get docCopy() {
         return this.doc.fmap(XML.deepcopy)
     }
@@ -202,7 +209,7 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
             .bind(ArethusaDoc.fromNode)
     }
 
-    static fromPlainTextStr = (plainText: string) => {
+    static fromPlainTextStr = (plainText: string): Maybe<ArethusaDoc> => {
         const arethusaXMLNode = MaybeT
             .of(XML.fromXMLStr(arethusaTemplate))
             .bind(XML.documentElement)
@@ -234,18 +241,46 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
         const arethusaXMLNodeWithChildren = arethusaXMLNode
             .bind(XML.appendChildrenToNode(sentenceElemsNoNothings))
 
-        return arethusaXMLNodeWithChildren
+        const arethusaDoc = arethusaXMLNodeWithChildren
             .bind(ArethusaDoc.fromNode)
             .bind(ArethusaDoc.renumberSentenceIds)
             .bind(ArethusaDoc.renumberTokenIds(false))
+            .value
+
+        if (arethusaDoc == null) {
+            return Nothing.of()
+        }
+
+        if (arethusaDoc.tokens.length > Constants.MAXTOKENS) {
+            throw new TokenCountError(
+                `Too many tokens. ` + 
+                `Must be ${Constants.MAXTOKENS} or fewer`
+            )
+        }
+
+        return MaybeT.of(arethusaDoc)
     }
 
     static fromXMLStr = (arethusaXML: string): Maybe<ArethusaDoc> => {
 
         const xmldoc = XML.fromXMLStr(arethusaXML)
 
-        return XML.documentElement(xmldoc)
-            .bind(ArethusaDoc.fromNode)
+        const arethusaDoc = XML.documentElement(xmldoc)
+            .bind(ArethusaDoc.fromNode).value
+        
+        if (arethusaDoc == null) {
+            return Nothing.of()
+        }
+
+        // Check not too many tokens
+        if (arethusaDoc.tokens.length > Constants.MAXTOKENS) {
+            throw new TokenCountError(
+                `Too many tokens. ` + 
+                `Must be ${Constants.MAXTOKENS} or fewer`
+            )
+        } 
+
+        return MaybeT.of(arethusaDoc)
     }
 
     static incrementSentenceIdsFrom = 
@@ -594,6 +629,17 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
 
     static renumberTokenIds = (renumberHeads: boolean) => (a: ArethusaDoc): Maybe<ArethusaDoc> => {
         const changes = new Array() // Stores a map of id changes from old to new
+
+        const arethusa_ = a.deepcopy.value
+        if (arethusa_ == null) return Nothing.of()
+        
+        // Check not too many tokens
+        if (arethusa_.tokens.length > Constants.MAXTOKENS) {
+            throw new TokenCountError(
+                `Too many tokens. ` + 
+                `Must be ${Constants.MAXTOKENS} or fewer`
+            )
+        } 
 
         const maybeWords = MaybeT.of(a)
             .bindErr("No Arethusa.", ArethusaDoc.deepcopy)
