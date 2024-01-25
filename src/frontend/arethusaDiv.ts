@@ -45,12 +45,6 @@ class ArethusaDiv {
         return HTML.id("arethusaDiv") as Maybe<HTMLDivElement>
     }
 
-    static formatXMLForDiv = (xml: string) => {
-        return xml
-            .replace(/\</g, "&lt")
-            .replace(/\>/g, "&gt")
-    }
-
     static get innerText() {
         return Frontend
             .arethusaOutputDiv

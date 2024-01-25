@@ -24,11 +24,6 @@ class ArethusaDiv {
     static get control() {
         return HTML.id("arethusaDiv");
     }
-    static formatXMLForDiv = (xml) => {
-        return xml
-            .replace(/\</g, "&lt")
-            .replace(/\>/g, "&gt");
-    };
     static get innerText() {
         return Frontend
             .arethusaOutputDiv
