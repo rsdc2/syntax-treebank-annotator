@@ -286,6 +286,7 @@ class XML {
         if (result.querySelector("parsererror")) {
             // Cf. https://developer.mozilla.org/en-US/docs/Web/API/DOMParser/parseFromString
             console.log("Parser error");
+            console.log(result);
         }
         return result;
     }
