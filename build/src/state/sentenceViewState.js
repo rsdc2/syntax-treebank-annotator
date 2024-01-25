@@ -33,9 +33,6 @@ class SentenceViewState {
         const newSVS = new SentenceViewState([]);
         newSVS._viewstates = [...svs._viewstates];
         return newSVS;
-        // console.log(newSVS._viewstates)
-        // console.log(newSVS)
-        // return JSON.parse(JSON.stringify(svs)) as SentenceViewState
     };
     hasSentenceId(id) {
         return id in this.sentenceIds;

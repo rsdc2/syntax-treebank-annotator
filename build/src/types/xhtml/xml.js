@@ -287,6 +287,7 @@ class XML {
             // Cf. https://developer.mozilla.org/en-US/docs/Web/API/DOMParser/parseFromString
             console.log("Parser error");
             console.log(result);
+            throw new XMLParseError("Could not parse XML");
         }
         return result;
     }

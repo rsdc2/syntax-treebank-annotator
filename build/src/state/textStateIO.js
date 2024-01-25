@@ -19,7 +19,6 @@ class TextStateIO {
     appendNewState = (ext) => (state) => {
         const s = MaybeT.of(state);
         const newState = TextState.of(s.bind(TextState.viewStateDeep), state._sentenceVS.fmap(SentenceViewState.deepcopy), s.bind(TextState.treeStateDeep), s.bind(TextState.plainText), s.bind(TextState.inputArethusaDeep), s.bind(TextState.outputArethusaDeep), s.bind(TextState.epidocDeep));
-        // console.log('appendNewState', newState.outputArethusa.value?.node)
         if (newState._sentenceVS.isNothing) {
             if (this.currentState.value?._sentenceVS != null) {
                 newState._sentenceVS = this
@@ -32,7 +31,6 @@ class TextStateIO {
         const maybeNS = MaybeT.of(newState);
         if (!maybeNS.fmap(TextState.hasNothing).fromMaybe(true)) {
             maybeNS.fmap(this.push);
-            // console.log('Has TS')
             this.currentStateIdx = this.lastStateIdx;
         }
         this.show(ext);
@@ -116,8 +114,6 @@ class TextStateIO {
         const newArethusa = s
             .outputArethusaP
             .bind(flip(ArethusaDoc.replaceSentence)(newS));
-        // console.log('changeArethusaSentence', s.outputArethusaP.value?.node)
-        // console.log('newArethusa', newArethusa.value?.node)
         s.pushOutputArethusa(ext)(new ViewState(Nothing.of(), s.viewState.bind(ViewState.currentSentenceId), s.outputArethusaP))(s.treeState)(newArethusa);
     };
     changeView = (wordId) => (sentenceId) => {
@@ -178,12 +174,6 @@ class TextStateIO {
         const x = tsio.currentState
             .bind(TextState.sentenceVS)
             .bind(setViewBox);
-        // console.log(
-        //     globalState
-        //         .textStateIO
-        //         .bind(TextStateIO.sentenceViewState)
-        //         .fmap(SentenceViewState.viewstates)
-        // )
         return x;
     };
     get currentWord() {

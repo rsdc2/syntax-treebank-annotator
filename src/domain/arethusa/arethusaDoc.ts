@@ -240,10 +240,11 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
             .bind(ArethusaDoc.renumberTokenIds(false))
     }
 
-    static fromXMLStr = (arethusaXML: string) => {
-        return MaybeT.of(arethusaXML)
-            .fmap(XML.fromXMLStr)
-            .bind(XML.documentElement)
+    static fromXMLStr = (arethusaXML: string): Maybe<ArethusaDoc> => {
+
+        const xmldoc = XML.fromXMLStr(arethusaXML)
+
+        return XML.documentElement(xmldoc)
             .bind(ArethusaDoc.fromNode)
     }
 

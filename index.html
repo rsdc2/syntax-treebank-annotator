@@ -27,28 +27,6 @@
             <li><button class="toggle" id="btnAbout">About</button></li>
             <li><button id="PrevSentence">←</button></li>
             <li><button id="NextSentence">→</button></li>  
-
-            <!-- <li>
-              <button id="Download EpiDoc" onclick="Frontend.downloadEpiDoc()">
-                Download EpiDoc
-              </button>
-            </li> -->
-            <!-- <li>
-              <button
-                id="Upload"
-                onclick="Frontend.downloadArethusa()"
-              >
-                Download Arethusa XML
-              </button>
-            </li> -->
-            <!-- <li>
-              <button
-                id="Download Arethusa"
-                onclick="Frontend.downloadArethusa()"
-              >
-                Save as
-              </button>
-            </li> -->
           </ul>
 
           <div class="Sentences" id="sentencesDiv" contenteditable="false">
@@ -89,9 +67,7 @@
                   <button id="DrawTreeText">Render</button>
                 </li>
                 <li>
-                  <button id="loadTextFile">
-                    Load
-                  </button>
+                  <button id="loadTextFile">Load</button>
                 </li>
               </ul>
             </div>
@@ -107,14 +83,6 @@
           <div class="epidoc input" hidden>
             <div class="epidoc input toolbar">
               <ul class="epidoc input toolbar">
-                <!-- <li>
-                    <button
-                      id="EpiDocToArethusa"
-                      onclick="globalState.textStateIO.fmap(TextStateIO.epidocToArethusa)"
-                    >
-                      EpiDoc to Arethusa
-                    </button>
-                  </li> -->
                 <li>
                   <button id="DrawTreeEpiDoc">Render</button>
                 </li>
@@ -267,6 +235,7 @@
   <script src="build/src/types/xhtml/xml.js"></script>
   <script src="build/src/types/xhtml/svg.js"></script>
   <script src="build/src/types/xhtml/dom.js"></script>
+  <script src="build/src/errors/error.js"></script>
   
   <script src="build/src/tree/graph.js"></script>
   <script src="build/src/tree/treeEnums.js"></script> 

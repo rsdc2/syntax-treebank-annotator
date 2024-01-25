@@ -3,7 +3,8 @@
         "outDir": "build",
         "target": "ES2022",
         "skipLibCheck": false,
-        "strictNullChecks": true
+        "strictNullChecks": true,
+        "allowJs": true
     },
     "include": ["src/**/*", "data/**/*"]
 }

@@ -166,9 +166,8 @@ class ArethusaDoc {
             .bind(ArethusaDoc.renumberTokenIds(false));
     };
     static fromXMLStr = (arethusaXML) => {
-        return MaybeT.of(arethusaXML)
-            .fmap(XML.fromXMLStr)
-            .bind(XML.documentElement)
+        const xmldoc = XML.fromXMLStr(arethusaXML);
+        return XML.documentElement(xmldoc)
             .bind(ArethusaDoc.fromNode);
     };
     static incrementSentenceIdsFrom = (startSentenceId) => (a) => {
@@ -417,7 +416,6 @@ class ArethusaDoc {
                 .bind(XML.nodeValue)
                 .unpack("");
             changes.push([tokenSentenceId, Str.fromNum(currentId), Str.fromNum(newId)]);
-            // console.log(changes)
             // Renumber token ids
             const newToken = MaybeT.ofThrow("Could not create Maybe<Word>.", DXML.node(w))
                 .fmapErr("Could not make word node.", XML.setId(Str.fromNum(newId)))

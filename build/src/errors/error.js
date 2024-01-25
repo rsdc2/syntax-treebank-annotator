@@ -1,0 +1,2 @@
+class XMLParseError extends Error {
+}

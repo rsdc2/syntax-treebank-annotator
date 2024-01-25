@@ -197,33 +197,45 @@ class Frontend {
     }
 
     static processArethusa = (arethusaStr: string) => {
-        Frontend.saveCurrentState()
 
-        const arethusa = MaybeT
-            .of(arethusaStr)
-            .bind(ArethusaDoc.fromXMLStr)
-            .bind(ArethusaDoc.renumberTokenIds(true))
+        try {
+            Frontend.saveCurrentState()
+            const arethusa = ArethusaDoc.fromXMLStr(arethusaStr)
 
-        const textstate = TextState.of(
-            arethusa.fmap(ViewState.of("1")("1")),
-            Nothing.of(),
-            Nothing.of(),
-            Nothing.of(),
-            arethusa,
-            arethusa,
-            Nothing.of()
-        )
-                
-        globalState
-            .textStateIO
-            .fmapErr(
-                "No textStateIO",
-                TextStateIO.appendNewState(false)(textstate)
-            )    
+            const renumbered = arethusa
+                .bind(ArethusaDoc.renumberTokenIds(true))
             
-
-        globalState.createTreeStateIO()
-        globalState.graph()
+            const textstate = TextState.of(
+                renumbered.fmap(ViewState.of("1")("1")),
+                Nothing.of(),
+                Nothing.of(),
+                Nothing.of(),
+                arethusa,
+                arethusa,
+                Nothing.of()
+            )
+                        
+            globalState
+                .textStateIO
+                .fmapErr(
+                    "No textStateIO",
+                    TextStateIO.appendNewState(false)(textstate)
+                )    
+                            
+            globalState.createTreeStateIO()
+                globalState.graph()
+        } catch (error) {
+            if (error instanceof XMLParseError) {
+                const outputArethusaDiv = ArethusaDiv.control._value
+                if (outputArethusaDiv != null) {
+                    outputArethusaDiv.replaceChildren("ERROR: Could not parse XML")
+                } else {
+                    throw new Error("Missing output div element")
+                }
+            } else {
+                throw error
+            }
+        }
     }
 
     static processText = (textStr: string) => {
