@@ -228,7 +228,9 @@ class Frontend {
             if (error instanceof XMLParseError) {
                 const outputArethusaDiv = ArethusaDiv.control._value
                 if (outputArethusaDiv != null) {
-                    outputArethusaDiv.replaceChildren("ERROR: Could not parse XML")
+                    outputArethusaDiv.replaceChildren(
+                        "ERROR: Could not parse XML, likely because the XML contains an error."
+                    )
                 } else {
                     throw new Error("Missing output div element")
                 }

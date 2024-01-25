@@ -149,7 +149,7 @@ class Frontend {
             if (error instanceof XMLParseError) {
                 const outputArethusaDiv = ArethusaDiv.control._value;
                 if (outputArethusaDiv != null) {
-                    outputArethusaDiv.replaceChildren("ERROR: Could not parse XML");
+                    outputArethusaDiv.replaceChildren("ERROR: Could not parse XML, likely because the XML contains an error.");
                 }
                 else {
                     throw new Error("Missing output div element");
@@ -343,23 +343,7 @@ class Frontend {
             Frontend.processArethusa(arethusaUglifiedExample);
         };
         const loadArethusaBtnFunc = () => {
-            try {
-                FileHandling.loadFromDialog('.xml')(MaybeT.of(Frontend.processArethusa));
-            }
-            catch (error) {
-                if (error instanceof FileSizeError) {
-                    const outputArethusaDiv = ArethusaDiv.control._value;
-                    if (outputArethusaDiv != null) {
-                        outputArethusaDiv.replaceChildren("ERROR: File too big");
-                    }
-                    else {
-                        throw new Error("Missing output div element");
-                    }
-                }
-                else {
-                    throw error;
-                }
-            }
+            FileHandling.loadFromDialog('.xml')(MaybeT.of(Frontend.processArethusa));
         };
         const loadEpiDocBtnFunc = (e) => {
             FileHandling.loadFromDialog('.xml')(MaybeT.of(Frontend.processEpiDoc));

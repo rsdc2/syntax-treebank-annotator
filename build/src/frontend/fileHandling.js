@@ -58,11 +58,11 @@ var FileHandling;
                 .fmap(Arr.fromIterable)
                 .bind(Arr.head);
             try {
-                if (file.value?.size !== undefined && file.value.size < 100000) {
+                if (file.value?.size !== undefined && file.value.size < 50000) {
                     file.fmap(TextFile.process(callback)('UTF-8'));
                 }
                 else {
-                    throw new FileSizeError("File is too large. Files must be below 100KB");
+                    throw new FileSizeError("File is too large. Files must be below 50KB");
                 }
             }
             catch (error) {
