@@ -51,12 +51,6 @@ class ArethusaDiv {
             .replace(/\>/g, "&gt")
     }
 
-    static get innerHTML() {
-        return Frontend
-            .arethusaOutputDiv
-            .fmap(Div.innerHTML)
-    }
-
     static get innerText() {
         return Frontend
             .arethusaOutputDiv
