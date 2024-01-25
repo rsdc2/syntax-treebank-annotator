@@ -432,7 +432,7 @@ class Frontend {
         }
         elem.textContent = ""
 
-        // Show the message
+        // Hide the message
         HTML.Elem.setHidden(elem)
     }
 
@@ -448,21 +448,35 @@ class Frontend {
     static toggleAbout(e: MouseEvent) {
         e.stopPropagation()
         Frontend.toggleMessage(Constants.messages.about)
-        Frontend.buttonById("btnAbout")
-            .fmap(HTML.Elem.Class.toggle("active"))
+        
+        const messageElem = document.querySelector<HTMLDivElement>("div.message")
+        const aboutBtn = document.querySelector<HTMLButtonElement>("#btnAbout")
+        if (messageElem?.hidden) {
+            console.log("inactive")
+            // messageElem.hidden = true
+            aboutBtn?.classList.remove("active")
+        } else {
+            console.log("active")
+            // if (messageElem) {
+            //     messageElem.hidden = false
+            // }
+            aboutBtn?.classList.add("active")
+        }
+        UserInput.setClickOutMessageBox() // This seems to need to be reset each time... 
     }
 
     static hideAbout() {
         Frontend.hideMessage()
-        Frontend.buttonById("btnAbout")
-            .fmap(HTML.Elem.Class.remove("active"))
+        const aboutBtn = document.querySelector<HTMLButtonElement>("#btnAbout")
+        console.log(aboutBtn)
+        aboutBtn?.classList.remove("active")
     }
 
-    static showAbout() {
-        Frontend.showMessage(Constants.messages.about)
-        Frontend.buttonById("btnAbout")
-            .fmap(HTML.Elem.Class.add("active"))
-    }
+    // static showAbout() {
+    //     Frontend.showMessage(Constants.messages.about)
+    //     Frontend.buttonById("btnAbout")
+    //         .fmap(HTML.Elem.Class.add("active"))
+    // }
 
     static get textInputShowBtn() {
         return Frontend.buttonById("ToggleShowInputText")

@@ -147,10 +147,9 @@ var UserInput;
     UserInput.setTextInputKeyEvents = setTextInputKeyEvents;
     function setClickOutMessageBox() {
         window.onclick = (ev) => {
-            Frontend.hideMessage();
-            Frontend
-                .buttonById("btnAbout")
-                .fmap(HTML.Elem.Class.remove("active"));
+            ev.stopPropagation();
+            console.log("window click");
+            Frontend.hideAbout();
         };
     }
     UserInput.setClickOutMessageBox = setClickOutMessageBox;
