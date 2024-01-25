@@ -40,7 +40,9 @@ var Constants;
     Constants.messages = {
         about: String.raw `The Treebank Annotator was written by Robert Crellin as part of the
                 Crossreads project at the Faculty of Classics, University of Oxford, and
-                is licensed under the MIT license. This project has received funding
+                is licensed under the MIT license 
+                (https://github.com/rsdc2/syntax-treebank-annotator/blob/main/LICENSE). 
+                This project has received funding
                 from the European Research Council (ERC) under the European Union's
                 Horizon 2020 research and innovation programme (grant agreement No
                 885040, "Crossreads").`
