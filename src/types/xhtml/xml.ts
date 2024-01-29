@@ -380,6 +380,7 @@ class XML {
     }
     
     static fromXMLStr(xml: string): XMLDocument {
+
         if (xml === '') {
             return new DOMParser().parseFromString(
                 '<?xml version="1.0" encoding="UTF-8"?><empty/>', "application/xml"
@@ -388,7 +389,7 @@ class XML {
 
         if (xml === "<empty/>") {
             return new DOMParser().parseFromString(
-                '<?xml version="1.0" encoding="UTF-8"?><empty/>', "application/xml"
+                '<?xml version="1.0" encoding="UTF-8"?><empty/>', "application/xml" 
             )
         }
         const result = new DOMParser()
