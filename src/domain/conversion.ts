@@ -1,12 +1,12 @@
 class Conversion {
-    static epidocToArethusa = (epidoc: EpiDoc) => {
+    static epidocToArethusa = (epidoc: EpiDoc): Maybe<ArethusaDoc> => {
         return MaybeT.of(epidoc)
             .fmap(EpiDoc.toXMLStr)
             .bind(Conversion.epidocXMLToArethusaXML)
             .bind(ArethusaDoc.fromXMLStr)
     }
 
-    static epidocXMLToArethusa = (epidocXML: string) => {
+    static epidocXMLToArethusa = (epidocXML: string): Maybe<ArethusaDoc> => {
         return MaybeT.of(epidocXML)
             .bind(Conversion.epidocXMLToArethusaXML)
             .bind(ArethusaDoc.fromXMLStr)
