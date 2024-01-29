@@ -2,7 +2,7 @@
 namespace Constants {
 
     export const rootNode: ITreeNode = {
-        name: "&ltROOT&gt",
+        name: "[ROOT]",
         arethusaTokenId: 0,
         treeNodeId: 0,
         headTokenId: -1,
@@ -20,7 +20,7 @@ namespace Constants {
     }
 
     export const rootToken: ITreeWord = {
-        form: "&ltROOT&gt",
+        form: "[ROOT]",
         leiden: "",
         headId: -1,
         id: 0,
