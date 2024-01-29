@@ -1,7 +1,7 @@
 var Constants;
 (function (Constants) {
     Constants.rootNode = {
-        name: "&ltROOT&gt",
+        name: "[ROOT]",
         arethusaTokenId: 0,
         treeNodeId: 0,
         headTokenId: -1,
@@ -18,7 +18,7 @@ var Constants;
         artificialType: ArtificialType.None
     };
     Constants.rootToken = {
-        form: "&ltROOT&gt",
+        form: "[ROOT]",
         leiden: "",
         headId: -1,
         id: 0,

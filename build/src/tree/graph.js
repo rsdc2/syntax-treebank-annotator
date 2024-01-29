@@ -118,7 +118,7 @@ var Graph;
             .attr("dep-id", d => d.depTreeNodeId)
             .attr("head-id", d => d.headTreeNodeId)
             .attr("type", d => d.type)
-            .html(d => d.relation === "" ? Constants.defaultRel : d.relation);
+            .text(d => d.relation === "" ? Constants.defaultRel : d.relation);
         const edgeDivLabels = Graph.edgeDivLabels();
         edgeDivLabels.forEach((elem) => {
             elem.addEventListener("keydown", UserInput.keyDownEdgeLabel);
@@ -146,7 +146,7 @@ var Graph;
             .attr("overflow", "visible");
         d3.selectAll(".node-label") // Needs to be separate for some reason to update on change
             .data(nodes)
-            .html((d) => d.name);
+            .text((d) => d.name);
         d3.select(".text")
             .selectAll("text.node-label")
             .call(d3.drag().on("start", handleDrag));
