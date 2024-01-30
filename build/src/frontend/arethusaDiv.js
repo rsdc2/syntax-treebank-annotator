@@ -24,6 +24,13 @@ class ArethusaDiv {
     static get control() {
         return HTML.id("arethusaDiv");
     }
+    static get control_() {
+        const control = document.getElementById("arethusaDiv");
+        if (control == null) {
+            throw new NoElementError("arethusaDiv");
+        }
+        return control;
+    }
     static get innerText() {
         return Frontend
             .arethusaOutputDiv

@@ -37,10 +37,16 @@ namespace Constants {
 
     export const defaultViewBox = "0 0 560 560"
 
+    /**
+     * TODO MAXTOKENS per SENTENCE
+     */
+    export const MAXSENTENCES = 100
+
     export const MAXTOKENS = 200
 
     /**
      * Maximum file size in KB
+     * TODO: split this into Arethusa and EpiDoc
      */
     export const MAXFILESIZE = 50
 

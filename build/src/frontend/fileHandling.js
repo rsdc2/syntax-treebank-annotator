@@ -21,9 +21,9 @@ var FileHandling;
         const onchangeFunc = FileInput.onchange(callback);
         const setOnChangeFunc = HTML.Elem.setOnChangeFunc(onchangeFunc);
         HTML.Elem
-            .create('input')
-            .fmapErr("Error", HTML.Elem.setAttr('type')('file'))
-            .fmapErr("Error", HTML.Elem.setAttr('accept')(fileFormat))
+            .create("input")
+            .fmapErr("Error", HTML.Elem.setAttr("type")("file"))
+            .fmapErr("Error", HTML.Elem.setAttr("accept")(fileFormat))
             .fmap(setOnChangeFunc)
             .fmapErr("Error", HTML.Elem.click)
             .fmap(HTML.Elem.remove);

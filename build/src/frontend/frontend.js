@@ -98,21 +98,6 @@ class Frontend {
             }
         }
         catch (e) {
-            // const outputArethusaDiv = ArethusaDiv.control._value
-            // if (outputArethusaDiv == null) {
-            //     throw new Error ("No output Arethusa <div> element")
-            // }
-            // if (e instanceof XMLParseError) {
-            //     outputArethusaDiv.replaceChildren(e.message)
-            // }
-            // else if (e instanceof ValidationError) {
-            //     outputArethusaDiv.replaceChildren(
-            //         e.message
-            //     )                
-            // } 
-            // else {
-            //     throw e
-            // }
             throw e;
         }
     };
@@ -176,6 +161,8 @@ class Frontend {
         }
         catch (e) {
             if (e instanceof XMLParseError) {
+                // This could be raised by Frontend.inputArethusa
+                // or Frontend.epidoc
                 return;
             }
         }
@@ -197,26 +184,8 @@ class Frontend {
             globalState.graph();
             return true;
         }
-        catch (error) {
-            const outputArethusaDiv = ArethusaDiv.control._value;
-            if (outputArethusaDiv == null) {
-                throw new Error("No output Arethusa <div> element");
-            }
-            if (error instanceof XMLParseError) {
-                outputArethusaDiv.replaceChildren(error.message);
-                return false;
-            }
-            else if (error instanceof ValidationError) {
-                outputArethusaDiv.replaceChildren(error.message);
-                return false;
-            }
-            else if (error instanceof TokenCountError) {
-                outputArethusaDiv.replaceChildren(error.message);
-                return false;
-            }
-            else {
-                throw error;
-            }
+        catch (e) {
+            return ErrorHandler.handle(e);
         }
     };
     static processArethusa = (arethusaStr) => {
@@ -234,26 +203,8 @@ class Frontend {
             globalState.graph();
             return true;
         }
-        catch (error) {
-            const outputArethusaDiv = ArethusaDiv.control._value;
-            if (outputArethusaDiv == null) {
-                throw new Error("No output Arethusa <div> element");
-            }
-            if (error instanceof XMLParseError) {
-                outputArethusaDiv.replaceChildren(error.message);
-                return false;
-            }
-            else if (error instanceof ValidationError) {
-                outputArethusaDiv.replaceChildren(error.message);
-                return false;
-            }
-            else if (error instanceof TokenCountError) {
-                outputArethusaDiv.replaceChildren(error.message);
-                return false;
-            }
-            else {
-                throw error;
-            }
+        catch (e) {
+            return ErrorHandler.handle(e);
         }
     };
     static processText = (textStr) => {
@@ -272,20 +223,8 @@ class Frontend {
             globalState.createTreeStateIO();
             globalState.graph();
         }
-        catch (error) {
-            const outputArethusaDiv = ArethusaDiv.control._value;
-            if (outputArethusaDiv == null) {
-                throw new Error("No output Arethusa <div> element");
-            }
-            if (error instanceof XMLParseError) {
-                outputArethusaDiv.replaceChildren(error.message);
-            }
-            else if (error instanceof TokenCountError) {
-                outputArethusaDiv.replaceChildren(error.message);
-            }
-            else {
-                throw error;
-            }
+        catch (e) {
+            return ErrorHandler.handle(e);
         }
     };
     static pushPlainTextToFrontend = (textStateIO) => {

@@ -182,13 +182,16 @@ class ArethusaDoc {
     };
     /**
      * Parses an XML string into an ArethusaDoc. Returns Nothing if fails.
+     * Throws TokenCountError if too many tokens
      * @param arethusaXML string representation of XML document
      * @returns {ArethusaDoc}
      */
-    static fromXMLStr = (arethusaXML) => {
+    static fromXMLStr(arethusaXML) {
         const xmldoc = XML.fromXMLStr(arethusaXML);
-        const arethusaDoc = XML.documentElement(xmldoc)
-            .bind(ArethusaDoc.fromNode).value;
+        const arethusaDoc = XML
+            .documentElement(xmldoc)
+            .bind(ArethusaDoc.fromNode)
+            .value;
         if (arethusaDoc == null) {
             return Nothing.of();
         }
@@ -198,7 +201,7 @@ class ArethusaDoc {
                 `Must be ${Constants.MAXTOKENS} or fewer`);
         }
         return MaybeT.of(arethusaDoc);
-    };
+    }
     /**
      * Parses an XML string into an ArethusaDoc. Raises an error if fails.
      * @param arethusaXML string representation of XML document
