@@ -131,46 +131,57 @@ class Frontend {
 
 
     static saveCurrentState = () => {
-        if (globalState.textStateIO.isNothing) {
-            globalState.createTextStateIO(
+        try {
+            if (globalState.textStateIO.isNothing) {
+                globalState.createTextStateIO(
+                    Nothing.of(),
+                    Nothing.of(),
+                    Nothing.of()
+                )
+            } 
+    
+            const textState = TextState.of(
+                globalState
+                    .textStateIO
+                    .bind(TextStateIO.currentState)
+                    .bind(TextState.viewState),
+                globalState
+                    .textStateIO
+                    .bind(TextStateIO.currentState)
+                    .bind(TextState.sentenceVSDeep),
                 Nothing.of(),
-                Nothing.of(),
-                Nothing.of()
+                Frontend.plainText,
+                Frontend.inputArethusa,
+                globalState
+                    .textStateIO
+                    .bind(TextStateIO.currentState)
+                    .bind(TextState.outputArethusaDeep),
+                Frontend.epidoc
             )
+    
+            globalState
+                .textStateIO
+                .fmapErr(
+                    "No textStateIO",
+                    TextStateIO.appendNewState(false)(textState)
+                )            
         } 
+        catch (e) {
+            if (e instanceof XMLParseError) {
+                return
+            }
+        }
 
-        const textState = TextState.of(
-            globalState
-                .textStateIO
-                .bind(TextStateIO.currentState)
-                .bind(TextState.viewState),
-            globalState
-                .textStateIO
-                .bind(TextStateIO.currentState)
-                .bind(TextState.sentenceVSDeep),
-            Nothing.of(),
-            Frontend.plainText,
-            Frontend.inputArethusa,
-            globalState
-                .textStateIO
-                .bind(TextStateIO.currentState)
-                .bind(TextState.outputArethusaDeep),
-            Frontend.epidoc
-        )
-
-        globalState
-            .textStateIO
-            .fmapErr(
-                "No textStateIO",
-                TextStateIO.appendNewState(false)(textState)
-            )            
     }
 
     static processEpiDoc = (epidocStr: string) => {
         try {
             Frontend.saveCurrentState()
 
-            const epidoc = EpiDoc.fromXMLStr(epidocStr)
+            const epidoc = EpiDoc.fromXMLStr_(epidocStr)
+
+            TEIValidator.assertValid(epidoc)
+
             const arethusa = MaybeT
                 .of(epidocStr)
                 .bind(Conversion.epidocXMLToArethusa)
@@ -182,7 +193,7 @@ class Frontend {
                 Nothing.of(),
                 arethusa,
                 arethusa,
-                epidoc
+                MaybeT.of(epidoc)
             )
 
             globalState
@@ -200,15 +211,26 @@ class Frontend {
             if (outputArethusaDiv == null) {
                 throw new Error ("No output Arethusa <div> element")
             }
+            
             if (error instanceof XMLParseError) {
                 outputArethusaDiv.replaceChildren(
                     error.message
                 )
-            } else if (error instanceof TokenCountError) {
+            } 
+
+            else if (error instanceof ValidationError) {
+                outputArethusaDiv.replaceChildren(
+                    error.message
+                )                
+            } 
+            
+            else if (error instanceof TokenCountError) {
                 outputArethusaDiv.replaceChildren(
                     error.message
                 )            
-            } else {
+            } 
+            
+            else {
                 throw error
             }
         }
@@ -218,8 +240,10 @@ class Frontend {
 
         try {
             Frontend.saveCurrentState()
-            const arethusa = ArethusaDoc.fromXMLStr(arethusaStr)
-            const renumbered = arethusa
+            const arethusa = ArethusaDoc.fromXMLStr_(arethusaStr)
+            ArethusaValidator.assertValid(arethusa)
+
+            const renumbered = MaybeT.of(arethusa)
                 .bind(ArethusaDoc.renumberTokenIds(true))
 
             const textstate = TextState.of(
@@ -227,8 +251,8 @@ class Frontend {
                 Nothing.of(),
                 Nothing.of(),
                 Nothing.of(),
-                arethusa,
-                arethusa,
+                MaybeT.of(arethusa),
+                MaybeT.of(arethusa),
                 Nothing.of()
             )
                         
@@ -250,11 +274,21 @@ class Frontend {
                 outputArethusaDiv.replaceChildren(
                     error.message
                 )
-            } else if (error instanceof TokenCountError) {
+            } 
+            
+            else if (error instanceof ValidationError) {
+                outputArethusaDiv.replaceChildren(
+                    error.message
+                )                
+            } 
+            
+            else if (error instanceof TokenCountError) {
                 outputArethusaDiv.replaceChildren(
                     error.message
                 )            
-            } else {
+            } 
+            
+            else {
                 throw error
             }
         }
@@ -296,15 +330,19 @@ class Frontend {
             if (outputArethusaDiv == null) {
                 throw new Error ("No output Arethusa <div> element")
             }
+            
             if (error instanceof XMLParseError) {
                 outputArethusaDiv.replaceChildren(
                     error.message
                 )
-            } else if (error instanceof TokenCountError) {
+            } 
+            
+            else if (error instanceof TokenCountError) {
                 outputArethusaDiv.replaceChildren(
                     error.message
                 )            
-            } else {
+            } 
+            else {
                 throw error
             }
         }
@@ -452,23 +490,16 @@ class Frontend {
         const messageElem = document.querySelector<HTMLDivElement>("div.message")
         const aboutBtn = document.querySelector<HTMLButtonElement>("#btnAbout")
         if (messageElem?.hidden) {
-            console.log("inactive")
-            // messageElem.hidden = true
             aboutBtn?.classList.remove("active")
         } else {
-            console.log("active")
-            // if (messageElem) {
-            //     messageElem.hidden = false
-            // }
             aboutBtn?.classList.add("active")
         }
-        UserInput.setClickOutMessageBox() // This seems to need to be reset each time... 
+        UserInput.setClickOutMessageBox() // For some reason this seems to need to be reset each time... 
     }
 
     static hideAbout() {
         Frontend.hideMessage()
         const aboutBtn = document.querySelector<HTMLButtonElement>("#btnAbout")
-        console.log(aboutBtn)
         aboutBtn?.classList.remove("active")
     }
 
@@ -492,7 +523,7 @@ class Frontend {
 
     static setDivClickEvents() {
         const arethusaDivClickFunc = (e: Event) => {
-            e.stopPropagation()
+            e.stopPropagation() 
             ArethusaDiv.click()
         }
 
@@ -861,18 +892,6 @@ class Frontend {
         Frontend
             .inputShowBtn
             .fmap(HTML.Elem.Class.toggle("active"))
-
-        // Frontend
-        //     .epidocInputShowBtn
-        //     .fmap(HTML.Elem.toggleHidden)
-
-        // Frontend
-        //     .arethusaInputShowBtn
-        //     .fmap(HTML.Elem.toggleHidden)
-
-        // Frontend
-        //     .textInputShowBtn
-        //     .fmap(HTML.Elem.toggleHidden)
 
         Frontend
             .divById("InputDiv")

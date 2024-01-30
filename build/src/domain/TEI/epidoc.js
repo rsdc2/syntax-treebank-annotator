@@ -18,7 +18,10 @@ class EpiDoc {
     }
     static editionsFromArray = map(Edition.of);
     static fromXMLStr(epidocXML) {
-        return MaybeT.of(new EpiDoc(epidocXML));
+        return MaybeT.of(EpiDoc.fromXMLStr_(epidocXML));
+    }
+    static fromXMLStr_(epidocXML) {
+        return new EpiDoc(epidocXML);
     }
     static fromNode(node) {
         return MaybeT.of(node)

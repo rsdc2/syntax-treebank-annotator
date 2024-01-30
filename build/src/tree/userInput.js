@@ -148,7 +148,6 @@ var UserInput;
     function setClickOutMessageBox() {
         window.onclick = (ev) => {
             ev.stopPropagation();
-            console.log("window click");
             Frontend.hideAbout();
         };
     }

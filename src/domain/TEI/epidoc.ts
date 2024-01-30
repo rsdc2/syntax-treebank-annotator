@@ -29,8 +29,12 @@ class EpiDoc implements TEIEditionable, HasToken {
 
     static editionsFromArray = map(Edition.of)
 
-    static fromXMLStr(epidocXML: string) {
-        return MaybeT.of(new EpiDoc(epidocXML))
+    static fromXMLStr(epidocXML: string): Maybe<EpiDoc> {
+        return MaybeT.of(EpiDoc.fromXMLStr_(epidocXML))
+    }
+
+    static fromXMLStr_(epidocXML: string): EpiDoc {
+        return new EpiDoc(epidocXML)
     }
 
     static fromNode(node: Node) {

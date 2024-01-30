@@ -206,7 +206,6 @@ namespace UserInput {
     export function setClickOutMessageBox() {
         window.onclick = (ev: MouseEvent) => {
             ev.stopPropagation()
-            console.log("window click")
             Frontend.hideAbout()
         }
     }

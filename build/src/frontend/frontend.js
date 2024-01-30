@@ -102,31 +102,39 @@ class Frontend {
             .fmapErr("No textStateIO", TextStateIO.formatInputArethusa);
     };
     static saveCurrentState = () => {
-        if (globalState.textStateIO.isNothing) {
-            globalState.createTextStateIO(Nothing.of(), Nothing.of(), Nothing.of());
+        try {
+            if (globalState.textStateIO.isNothing) {
+                globalState.createTextStateIO(Nothing.of(), Nothing.of(), Nothing.of());
+            }
+            const textState = TextState.of(globalState
+                .textStateIO
+                .bind(TextStateIO.currentState)
+                .bind(TextState.viewState), globalState
+                .textStateIO
+                .bind(TextStateIO.currentState)
+                .bind(TextState.sentenceVSDeep), Nothing.of(), Frontend.plainText, Frontend.inputArethusa, globalState
+                .textStateIO
+                .bind(TextStateIO.currentState)
+                .bind(TextState.outputArethusaDeep), Frontend.epidoc);
+            globalState
+                .textStateIO
+                .fmapErr("No textStateIO", TextStateIO.appendNewState(false)(textState));
         }
-        const textState = TextState.of(globalState
-            .textStateIO
-            .bind(TextStateIO.currentState)
-            .bind(TextState.viewState), globalState
-            .textStateIO
-            .bind(TextStateIO.currentState)
-            .bind(TextState.sentenceVSDeep), Nothing.of(), Frontend.plainText, Frontend.inputArethusa, globalState
-            .textStateIO
-            .bind(TextStateIO.currentState)
-            .bind(TextState.outputArethusaDeep), Frontend.epidoc);
-        globalState
-            .textStateIO
-            .fmapErr("No textStateIO", TextStateIO.appendNewState(false)(textState));
+        catch (e) {
+            if (e instanceof XMLParseError) {
+                return;
+            }
+        }
     };
     static processEpiDoc = (epidocStr) => {
         try {
             Frontend.saveCurrentState();
-            const epidoc = EpiDoc.fromXMLStr(epidocStr);
+            const epidoc = EpiDoc.fromXMLStr_(epidocStr);
+            TEIValidator.assertValid(epidoc);
             const arethusa = MaybeT
                 .of(epidocStr)
                 .bind(Conversion.epidocXMLToArethusa);
-            const textState = TextState.of(arethusa.fmap(ViewState.of("1")("1")), Nothing.of(), Nothing.of(), Nothing.of(), arethusa, arethusa, epidoc);
+            const textState = TextState.of(arethusa.fmap(ViewState.of("1")("1")), Nothing.of(), Nothing.of(), Nothing.of(), arethusa, arethusa, MaybeT.of(epidoc));
             globalState
                 .textStateIO
                 .fmapErr("No textStateIO", TextStateIO.appendNewState(false)(textState));
@@ -141,6 +149,9 @@ class Frontend {
             if (error instanceof XMLParseError) {
                 outputArethusaDiv.replaceChildren(error.message);
             }
+            else if (error instanceof ValidationError) {
+                outputArethusaDiv.replaceChildren(error.message);
+            }
             else if (error instanceof TokenCountError) {
                 outputArethusaDiv.replaceChildren(error.message);
             }
@@ -152,10 +163,11 @@ class Frontend {
     static processArethusa = (arethusaStr) => {
         try {
             Frontend.saveCurrentState();
-            const arethusa = ArethusaDoc.fromXMLStr(arethusaStr);
-            const renumbered = arethusa
+            const arethusa = ArethusaDoc.fromXMLStr_(arethusaStr);
+            ArethusaValidator.assertValid(arethusa);
+            const renumbered = MaybeT.of(arethusa)
                 .bind(ArethusaDoc.renumberTokenIds(true));
-            const textstate = TextState.of(renumbered.fmap(ViewState.of("1")("1")), Nothing.of(), Nothing.of(), Nothing.of(), arethusa, arethusa, Nothing.of());
+            const textstate = TextState.of(renumbered.fmap(ViewState.of("1")("1")), Nothing.of(), Nothing.of(), Nothing.of(), MaybeT.of(arethusa), MaybeT.of(arethusa), Nothing.of());
             globalState
                 .textStateIO
                 .fmapErr("No textStateIO", TextStateIO.appendNewState(false)(textstate));
@@ -168,6 +180,9 @@ class Frontend {
                 throw new Error("No output Arethusa <div> element");
             }
             if (error instanceof XMLParseError) {
+                outputArethusaDiv.replaceChildren(error.message);
+            }
+            else if (error instanceof ValidationError) {
                 outputArethusaDiv.replaceChildren(error.message);
             }
             else if (error instanceof TokenCountError) {
@@ -322,23 +337,16 @@ class Frontend {
         const messageElem = document.querySelector("div.message");
         const aboutBtn = document.querySelector("#btnAbout");
         if (messageElem?.hidden) {
-            console.log("inactive");
-            // messageElem.hidden = true
             aboutBtn?.classList.remove("active");
         }
         else {
-            console.log("active");
-            // if (messageElem) {
-            //     messageElem.hidden = false
-            // }
             aboutBtn?.classList.add("active");
         }
-        UserInput.setClickOutMessageBox(); // This seems to need to be reset each time... 
+        UserInput.setClickOutMessageBox(); // For some reason this seems to need to be reset each time... 
     }
     static hideAbout() {
         Frontend.hideMessage();
         const aboutBtn = document.querySelector("#btnAbout");
-        console.log(aboutBtn);
         aboutBtn?.classList.remove("active");
     }
     // static showAbout() {
@@ -634,15 +642,6 @@ class Frontend {
         Frontend
             .inputShowBtn
             .fmap(HTML.Elem.Class.toggle("active"));
-        // Frontend
-        //     .epidocInputShowBtn
-        //     .fmap(HTML.Elem.toggleHidden)
-        // Frontend
-        //     .arethusaInputShowBtn
-        //     .fmap(HTML.Elem.toggleHidden)
-        // Frontend
-        //     .textInputShowBtn
-        //     .fmap(HTML.Elem.toggleHidden)
         Frontend
             .divById("InputDiv")
             .fmap(HTML.Elem.toggleHidden);

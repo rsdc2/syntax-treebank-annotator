@@ -4,7 +4,8 @@
         "target": "ES2022",
         "skipLibCheck": false,
         "strictNullChecks": true,
-        "allowJs": true
+        "allowJs": true,
+        "checkJs": true
     },
     "include": ["src/**/*", "data/**/*"]
 }

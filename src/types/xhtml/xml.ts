@@ -382,16 +382,14 @@ class XML {
     static fromXMLStr(xml: string): XMLDocument {
 
         if (xml === '') {
-            return new DOMParser().parseFromString(
-                '<?xml version="1.0" encoding="UTF-8"?><empty/>', "application/xml"
-            )
+            throw new XMLParseError("XML file is empty")
         }
 
-        if (xml === "<empty/>") {
-            return new DOMParser().parseFromString(
-                '<?xml version="1.0" encoding="UTF-8"?><empty/>', "application/xml" 
-            )
-        }
+        // if (xml === "<empty/>") {
+        //     return new DOMParser().parseFromString(
+        //         '<?xml version="1.0" encoding="UTF-8"?>', "application/xml" 
+        //     )
+        // }
         const result = new DOMParser()
             .parseFromString(xml, "application/xml")
 
@@ -401,8 +399,7 @@ class XML {
         
         if (result.querySelector("parsererror")) { 
             // Cf. https://developer.mozilla.org/en-US/docs/Web/API/DOMParser/parseFromString
-            console.log("Parser error")
-            console.log(result)
+            // console.log(result)
             throw new XMLParseError("Could not parse XML")
         }
         return result

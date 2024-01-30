@@ -261,6 +261,11 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
         return MaybeT.of(arethusaDoc)
     }
 
+    /**
+     * Parses an XML string into an ArethusaDoc. Returns Nothing if fails.
+     * @param arethusaXML string representation of XML document
+     * @returns {ArethusaDoc} 
+     */
     static fromXMLStr = (arethusaXML: string): Maybe<ArethusaDoc> => {
 
         const xmldoc = XML.fromXMLStr(arethusaXML)
@@ -281,6 +286,19 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
         } 
 
         return MaybeT.of(arethusaDoc)
+    }
+
+    /**
+     * Parses an XML string into an ArethusaDoc. Raises an error if fails.
+     * @param arethusaXML string representation of XML document
+     * @returns {ArethusaDoc} 
+     */
+    static fromXMLStr_ (arethusaXML: string): ArethusaDoc {
+        const arethusa = ArethusaDoc.fromXMLStr(arethusaXML).value
+        if (arethusa == null) {
+            throw new XMLParseError("XML document is empty")
+        }
+        return arethusa
     }
 
     static incrementSentenceIdsFrom = 

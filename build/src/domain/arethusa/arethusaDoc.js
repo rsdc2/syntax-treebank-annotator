@@ -180,6 +180,11 @@ class ArethusaDoc {
         }
         return MaybeT.of(arethusaDoc);
     };
+    /**
+     * Parses an XML string into an ArethusaDoc. Returns Nothing if fails.
+     * @param arethusaXML string representation of XML document
+     * @returns {ArethusaDoc}
+     */
     static fromXMLStr = (arethusaXML) => {
         const xmldoc = XML.fromXMLStr(arethusaXML);
         const arethusaDoc = XML.documentElement(xmldoc)
@@ -194,6 +199,18 @@ class ArethusaDoc {
         }
         return MaybeT.of(arethusaDoc);
     };
+    /**
+     * Parses an XML string into an ArethusaDoc. Raises an error if fails.
+     * @param arethusaXML string representation of XML document
+     * @returns {ArethusaDoc}
+     */
+    static fromXMLStr_(arethusaXML) {
+        const arethusa = ArethusaDoc.fromXMLStr(arethusaXML).value;
+        if (arethusa == null) {
+            throw new XMLParseError("XML document is empty");
+        }
+        return arethusa;
+    }
     static incrementSentenceIdsFrom = (startSentenceId) => (a) => {
         const reduceIncrement = (a, id) => {
             const s = a.bind(ArethusaDoc.sentenceById(id));
