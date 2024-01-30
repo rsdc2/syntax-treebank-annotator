@@ -197,6 +197,8 @@ class Frontend {
             const arethusa = MaybeT
                 .of(epidocStr)
                 .bind(Conversion.epidocXMLToArethusa)
+                
+            arethusa.fmap(ArethusaValidator.assertValid)
 
             const textState = TextState.of(
                 arethusa.fmap(ViewState.of("1")("1")),

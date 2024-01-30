@@ -51,6 +51,11 @@ class ArethusaValidator {
             throw new ValidationError(message)
         }
 
+        if (arethusa.tokens.length === 0) {
+            const message = "The file has no tokens"
+            throw new TokenCountError(message)
+        }
+
         return true
     }
 
