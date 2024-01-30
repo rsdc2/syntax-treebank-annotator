@@ -565,6 +565,7 @@ class Frontend {
 
         const epidocExampleBtnFunc = (e: Event) => {
             e.stopPropagation()
+            
             Frontend
                 .epidocInputTextArea
                 .fmap(TextArea.setValue(epidocFile))
