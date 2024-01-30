@@ -286,6 +286,7 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
         } 
 
         return MaybeT.of(arethusaDoc)
+        
     }
 
     /**
