@@ -108,25 +108,73 @@ class Frontend {
     }
 
     static formatInputEpiDoc=() => {
-        Frontend
+        try {
+            Frontend
             .epidocInputTextArea
             .fmap(TextArea.value)
             .fmap(Frontend.processEpiDoc)
 
-        globalState
-            .textStateIO
-            .fmapErr("No textStateIO", TextStateIO.formatInputEpiDoc)
+            globalState
+                .textStateIO
+                .fmapErr("No textStateIO", TextStateIO.formatInputEpiDoc)
+        }
+        catch (e) {
+
+            const outputArethusaDiv = ArethusaDiv.control._value
+            
+            if (outputArethusaDiv == null) {
+                throw new Error ("No output Arethusa <div> element")
+            }
+
+            if (e instanceof XMLParseError) {
+                outputArethusaDiv.replaceChildren(e.message)
+            }
+
+            else if (e instanceof ValidationError) {
+                outputArethusaDiv.replaceChildren(
+                    e.message
+                )                
+            } 
+
+            else {
+                throw e
+            }
+        }
+
     }
 
     static formatInputArethusa=() => {
-        Frontend
-            .arethusaInputTextArea
-            .fmap(TextArea.value)
-            .fmap(Frontend.processArethusa)
 
-        globalState
-            .textStateIO
-            .fmapErr("No textStateIO", TextStateIO.formatInputArethusa)
+        try {
+            Frontend
+                .arethusaInputTextArea
+                .fmap(TextArea.value)
+                .fmap(Frontend.processArethusa)
+
+            globalState
+                .textStateIO
+                .fmapErr("No textStateIO", TextStateIO.formatInputArethusa)
+
+        }
+        catch (e) {
+            const outputArethusaDiv = ArethusaDiv.control._value
+            
+            if (outputArethusaDiv == null) {
+                throw new Error ("No output Arethusa <div> element")
+            }
+
+            if (e instanceof XMLParseError) {
+                outputArethusaDiv.replaceChildren(e.message)
+            }
+
+            else if (e instanceof ValidationError) {
+                outputArethusaDiv.replaceChildren(e.message)                
+            } 
+
+            else {
+                throw e
+            }            
+        }
     }
 
     /**
