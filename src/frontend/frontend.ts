@@ -107,73 +107,84 @@ class Frontend {
             .fmap(TextArea.value)
     }
 
-    static formatInputEpiDoc=() => {
+    static formatInputEpiDoc=(e: Event) => {
+        e.stopPropagation()
         try {
-            Frontend
-            .epidocInputTextArea
-            .fmap(TextArea.value)
-            .fmap(Frontend.processEpiDoc)
+            const result = Frontend
+                .epidocInputTextArea
+                .fmap(TextArea.value)
+                .fmap(Frontend.processEpiDoc)
+                .fromMaybe(false)
 
-            globalState
-                .textStateIO
-                .fmapErr("No textStateIO", TextStateIO.formatInputEpiDoc)
+            if (result) {
+                globalState
+                    .textStateIO
+                    .fmapErr("No textStateIO", TextStateIO.formatInputEpiDoc)
+
+            }
+
         }
         catch (e) {
 
-            const outputArethusaDiv = ArethusaDiv.control._value
+            // const outputArethusaDiv = ArethusaDiv.control._value
             
-            if (outputArethusaDiv == null) {
-                throw new Error ("No output Arethusa <div> element")
-            }
+            // if (outputArethusaDiv == null) {
+            //     throw new Error ("No output Arethusa <div> element")
+            // }
 
-            if (e instanceof XMLParseError) {
-                outputArethusaDiv.replaceChildren(e.message)
-            }
+            // if (e instanceof XMLParseError) {
+            //     outputArethusaDiv.replaceChildren(e.message)
+            // }
 
-            else if (e instanceof ValidationError) {
-                outputArethusaDiv.replaceChildren(
-                    e.message
-                )                
-            } 
+            // else if (e instanceof ValidationError) {
+            //     outputArethusaDiv.replaceChildren(
+            //         e.message
+            //     )                
+            // } 
 
-            else {
-                throw e
-            }
+            // else {
+            //     throw e
+            // }
+            throw e
         }
 
     }
 
-    static formatInputArethusa=() => {
+    static formatInputArethusa=(e : Event) => {
+
+        e.stopPropagation()
+        const result = Frontend
+            .arethusaInputTextArea
+            .fmap(TextArea.value)
+            .fmap(Frontend.processArethusa)
+            .fromMaybe(false)
 
         try {
-            Frontend
-                .arethusaInputTextArea
-                .fmap(TextArea.value)
-                .fmap(Frontend.processArethusa)
-
-            globalState
-                .textStateIO
-                .fmapErr("No textStateIO", TextStateIO.formatInputArethusa)
-
+            if (result === true) {
+                globalState
+                    .textStateIO
+                    .fmapErr("No textStateIO", TextStateIO.formatInputArethusa)
+            }
         }
         catch (e) {
-            const outputArethusaDiv = ArethusaDiv.control._value
+            // const outputArethusaDiv = ArethusaDiv.control._value
             
-            if (outputArethusaDiv == null) {
-                throw new Error ("No output Arethusa <div> element")
-            }
+            // if (outputArethusaDiv == null) {
+            //     throw new Error ("No output Arethusa <div> element")
+            // }
 
-            if (e instanceof XMLParseError) {
-                outputArethusaDiv.replaceChildren(e.message)
-            }
+            // if (e instanceof XMLParseError) {
+            //     outputArethusaDiv.replaceChildren(e.message)
+            // }
 
-            else if (e instanceof ValidationError) {
-                outputArethusaDiv.replaceChildren(e.message)                
-            } 
+            // else if (e instanceof ValidationError) {
+            //     outputArethusaDiv.replaceChildren(e.message)                
+            // } 
 
-            else {
-                throw e
-            }            
+            // else {
+            //     throw e
+            // }            
+            throw e
         }
     }
 
@@ -234,7 +245,7 @@ class Frontend {
 
     }
 
-    static processEpiDoc = (epidocStr: string) => {
+    static processEpiDoc = (epidocStr: string): boolean => {
         Frontend.saveCurrentState()
 
         try {
@@ -267,6 +278,7 @@ class Frontend {
 
             globalState.createTreeStateIO()
             globalState.graph()
+            return true
             
         } catch (error) {
             const outputArethusaDiv = ArethusaDiv.control._value
@@ -278,18 +290,21 @@ class Frontend {
                 outputArethusaDiv.replaceChildren(
                     error.message
                 )
+                return false
             } 
 
             else if (error instanceof ValidationError) {
                 outputArethusaDiv.replaceChildren(
                     error.message
                 )                
+                return false
             } 
             
             else if (error instanceof TokenCountError) {
                 outputArethusaDiv.replaceChildren(
                     error.message
-                )            
+                )           
+                return false 
             } 
             
             else {
@@ -298,7 +313,7 @@ class Frontend {
         }
     }
 
-    static processArethusa = (arethusaStr: string) => {
+    static processArethusa = (arethusaStr: string): boolean => {
         Frontend.saveCurrentState()
 
         try {
@@ -327,6 +342,7 @@ class Frontend {
                             
             globalState.createTreeStateIO()
                 globalState.graph()
+            return true
         } catch (error) {
             const outputArethusaDiv = ArethusaDiv.control._value
             if (outputArethusaDiv == null) {
@@ -336,18 +352,21 @@ class Frontend {
                 outputArethusaDiv.replaceChildren(
                     error.message
                 )
+                return false
             } 
             
             else if (error instanceof ValidationError) {
                 outputArethusaDiv.replaceChildren(
                     error.message
-                )                
+                )    
+                return false            
             } 
             
             else if (error instanceof TokenCountError) {
                 outputArethusaDiv.replaceChildren(
                     error.message
-                )            
+                )      
+                return false      
             } 
             
             else {
