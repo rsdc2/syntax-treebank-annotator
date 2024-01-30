@@ -134,6 +134,12 @@ class Frontend {
      * an XML document is empty, does not save
      */
     static saveCurrentState = (): void => {
+
+        // if (Frontend.epidocInputTextArea.value != null)
+        //     Frontend.epidocInputTextArea.value.textContent = ""
+
+        // if (Frontend.arethusaInputTextArea.value != null)
+        //     Frontend.arethusaInputTextArea.value.textContent = ""
         try {
             if (globalState.textStateIO.isNothing) {
                 globalState.createTextStateIO(
@@ -174,6 +180,9 @@ class Frontend {
                 return
             }
         }
+        
+
+
 
     }
 

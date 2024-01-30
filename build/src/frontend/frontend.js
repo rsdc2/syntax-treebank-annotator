@@ -106,6 +106,10 @@ class Frontend {
      * an XML document is empty, does not save
      */
     static saveCurrentState = () => {
+        // if (Frontend.epidocInputTextArea.value != null)
+        //     Frontend.epidocInputTextArea.value.textContent = ""
+        // if (Frontend.arethusaInputTextArea.value != null)
+        //     Frontend.arethusaInputTextArea.value.textContent = ""
         try {
             if (globalState.textStateIO.isNothing) {
                 globalState.createTextStateIO(Nothing.of(), Nothing.of(), Nothing.of());
