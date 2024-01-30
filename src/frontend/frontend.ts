@@ -129,8 +129,11 @@ class Frontend {
             .fmapErr("No textStateIO", TextStateIO.formatInputArethusa)
     }
 
-
-    static saveCurrentState = () => {
+    /**
+     * Saves the current state; if an error, e.g. if 
+     * an XML document is empty, does not save
+     */
+    static saveCurrentState = (): void => {
         try {
             if (globalState.textStateIO.isNothing) {
                 globalState.createTextStateIO(
@@ -175,9 +178,9 @@ class Frontend {
     }
 
     static processEpiDoc = (epidocStr: string) => {
-        try {
-            Frontend.saveCurrentState()
+        Frontend.saveCurrentState()
 
+        try {
             const epidoc = EpiDoc.fromXMLStr_(epidocStr)
 
             TEIValidator.assertValid(epidoc)
@@ -237,9 +240,9 @@ class Frontend {
     }
 
     static processArethusa = (arethusaStr: string) => {
+        Frontend.saveCurrentState()
 
         try {
-            Frontend.saveCurrentState()
             const arethusa = ArethusaDoc.fromXMLStr_(arethusaStr)
             ArethusaValidator.assertValid(arethusa)
 
