@@ -12,7 +12,24 @@ class FileSizeError extends Error {
 }
 
 class TokenCountError extends Error {
-    
+    /**
+     * 
+     * @param {number} tokenCount 
+     */
+    constructor(tokenCount) {
+        if (tokenCount === 0) {
+            super("No tokens found")
+        } else {
+            super(
+                `${tokenCount} tokens found: cannot be greater than ` +
+                `${Constants.MAXTOKENS}`
+            )
+        }
+    }
+}
+
+class SentenceCountError extends Error {
+
 }
 
 /**

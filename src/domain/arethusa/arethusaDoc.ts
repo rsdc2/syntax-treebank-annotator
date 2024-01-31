@@ -252,10 +252,7 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
         }
 
         if (arethusaDoc.tokens.length > Constants.MAXTOKENS) {
-            throw new TokenCountError(
-                `Too many tokens. ` + 
-                `Must be ${Constants.MAXTOKENS} or fewer`
-            )
+            throw new TokenCountError(arethusaDoc.tokens.length)
         }
 
         return MaybeT.of(arethusaDoc)
@@ -282,10 +279,7 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
 
         // Check not too many tokens
         if (arethusaDoc.tokens.length > Constants.MAXTOKENS) {
-            throw new TokenCountError(
-                `Too many tokens. ` + 
-                `Must be ${Constants.MAXTOKENS} or fewer`
-            )
+            throw new TokenCountError(arethusaDoc.tokens.length)
         } 
 
         return MaybeT.of(arethusaDoc)
@@ -657,10 +651,7 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
         
         // Check not too many tokens
         if (arethusa_.tokens.length > Constants.MAXTOKENS) {
-            throw new TokenCountError(
-                `Too many tokens. ` + 
-                `Must be ${Constants.MAXTOKENS} or fewer`
-            )
+            throw new TokenCountError(arethusa_.tokens.length)
         } 
 
         const maybeWords = MaybeT.of(a)
