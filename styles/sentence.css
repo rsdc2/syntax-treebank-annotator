@@ -14,6 +14,8 @@ div.Sentences {
     margin-bottom: 15px;
     font-size: medium;
     border-radius: 3.5px;
+    max-height: 100px;
+    overflow: auto;
 }
 
 div.Sentences.set {

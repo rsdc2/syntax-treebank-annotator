@@ -23,7 +23,9 @@ class InputProcessor {
             return ErrorHandler.printErrorMsgSpecific([
                 XMLParseError,
                 ValidationError,
-                TokenCountError
+                TokenCountError,
+                SentenceCountError,
+                TokensPerSentenceError
             ], e);
         }
     }
@@ -46,7 +48,9 @@ class InputProcessor {
             return ErrorHandler.printErrorMsgSpecific([
                 XMLParseError,
                 ValidationError,
-                TokenCountError
+                TokenCountError,
+                SentenceCountError,
+                TokensPerSentenceError
             ], e);
         }
     }
@@ -70,7 +74,9 @@ class InputProcessor {
             return ErrorHandler.printErrorMsgSpecific([
                 XMLParseError,
                 ValidationError,
-                TokenCountError
+                TokenCountError,
+                SentenceCountError,
+                TokensPerSentenceError
             ], e);
         }
     }

@@ -18,11 +18,11 @@ class TokenCountError extends Error {
      */
     constructor(tokenCount) {
         if (tokenCount === 0) {
-            super("No tokens found")
+            super("No tokens found.")
         } else {
             super(
-                `${tokenCount} tokens found. Should be ` +
-                `${Constants.MAXTOKENS} or fewer`
+                `${tokenCount} tokens found in the file. Should be ` +
+                `${Constants.MAXTOKENS} or fewer.`
             )
         }
     }
@@ -42,6 +42,22 @@ class SentenceCountError extends Error {
                 `${Constants.MAXSENTENCES} or fewer.`
             )
         }
+    }
+}
+
+class TokensPerSentenceError extends Error {
+    /**
+     * 
+     * @param {number} tokenCount 
+     * @param {string} sentenceId
+     */
+    constructor(tokenCount, sentenceId) {
+
+        super(
+            `Sentence ${sentenceId} has too many tokens (${tokenCount}). ` +
+            `Should be ` +
+            `${Constants.MAXTOKENSPERSENTENCE} or fewer.`
+        )
     }
 }
 

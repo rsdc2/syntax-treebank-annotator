@@ -40,9 +40,12 @@ namespace Constants {
     /**
      * TODO MAXTOKENS per SENTENCE
      */
-    export const MAXSENTENCES = 100
+    export const MAXSENTENCES = 2000
 
-    export const MAXTOKENS = 200
+    export const MAXTOKENS = 800
+
+    export const MAXTOKENSPERSENTENCE = 270
+
 
     /**
      * Maximum file size in KB

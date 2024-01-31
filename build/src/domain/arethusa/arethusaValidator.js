@@ -54,6 +54,17 @@ class ArethusaValidator {
         if (arethusa.tokens.length > Constants.MAXTOKENS) {
             throw new TokenCountError(arethusa.tokens.length);
         }
+        // Check that not too many sentences
+        if (arethusa.sentences.length > Constants.MAXSENTENCES) {
+            throw new SentenceCountError(arethusa.sentences.length);
+        }
+        // Check that no sentence has more than 
+        // the maximum number of tokens per sentence
+        arethusa.sentences.forEach((sentence) => {
+            if (sentence.tokens.length > Constants.MAXTOKENSPERSENTENCE) {
+                throw new TokensPerSentenceError(sentence.tokens.length, sentence._id.fromMaybe("?"));
+            }
+        });
         return true;
     }
     /**
