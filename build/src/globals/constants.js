@@ -32,12 +32,16 @@ var Constants;
     };
     Constants.defaultRel = "rel";
     Constants.defaultViewBox = "0 0 560 560";
+    /**
+     * TODO MAXTOKENS per SENTENCE
+     */
     Constants.MAXSENTENCES = 100;
-    Constants.MAXTOKENS = 2000;
+    Constants.MAXTOKENS = 200;
     /**
      * Maximum file size in KB
+     * TODO: split this into Arethusa and EpiDoc
      */
-    Constants.MAXFILESIZE = 200;
+    Constants.MAXFILESIZE = 50;
     Constants.messages = {
         about: String.raw `The Treebank Annotator was written by Robert Crellin as part of the
                 Crossreads project at the Faculty of Classics, University of Oxford, and

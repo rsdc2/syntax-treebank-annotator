@@ -185,7 +185,11 @@ class Frontend {
             return true;
         }
         catch (e) {
-            return ErrorHandler.handle(e);
+            return ErrorHandler.printErrorMsgSpecific([
+                XMLParseError,
+                ValidationError,
+                TokenCountError
+            ], e);
         }
     };
     static processArethusa = (arethusaStr) => {
@@ -204,7 +208,11 @@ class Frontend {
             return true;
         }
         catch (e) {
-            return ErrorHandler.handle(e);
+            return ErrorHandler.printErrorMsgSpecific([
+                XMLParseError,
+                ValidationError,
+                TokenCountError
+            ], e);
         }
     };
     static processText = (textStr) => {
@@ -224,7 +232,11 @@ class Frontend {
             globalState.graph();
         }
         catch (e) {
-            return ErrorHandler.handle(e);
+            return ErrorHandler.printErrorMsgSpecific([
+                XMLParseError,
+                ValidationError,
+                TokenCountError
+            ], e);
         }
     };
     static pushPlainTextToFrontend = (textStateIO) => {

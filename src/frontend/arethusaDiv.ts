@@ -45,6 +45,10 @@ class ArethusaDiv {
         return HTML.id("arethusaDiv") as Maybe<HTMLDivElement>
     }
 
+    /**
+     * Return the Arethusa output <div/> element.
+     * Raise a NoElementError if not found
+     */
     static get control_() {
         const control = document.getElementById("arethusaDiv")
         if (control == null) {

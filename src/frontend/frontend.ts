@@ -259,7 +259,12 @@ class Frontend {
             return true
             
         } catch (e) {
-            return ErrorHandler.handle(e)
+            return ErrorHandler.printErrorMsgSpecific([
+                    XMLParseError, 
+                    ValidationError,
+                    TokenCountError
+                ], e
+            )
         }
     }
 
@@ -295,7 +300,12 @@ class Frontend {
             return true
 
         } catch (e) {
-            return ErrorHandler.handle(e)
+            return ErrorHandler.printErrorMsgSpecific([
+                XMLParseError, 
+                ValidationError,
+                TokenCountError
+            ], e
+        )
         }
     }
 
@@ -331,7 +341,12 @@ class Frontend {
             globalState.createTreeStateIO()
             globalState.graph()
         } catch (e) {
-            return ErrorHandler.handle(e)
+            return ErrorHandler.printErrorMsgSpecific([
+                XMLParseError, 
+                ValidationError,
+                TokenCountError
+            ], e
+        )
         }
     }
 
