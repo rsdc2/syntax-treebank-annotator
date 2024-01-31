@@ -1,6 +1,6 @@
 # Syntax Treebank Annotator (α, under active development)
 
-The source code for the Syntax Treebank Annotator is written in [TypeScript](https://www.typescriptlang.org/) and transpiled to JavaScript (ECMAScript 2022).
+The source code for the Syntax Treebank Annotator is written in a combination of JavaScript and [TypeScript](https://www.typescriptlang.org/), transpiled to JavaScript (ECMAScript 2022).
 
 The annotator provides a UI for annotating dependency treebanks. 
 It has been designed for use, in the first instance, 
