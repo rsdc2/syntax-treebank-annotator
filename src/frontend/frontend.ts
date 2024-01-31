@@ -342,11 +342,11 @@ class Frontend {
             globalState.graph()
         } catch (e) {
             return ErrorHandler.printErrorMsgSpecific([
-                XMLParseError, 
-                ValidationError,
-                TokenCountError
-            ], e
-        )
+                    XMLParseError, 
+                    ValidationError,
+                    TokenCountError
+                ], e
+            )
         }
     }
 
