@@ -19,6 +19,30 @@ The Treebank Annotator can be run by following this link:
 
 Download or clone the repository and open ```index.html``` in a browser.
 
+### Run from a local server
+
+Although it isn't necessary, you can also serve the website locally.
+To do this, from the repository directory:
+
+- Install dependency ([```http-server```](https://www.npmjs.com/package/http-server)):
+
+```
+npm install
+```
+
+- Run the server locally:
+
+```
+npx http-server
+```
+
+- Open localhost according to the message provided by ```http-server```:
+
+```
+http://localhost:8080/
+```
+
+
 ### Build
 
 ``` bash
@@ -40,7 +64,7 @@ The annotator has similar aims to Arethusa.
 However, it differs in the following ways, and 
 is therefore somewhat complementary:
 
-### No server
+### No backend server needed
 Whereas Arethusa has a backend, 
 this annotator runs entirely in the browser. 
 The advantage of this is that it's easy to
