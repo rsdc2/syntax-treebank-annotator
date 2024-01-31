@@ -3,7 +3,7 @@
  */
 
 class InputProcessor {
-    static processEpiDoc = (epidocStr: string): boolean => {
+    static processEpiDoc (epidocStr: string): boolean {
         Frontend.saveCurrentState()
 
         try {
@@ -48,7 +48,7 @@ class InputProcessor {
         }
     }
 
-    static processArethusa = (arethusaStr: string): boolean => {
+    static processArethusa (arethusaStr: string): boolean {
         Frontend.saveCurrentState()
 
         try {
@@ -89,7 +89,7 @@ class InputProcessor {
         }
     }
 
-    static processText = (textStr: string) => {
+    static processText(textStr: string) {
 
         if (textStr === "") {
             return
