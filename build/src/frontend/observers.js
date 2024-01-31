@@ -1,17 +1,5 @@
 var Observers;
 (function (Observers) {
-    // const setSVGObserver = () => {
-    //     const svg = Graph.svg().value
-    //     if (svg !== null) {
-    //         const observer = new ResizeObserver( (entries) => {
-    //             const h = svg.clientHeight
-    //             const w = svg.clientWidth
-    //             const d = h > w ? w : h
-    //             svg.setAttribute("width", Str.fromNum(d))
-    //             svg.setAttribute("height", Str.fromNum(d))
-    //         })
-    //     }
-    // }
     const setTopToolbarObserver = () => {
         const tb = Frontend.topToolbarDiv.value;
         if (tb !== null) {
