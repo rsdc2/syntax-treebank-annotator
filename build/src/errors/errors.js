@@ -5,6 +5,34 @@ class ValidationError extends Error {
 class FileSizeError extends Error {
 }
 class TokenCountError extends Error {
+    /**
+     *
+     * @param {number} tokenCount
+     */
+    constructor(tokenCount) {
+        if (tokenCount === 0) {
+            super("No tokens found");
+        }
+        else {
+            super(`${tokenCount} tokens found. Should be ` +
+                `${Constants.MAXTOKENS} or fewer`);
+        }
+    }
+}
+class SentenceCountError extends Error {
+    /**
+     *
+     * @param {number} sentenceCount
+     */
+    constructor(sentenceCount) {
+        if (sentenceCount === 0) {
+            super("No tokens found");
+        }
+        else {
+            super(`${sentenceCount} tokens found. Should be ` +
+                `${Constants.MAXSENTENCES} or fewer.`);
+        }
+    }
 }
 /**
  * For when a given HTML element cannot be found

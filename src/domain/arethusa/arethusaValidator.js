@@ -46,15 +46,22 @@ class ArethusaValidator {
      */
 
     static assertValid(arethusa) {
+        // Check that has a <treebank/> element
         if (arethusa.node.nodeName !== "treebank") {
             const message = "The file has no <treebank/> element"
             throw new ValidationError(message)
         }
 
+        // Check that there are some tokens in the file
         if (arethusa.tokens.length === 0) {
             const message = "The file has no tokens"
             throw new TokenCountError(0)
         }
+
+        // Check that not too many tokens
+        if (arethusa.tokens.length > Constants.MAXTOKENS) {
+            throw new TokenCountError(arethusa.tokens.length)
+        } 
 
         return true
     }

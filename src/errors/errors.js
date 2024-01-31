@@ -21,15 +21,28 @@ class TokenCountError extends Error {
             super("No tokens found")
         } else {
             super(
-                `${tokenCount} tokens found: cannot be greater than ` +
-                `${Constants.MAXTOKENS}`
+                `${tokenCount} tokens found. Should be ` +
+                `${Constants.MAXTOKENS} or fewer`
             )
         }
     }
 }
 
 class SentenceCountError extends Error {
-
+    /**
+     * 
+     * @param {number} sentenceCount 
+     */
+    constructor(sentenceCount) {
+        if (sentenceCount === 0) {
+            super("No tokens found")
+        } else {
+            super(
+                `${sentenceCount} tokens found. Should be ` +
+                `${Constants.MAXSENTENCES} or fewer.`
+            )
+        }
+    }
 }
 
 /**

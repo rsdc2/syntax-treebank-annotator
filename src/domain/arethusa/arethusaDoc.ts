@@ -646,14 +646,6 @@ class ArethusaDoc implements ArethusaSentenceable, HasToken {
     static renumberTokenIds = (renumberHeads: boolean) => (a: ArethusaDoc): Maybe<ArethusaDoc> => {
         const changes = new Array() // Stores a map of id changes from old to new
 
-        const arethusa_ = a.deepcopy.value
-        if (arethusa_ == null) return Nothing.of()
-        
-        // Check not too many tokens
-        if (arethusa_.tokens.length > Constants.MAXTOKENS) {
-            throw new TokenCountError(arethusa_.tokens.length)
-        } 
-
         const maybeWords = MaybeT.of(a)
             .bindErr("No Arethusa.", ArethusaDoc.deepcopy)
             .fmapErr("No words in Arethusa.", ArethusaDoc.tokens)
