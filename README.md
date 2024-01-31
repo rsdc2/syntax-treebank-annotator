@@ -120,7 +120,7 @@ On load, the annotator will assign IDs to each token meeting these criteria.
 Dependencies (primary and secondary) should be preserved in this process,
 provided that at least within each sentence each token has a unique ID.
 
-## Artificial tokens
+### Artificial tokens
 
 It is possible to add artificial tokens using the annotator. 
 By default, these are given the text '0'. At present, the form cannot be 
@@ -130,6 +130,15 @@ editing the XML.
 At present the annotator does not read the ```@insertion_id``` attribute
 in an Arethusa XML file; the insertion position is simply the linear order
 in the XML file.
+
+### Sentence, token and filesize limits
+
+At present the annotator is only able to handle files with:
+
+- a maximum total of 2000 sentences
+- a maximum total of 800 tokens
+- a maximum of 270 tokens per sentence
+- a maximum filesize of 50KB
 
 ## Dependencies
 The syntax treebank annotator was written in [TypeScript](https://www.typescriptlang.org/) ([Apache 2.0](https://github.com/microsoft/TypeScript/blob/main/LICENSE.txt)) and uses:
