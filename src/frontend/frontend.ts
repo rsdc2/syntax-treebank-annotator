@@ -903,7 +903,7 @@ class Frontend {
 
         const span = document.createElement("span")
         span.classList.add("selected")
-        span.append(spanText)
+        span.textContent = spanText
 
         arethusaDiv.replaceChildren("")
         arethusaDiv.append(textToPrepend, span, textToAppend)
