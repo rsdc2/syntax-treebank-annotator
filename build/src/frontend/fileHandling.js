@@ -17,27 +17,32 @@ var FileHandling;
             .fmap(HTML.Elem.remove);
         url.fmap(HTML.URL.revokeObjectURL);
     };
-    FileHandling.loadFromDialog = (fileFormat) => (callback) => {
-        const onchangeFunc = FileInput.onchange(callback);
+    /**
+     *
+     * @param ext file extension including '.'
+     * @returns
+     */
+    FileHandling.loadFromDialog = (ext) => (callback) => {
+        const onchangeFunc = FileInput.onchange(callback, ext);
         const setOnChangeFunc = HTML.Elem.setOnChangeFunc(onchangeFunc);
         HTML.Elem
             .create("input")
             .fmapErr("Error", HTML.Elem.setAttr("type")("file"))
-            .fmapErr("Error", HTML.Elem.setAttr("accept")(fileFormat))
+            .fmapErr("Error", HTML.Elem.setAttr("accept")(ext))
             .fmap(setOnChangeFunc)
             .fmapErr("Error", HTML.Elem.click)
             .fmap(HTML.Elem.remove);
     };
     let TextFile;
     (function (TextFile) {
-        TextFile.process = (f) => (encoding) => (blob) => {
+        TextFile.process = (processString) => (encoding, ext) => (file) => {
+            FileValidator.assertCorrectExt(file, ext);
             const reader = new FileReader();
-            reader.readAsText(blob, encoding);
+            reader.readAsText(file, encoding);
             reader.onload = (e) => {
-                const fileContent = MaybeT.of(e.target)
-                    .bind(FR.result);
+                const fileContent = e.target?.result;
                 // TODO handle array buffer
-                fileContent.applyFmap(f);
+                processString(fileContent);
             };
         };
     })(TextFile = FileHandling.TextFile || (FileHandling.TextFile = {}));
@@ -52,14 +57,21 @@ var FileHandling;
         FileInput.files = (elem) => {
             return MaybeT.of(elem.files);
         };
-        FileInput.onchange = (callback) => (e) => {
+        /**
+         * This is what happens when the file has been selected
+         * and loaded with the dialog
+         * @param callback
+         * @param ext File extension, including initial '.'
+         * @returns
+         */
+        FileInput.onchange = (callback, ext) => (e) => {
             const file = MaybeT.of(e.target)
                 .bind(FileInput.files)
                 .fmap(Arr.fromIterable)
                 .bind(Arr.head);
             try {
                 if (file.value?.size !== undefined && file.value.size < Constants.MAXFILESIZE * 1000) {
-                    file.fmap(TextFile.process(callback)('UTF-8'));
+                    file.fmap(TextFile.process(callback)('UTF-8', ext));
                 }
                 else {
                     throw new FileSizeError(`File is too large. ` +
@@ -68,18 +80,10 @@ var FileHandling;
                 }
             }
             catch (error) {
-                if (error instanceof FileSizeError) {
-                    const outputArethusaDiv = ArethusaDiv.control._value;
-                    if (outputArethusaDiv != null) {
-                        outputArethusaDiv.replaceChildren("ERROR: " + error.message);
-                    }
-                    else {
-                        throw new Error("Missing output div element");
-                    }
-                }
-                else {
-                    throw error;
-                }
+                return ErrorHandler.printErrorMsgSpecific([
+                    FileSizeError,
+                    FileError
+                ], error);
             }
         };
     })(FileInput = FileHandling.FileInput || (FileHandling.FileInput = {}));

@@ -457,17 +457,17 @@ class Frontend {
         }
 
         const loadArethusaBtnFunc = () => {
-            FileHandling.loadFromDialog('.xml')(MaybeT.of(InputProcessor.processArethusa))
+            FileHandling.loadFromDialog('.xml')(InputProcessor.processArethusa)
         }
 
         const loadEpiDocBtnFunc = (e: Event) => {
             FileHandling.loadFromDialog
                       ('.xml')
-                      (MaybeT.of(InputProcessor.processEpiDoc))
+                      (InputProcessor.processEpiDoc)
         }
 
         const loadTextBtnFunc = (e: Event) => {
-            FileHandling.loadFromDialog('.txt')(MaybeT.of(InputProcessor.processText))
+            FileHandling.loadFromDialog('.txt')(InputProcessor.processText)
         }
 
         const undoFunc = (e: Event) => {

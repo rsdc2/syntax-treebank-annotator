@@ -15,6 +15,9 @@ class ErrorHandler {
         else if (e instanceof TokenCountError) {
             outputArethusaDiv.replaceChildren(e.message);
         }
+        else if (e instanceof FileError) {
+            outputArethusaDiv.replaceChildren(e.message);
+        }
         else {
             throw e;
         }

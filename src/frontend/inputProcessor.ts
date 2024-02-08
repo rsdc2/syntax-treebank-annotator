@@ -130,7 +130,7 @@ class InputProcessor {
                     ValidationError,
                     TokenCountError,
                     SentenceCountError,
-                    TokensPerSentenceError    
+                    TokensPerSentenceError
                 ], e
             )
         }

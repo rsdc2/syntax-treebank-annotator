@@ -344,13 +344,13 @@ class Frontend {
             InputProcessor.processArethusa(arethusaUglifiedExample);
         };
         const loadArethusaBtnFunc = () => {
-            FileHandling.loadFromDialog('.xml')(MaybeT.of(InputProcessor.processArethusa));
+            FileHandling.loadFromDialog('.xml')(InputProcessor.processArethusa);
         };
         const loadEpiDocBtnFunc = (e) => {
-            FileHandling.loadFromDialog('.xml')(MaybeT.of(InputProcessor.processEpiDoc));
+            FileHandling.loadFromDialog('.xml')(InputProcessor.processEpiDoc);
         };
         const loadTextBtnFunc = (e) => {
-            FileHandling.loadFromDialog('.txt')(MaybeT.of(InputProcessor.processText));
+            FileHandling.loadFromDialog('.txt')(InputProcessor.processText);
         };
         const undoFunc = (e) => {
             e.stopPropagation();
