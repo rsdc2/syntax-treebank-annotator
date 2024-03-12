@@ -2,10 +2,10 @@ namespace UserInput {
     export const leftClickNodeLabelFunc = (treeNodeId: Maybe<string>) => {
         if (globalState.treeStateIO.bind(TreeStateIO.lastClickedId).value === treeNodeId.value
             && globalState.treeStateIO.fmap(TreeStateIO.lastClickType).eq(ClickType.Left)
-            ) {
-                globalState.treeStateIO
-                    .fmap(TreeStateIO.changeClickState( ClickState.none() ))
-                return
+        ) {
+            globalState.treeStateIO
+                .fmap(TreeStateIO.changeClickState(ClickState.none()))
+            return
         }
 
         if (globalState.treeStateIO.bind(TreeStateIO.lastClickedId).isNothing) {
@@ -15,11 +15,11 @@ namespace UserInput {
                 .fmap(
                     TreeStateIO.changeClickState(
                         ClickState.of
-                            (treeNodeId) 
+                            (treeNodeId)
                             (TreeLabelType.NodeLabel)
                             (ClickType.Left)
                     )
-            )
+                )
 
 
             // Change the selected word on the output Arethusa
@@ -44,18 +44,18 @@ namespace UserInput {
         }
 
         const changeNodeVal = treeNodeId
-            .fmap(TreeStateIO.changeNodeValue ('headTreeNodeId'))
+            .fmap(TreeStateIO.changeNodeValue('headTreeNodeId'))
 
         const x = globalState.treeStateIO.applyFmap(
-                globalState
-                    .treeStateIO
-                    .bind(TreeStateIO.lastClickedId)
-                    .applyFmap(changeNodeVal)
-            )
+            globalState
+                .treeStateIO
+                .bind(TreeStateIO.lastClickedId)
+                .applyFmap(changeNodeVal)
+        )
 
         globalState
             .treeStateIO
-            .fmap(TreeStateIO.changeClickState ( ClickState.none() ))
+            .fmap(TreeStateIO.changeClickState(ClickState.none()))
 
     }
 
@@ -63,19 +63,19 @@ namespace UserInput {
     export function leftClickNodeLabel(this: SVGTextElement, e: MouseEvent): void {
         e.stopPropagation()
 
-        const treeNodeId = HTML.Elem.getAttr ("treenode-id") (this)
+        const treeNodeId = HTML.Elem.getAttr("treenode-id")(this)
 
-        leftClickNodeLabelFunc(treeNodeId)        
+        leftClickNodeLabelFunc(treeNodeId)
     }
-    
+
     export function rightClickNodeLabel(this: SVGTextElement, e: MouseEvent): void {
         e.preventDefault()
-        e.stopPropagation()   
-        
-        const treeNodeId = HTML.Elem.getAttr ("treenode-id") (this)
+        e.stopPropagation()
+
+        const treeNodeId = HTML.Elem.getAttr("treenode-id")(this)
 
         if (globalState.treeStateIO.bind(TreeStateIO.lastClickedId).value === treeNodeId.value) {
-            globalState.treeStateIO.fmap(TreeStateIO.changeClickState( ClickState.none() ))
+            globalState.treeStateIO.fmap(TreeStateIO.changeClickState(ClickState.none()))
             return
         }
 
@@ -85,11 +85,11 @@ namespace UserInput {
                 .treeStateIO
                 .fmap(TreeStateIO.changeClickState(
                     ClickState.of
-                        (treeNodeId) 
+                        (treeNodeId)
                         (TreeLabelType.NodeLabel)
                         (ClickType.Right)
                 )
-            )
+                )
 
             // Change the selected word on the output Arethusa
             const getWordId = treeNodeId
@@ -105,7 +105,7 @@ namespace UserInput {
             globalState
                 .textStateIO
                 .fmap(
-                    TextStateIO.changeView (wordId) (Nothing.of())
+                    TextStateIO.changeView(wordId)(Nothing.of())
                 )
 
             return
@@ -126,10 +126,10 @@ namespace UserInput {
         const x = globalState
             .treeStateIO
             .applyFmap(a)
-        
+
         const y = globalState
             .treeStateIO
-            .fmap(TreeStateIO.changeClickState (ClickState.none() ) )
+            .fmap(TreeStateIO.changeClickState(ClickState.none()))
     }
 
     export function leftClickEdgeLabel(this: HTMLDivElement, e: MouseEvent): void {
@@ -139,7 +139,7 @@ namespace UserInput {
             .treeStateIO
             .fmap(
                 TreeStateIO.changeClickState(
-                    ClickState.of 
+                    ClickState.of
                         (HTML.Elem.getAttr("id")(this))
                         (TreeLabelType.EdgeLabel)
                         (ClickType.Left)
@@ -153,21 +153,21 @@ namespace UserInput {
             case ("Enter"):
                 globalState
                     .treeStateIO
-                    .fmap(TreeStateIO.changeClickState( ClickState.none() ))
+                    .fmap(TreeStateIO.changeClickState(ClickState.none()))
                 break
 
             case ("Escape"):
                 globalState
                     .treeStateIO
-                    .fmap(TreeStateIO.changeClickState( ClickState.none() ))
+                    .fmap(TreeStateIO.changeClickState(ClickState.none()))
                 break
 
             case ("Delete"):
                 const x = globalState
                     .treeStateIO
                     .applyFmap(HTML.q("div.edge-label-div.clicked")
-                    .bind(HTML.Elem.getAttr("slash-id"))
-                    .fmap(TreeStateIO.removeSlashBySlashIdFromTreeNodeIds))
+                        .bind(HTML.Elem.getAttr("slash-id"))
+                        .fmap(TreeStateIO.removeSlashBySlashIdFromTreeNodeIds))
                 break
         }
     }

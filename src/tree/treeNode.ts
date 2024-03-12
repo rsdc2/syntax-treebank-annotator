@@ -6,43 +6,40 @@
 
 namespace TreeNode {
 
-    export const appendSecondaryDep = 
-        (slash: ISecondaryDep) => 
-        (node: ITreeNode) => 
-    {
-        const newNode = Obj.deepcopy(node)
-        newNode.secondaryDeps = Arr.push(slash)(newNode.secondaryDeps)
-        return newNode
-    }
+    export const appendSecondaryDep =
+        (slash: ISecondaryDep) =>
+            (node: ITreeNode) => {
+                const newNode = Obj.deepcopy(node)
+                newNode.secondaryDeps = Arr.push(slash)(newNode.secondaryDeps)
+                return newNode
+            }
 
-    export const byTokenId = 
-        (treeNodes: ITreeNode[], tokenId: number): Maybe<ITreeNode> => 
-    {
-        const treeNode = treeNodes.find(
-            (treeNode) => treeNode.arethusaTokenId === tokenId
-        )
-        return MaybeT.of(treeNode)
-    }
-
-    export const changeSlash = 
-        (slash: SecondaryDep) => 
-        (node: ITreeNode) => 
-    {
-        const slashesIdx = node
-            .secondaryDeps
-            .findIndex( 
-                (_slash: SecondaryDep) => 
-                    _slash.slashIdFromTokenIds === slash.slashIdFromTokenIds
+    export const byTokenId =
+        (treeNodes: ITreeNode[], tokenId: number): Maybe<ITreeNode> => {
+            const treeNode = treeNodes.find(
+                (treeNode) => treeNode.arethusaTokenId === tokenId
             )
+            return MaybeT.of(treeNode)
+        }
 
-        const nodeCopy = Obj.deepcopy(node)
-        MaybeT.of(nodeCopy)
-            .fmap(TreeNode.slashes)
-            .fromMaybe([])
-            .splice(slashesIdx, 1, slash)
+    export const changeSlash =
+        (slash: SecondaryDep) =>
+            (node: ITreeNode) => {
+                const slashesIdx = node
+                    .secondaryDeps
+                    .findIndex(
+                        (_slash: SecondaryDep) =>
+                            _slash.slashIdFromTokenIds === slash.slashIdFromTokenIds
+                    )
 
-        return nodeCopy
-    }
+                const nodeCopy = Obj.deepcopy(node)
+                MaybeT.of(nodeCopy)
+                    .fmap(TreeNode.slashes)
+                    .fromMaybe([])
+                    .splice(slashesIdx, 1, slash)
+
+                return nodeCopy
+            }
 
     export const empty = (): ITreeNode => {
         return {
@@ -65,13 +62,12 @@ namespace TreeNode {
         }
     }
 
-    export const headTreeNodeId = 
-        (sentState: TreeState) => 
-        (treeNode: ITreeNode) => 
-        {
-        return sentState.tokenIdToTreeNodeId(treeNode
-            .headTokenId)
-    }
+    export const headTreeNodeId =
+        (sentState: TreeState) =>
+            (treeNode: ITreeNode) => {
+                return sentState.tokenIdToTreeNodeId(treeNode
+                    .headTokenId)
+            }
 
     export const links = (treeNodes: ITreeNode[]) => {
         // const sentState = TreeState.of
@@ -94,11 +90,11 @@ namespace TreeNode {
             const depTreeNodeId = depTreeNode
                 .fmap(TreeNode.treeNodeId)
             const id = depTreeNodeId.applyFmap(
-                            headTreeNodeId.fmap(
-                                TreeLinks.createId(LinkType.Slash)))
+                headTreeNodeId.fmap(
+                    TreeLinks.createId(LinkType.Slash)))
 
 
-            if (headTreeNodeId.isNothing || depTreeNodeId.isNothing) 
+            if (headTreeNodeId.isNothing || depTreeNodeId.isNothing)
                 return acc;
 
             const link: ITreeLink = {
@@ -110,16 +106,15 @@ namespace TreeNode {
                 headTreeNodeId: headTreeNodeId.unpack(-1),
                 depTreeNodeId: depTreeNodeId.unpack(-1)
             }
-    
-            return Arr.push (link) (acc)
+
+            return Arr.push(link)(acc)
         }
 
         function mainNodeLinkReduceFunc(
-            acc: ITreeLink[], 
-            treeNode: ITreeNode, 
-            idx: number, 
-            treeNodes: ITreeNode[]): ITreeLink[] 
-        {
+            acc: ITreeLink[],
+            treeNode: ITreeNode,
+            idx: number,
+            treeNodes: ITreeNode[]): ITreeLink[] {
 
             // Add slashes first so that links are created even if 
             // no main head-child relation
@@ -148,7 +143,7 @@ namespace TreeNode {
             )
 
             if (headTreeNode.isNothing) return acc;
-    
+
             const link: ITreeLink = {
                 id: id.fromMaybe(""),
                 target: treeNode,
@@ -156,12 +151,12 @@ namespace TreeNode {
                 type: LinkType.Head,
                 relation: treeNode.relation,
                 headTreeNodeId: headId.fromMaybe(-1),
-                depTreeNodeId: treeNode.treeNodeId 
+                depTreeNodeId: treeNode.treeNodeId
             }
 
-            return Arr.push (link) (acc)
+            return Arr.push(link)(acc)
         }
-    
+
         const links = treeNodes
             .reduce(mainNodeLinkReduceFunc, [])
 
@@ -172,32 +167,32 @@ namespace TreeNode {
         return MaybeT.of(
             nodes
                 .find(
-                    (node: ITreeNode) => 
+                    (node: ITreeNode) =>
                         node.arethusaTokenId === parseInt(tokenId))
-            )
+        )
     }
-    
-    
+
+
     /**
      * In order that links do not overlap, it is important to find nodes joined by multiple links.
      * This function returns an array of parallel links, which is a subset of all the links.
      */
-    
+
     export const parallelLinks = (
-        links: ITreeLink[], 
-        sourceIdx: number, 
+        links: ITreeLink[],
+        sourceIdx: number,
         targetIdx: number): ITreeLink[] => {
-    
-        return links.reduce( 
+
+        return links.reduce(
             (acc: ITreeLink[], link: ITreeLink) => {
-                const parallel1 = sourceIdx === link.headTreeNodeId 
+                const parallel1 = sourceIdx === link.headTreeNodeId
                     && targetIdx === link.depTreeNodeId
-                const parallel2 = targetIdx === link.headTreeNodeId 
+                const parallel2 = targetIdx === link.headTreeNodeId
                     && sourceIdx === link.depTreeNodeId
-    
-                return parallel1 || parallel2 ? Arr.push(link) (acc) : acc
+
+                return parallel1 || parallel2 ? Arr.push(link)(acc) : acc
             }
-        , [])
+            , [])
     }
 
     export const relation = (node: ITreeNode) => {
@@ -208,14 +203,14 @@ namespace TreeNode {
         const newNode = Obj.deepcopy(node)
         const slashArrIdx = newNode
             .secondaryDeps
-            .findIndex (
+            .findIndex(
                 (slash) => {
                     return SecondaryDep
                         .ofInterface(slash)
                         .slashIdFromTreeNodeIds(sentState)
                         .eq(slashId)
                 }
-        )
+            )
         newNode.secondaryDeps = Arr.removeByIdx(newNode.secondaryDeps)(slashArrIdx)
         return newNode
     }
@@ -247,16 +242,16 @@ namespace TreeNode {
 
     export const slashesToStr = (node: ITreeNode) => {
         const s = node
-                .secondaryDeps
-                .map(SecondaryDep.toStr)
-                .join(";")
-        
+            .secondaryDeps
+            .map(SecondaryDep.toStr)
+            .join(";")
+
         // If secondary deps have no string representation, 
         // can end up with empty strings at the start
         // This code removes the resulting initial ';'
         if (s.charAt(0) === ";") {
             return Str.substring(1)(s.length)(s)
-        } 
+        }
         return s
     }
 
@@ -269,10 +264,9 @@ namespace TreeNode {
      */
 
     export const tokenToTreeNode = (
-        token: ITreeToken, 
-        counter: number, 
-        tokens: ITreeToken[]): ITreeNode => 
-    {
+        token: ITreeToken,
+        counter: number,
+        tokens: ITreeToken[]): ITreeNode => {
         const node = {
             name: token.form,
             arethusaTokenId: token.id,
@@ -287,8 +281,8 @@ namespace TreeNode {
             secondaryDeps: token.secondaryDeps,
             distToRoot: TreeEdge.countEdgesToRoot(token.id, tokens),
             insertionId: TreeToken.insertionId(token),
-            type: token.type === TreeTokenType.Root ? 
-                NodeType.Root : 
+            type: token.type === TreeTokenType.Root ?
+                NodeType.Root :
                 NodeType.NonRoot,
             artificialType: TreeToken.artificialType(token),
             corpusId: token.corpusId
@@ -297,47 +291,46 @@ namespace TreeNode {
         return node
     }
 
-    export const tokenToTreeNodeFromExistingNode = 
-        (nodes: ITreeNode[]) => 
-        (
-            token: ITreeToken | ITreeWord | ITreeArtificial, 
-            counter: number, 
-            tokens: ITreeToken[]
-        ): ITreeNode => 
-    {
-        const _node = TreeNode
-            .nodeByTokenId
-                (Str.fromNum(token.id))
-                (nodes)
-            .unpack(null)
-        
-        if (_node === null) {
-            return TreeNode.tokenToTreeNode(token, counter, tokens)
-        }
-        
-        _node.name = token.form
-        _node.arethusaTokenId = token.id
-        _node.treeNodeId = counter
-        _node.headTokenId = token.headId
-        _node.relation = token.relation
-        _node.secondaryDeps = token.secondaryDeps
-        _node.distToRoot = TreeEdge.countEdgesToRoot(token.id, tokens)
-        _node.type = token.type === TreeTokenType.Root ? 
-            NodeType.Root : 
-            NodeType.NonRoot;
-        _node.artificialType = TreeToken.artificialType(token)
+    export const tokenToTreeNodeFromExistingNode =
+        (nodes: ITreeNode[]) =>
+            (
+                token: ITreeToken | ITreeWord | ITreeArtificial,
+                counter: number,
+                tokens: ITreeToken[]
+            ): ITreeNode => {
+                const _node = TreeNode
+                    .nodeByTokenId
+                    (Str.fromNum(token.id))
+                    (nodes)
+                    .unpack(null)
 
-        return _node
+                if (_node === null) {
+                    return TreeNode.tokenToTreeNode(token, counter, tokens)
+                }
 
-    }
-    
-    export const tokensToTreeNodes = 
+                _node.name = token.form
+                _node.arethusaTokenId = token.id
+                _node.treeNodeId = counter
+                _node.headTokenId = token.headId
+                _node.relation = token.relation
+                _node.secondaryDeps = token.secondaryDeps
+                _node.distToRoot = TreeEdge.countEdgesToRoot(token.id, tokens)
+                _node.type = token.type === TreeTokenType.Root ?
+                    NodeType.Root :
+                    NodeType.NonRoot;
+                _node.artificialType = TreeToken.artificialType(token)
+
+                return _node
+
+            }
+
+    export const tokensToTreeNodes =
         (tokens: ITreeToken[]): ITreeNode[] => {
-        return tokens
-            .map(TreeNode.tokenToTreeNode)
-    }
+            return tokens
+                .map(TreeNode.tokenToTreeNode)
+        }
 
-    export const toArethusaWordXMLStr = (node: ITreeNode):string => {
+    export const toArethusaWordXMLStr = (node: ITreeNode): string => {
         if (node.artificialType == ArtificialType.Elliptic) {
             return `<word id="${node.arethusaTokenId}" 
                     form="${node.name}" 

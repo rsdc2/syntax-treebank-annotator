@@ -63,7 +63,7 @@ namespace FileHandling {
 
     }
 
-    export namespace FR {
+    export namespace FR { // FR = FileReader
         export const result = (fr: FileReader) => {
             return MaybeT.of(fr.result)
         }

@@ -244,9 +244,11 @@ class ArethusaSentence {
     static XMLStrFromPlainTextStr = (a) => (str) => {
         const sentenceElem = a
             .doc
-            .fmapErr("No XML document.", XML.createElement("sentence")({ id: ArethusaDoc.newNextSentenceId(a),
+            .fmapErr("No XML document.", XML.createElement("sentence")({
+            id: ArethusaDoc.newNextSentenceId(a),
             notes: "",
-            "xml:lang": "" }));
+            "xml:lang": ""
+        }));
         const doc = MaybeT
             .of(a)
             .fmap(DXML.node)

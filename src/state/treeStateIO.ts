@@ -8,10 +8,9 @@ class TreeStateIO {
     private _currentSentStateIdx: number = 0
 
     addSentStateFromNodes(
-        nodes: ITreeNode[], 
-        update: boolean): void 
-    {
-        const newSentState = new TreeState (
+        nodes: ITreeNode[],
+        update: boolean): void {
+        const newSentState = new TreeState(
             this.currentSentStateIdx + 1,
             this.currentTreeState._sentence_id,
             this.currentTreeState._lang,
@@ -26,7 +25,7 @@ class TreeStateIO {
             (update)
     }
 
-    get arethusaSentence () {
+    get arethusaSentence() {
         return this
             .currentTreeState
             .arethusaSentence
@@ -69,15 +68,14 @@ class TreeStateIO {
         if (newClickState.elementType === TreeLabelType.EdgeLabel) {
 
             // Don't do anything if clicking on the same label
-            if ( this.currentTreeState.clickState.elementType === 
-                    TreeLabelType.EdgeLabel ) 
-            {
-                if (newClickState.lastClickedId.value === 
-                        this.currentTreeState.clickState.lastClickedId.value) {
+            if (this.currentTreeState.clickState.elementType ===
+                TreeLabelType.EdgeLabel) {
+                if (newClickState.lastClickedId.value ===
+                    this.currentTreeState.clickState.lastClickedId.value) {
                     return
                 }
             }
-    
+
             this.currentTreeState.clickState
                 .edgeLabelElement
                 .fmap(this.changeRelation)
@@ -86,7 +84,7 @@ class TreeStateIO {
 
             newClickState
                 .currentClickedLabelElem
-                .fmap( HTML.Elem.setAttr ("contenteditable") ("true") )
+                .fmap(HTML.Elem.setAttr("contenteditable")("true"))
 
             ClickState.clicked(newClickState)
         }
@@ -113,64 +111,64 @@ class TreeStateIO {
 
     static changeNodeValue =
         (nodeField: string) =>
-        (nodeValue: string) =>
-        (treeNodeId: string) =>
-        (state: TreeStateIO) =>
+            (nodeValue: string) =>
+                (treeNodeId: string) =>
+                    (state: TreeStateIO) => {
 
-        {
+                        const id = parseInt(treeNodeId)
+                        const nodes = state
+                            .currentTreeState
+                            .nodes
 
-        const id = parseInt(treeNodeId)
-        const nodes = state
-            .currentTreeState
-            .nodes
+                        if (nodes) {
+                            const node = nodes[id]
+                            const newNode = Obj.deepcopy(node)
 
-        if (nodes) {
-            const node = nodes[id]
-            const newNode = Obj.deepcopy(node)
+                            switch (nodeField) {
+                                case ('name'):
+                                    newNode[nodeField] = nodeValue
+                                    break
+                                case ('relation'):
+                                    newNode[nodeField] = nodeValue
+                                    break
+                                case ('headTreeNodeId'):
 
-            switch (nodeField) {
-                case ('name'): 
-                    newNode[nodeField] = nodeValue
-                    break
-                case ('relation'): 
-                    newNode[nodeField] = nodeValue
-                    break
-                case ('headTreeNodeId'):
-                    const tokenId = state
-                        .currentTreeState
-                        .treeNodeIdToTokenId(parseInt(nodeValue))
+                                    
 
-                    const setHeadTokenId = tokenId
-                        .fmap(TreeNode.setHeadTokenId)
+                                    const tokenId = state
+                                        .currentTreeState
+                                        .treeNodeIdToTokenId(parseInt(nodeValue))
+                                    
+                                    const setHeadTokenId = tokenId
+                                        .fmap(TreeNode.setHeadTokenId)
 
-                    MaybeT.of(newNode)
-                        .applyFmap(setHeadTokenId)
-                    break
+                                    MaybeT.of(newNode)
+                                        .applyFmap(setHeadTokenId)
+                                    break
 
-                default: 
-                    newNode[nodeField] = parseInt(nodeValue)
-            }
+                                default:
+                                    newNode[nodeField] = parseInt(nodeValue)
+                            }
 
-            state.changeNode(newNode)
-        }
-    }
+                            state.changeNode(newNode)
+                        }
+                    }
 
-    changeNodeValue = 
+    changeNodeValue =
         (nodeField: string) =>
-        (nodeValue: string) =>
-        (treeNodeId: string) =>
-        {
+            (nodeValue: string) =>
+                (treeNodeId: string) => {
 
-        TreeStateIO.changeNodeValue
-            (nodeField) 
-            (nodeValue) 
-            (treeNodeId) 
-            (this)
-    }
+                    TreeStateIO.changeNodeValue
+                        (nodeField)
+                        (nodeValue)
+                        (treeNodeId)
+                        (this)
+                }
 
     changeRelation = (elem: HTMLDivElement) => {
         const maybeElem = MaybeT.of(elem)
-            
+
         const linkType = maybeElem
             .bind(HTML.Elem.getAttr("type"))
             .unpack(LinkType.Unknown)
@@ -194,15 +192,15 @@ class TreeStateIO {
                         Graph.unclickAll()
                         break
                     case (true):
-                        const x = depIdx.applyFmap(newRel.fmap(TreeStateIO.changeNodeValue("relation")))  
-                        const y = MaybeT.of(this).applyFmap(x) 
+                        const x = depIdx.applyFmap(newRel.fmap(TreeStateIO.changeNodeValue("relation")))
+                        const y = MaybeT.of(this).applyFmap(x)
                         break
                 }
-     
+
                 break
 
             case (LinkType.Slash):
-                const slashId = HTML.Elem.getAttr ("slash-id") (elem)
+                const slashId = HTML.Elem.getAttr("slash-id")(elem)
                 const f = newRel.fmap(TreeStateIO.changeSlashRel)
                 const x = slashId.applyFmap(f)
                 const y = MaybeT.of(this).applyFmap(x)
@@ -211,65 +209,62 @@ class TreeStateIO {
 
     }
 
-    static changeSlashRel = 
+    static changeSlashRel =
         (newRel: AGLDTRel) =>
-        (slashId: string) => 
-        (state: TreeStateIO) => 
-
-        {
-            const currentSlash = state
-                .currentTreeState
-                .slashBySlashId(slashId)
-            
-            const currentRel = currentSlash
-                .fmap(SecondaryDep.relation)
-
-            const changed = !(currentRel.eq(newRel))
-
-            switch (changed) {
-                case (true):
-                    const newSlash = currentSlash
-                        .fmapErr(`Could not find current slash (looking for Id ${slashId}).`, SecondaryDep.changeRel(newRel))
-                        .fmap(SecondaryDep.ofInterface)
-        
-                    const getNode = state
+            (slashId: string) =>
+                (state: TreeStateIO) => {
+                    const currentSlash = state
                         .currentTreeState
-                        .nodeByTreeNodeId
-        
-                    const parentNode = newSlash
-                        .bind(SecondaryDep.depTreeNodeId(state.currentTreeState))
-                        .fmap(Str.fromNum)
-                        .bind(getNode)
-        
-                    const changeSlash = newSlash.fmap(TreeNode.changeSlash)
-        
-                    const newParentNode = parentNode.applyFmap(changeSlash)
-                    
-                    // This is where the node gets changed in the overall state
-                    newParentNode.fmap(state.changeNode)    
-                    break
-                
-                case (false):
-                    Graph.unclickAll()
-                    break
-            }
-        }
+                        .slashBySlashId(slashId)
 
-    changeSlashRel = 
+                    const currentRel = currentSlash
+                        .fmap(SecondaryDep.relation)
+
+                    const changed = !(currentRel.eq(newRel))
+
+                    switch (changed) {
+                        case (true):
+                            const newSlash = currentSlash
+                                .fmapErr(`Could not find current slash (looking for Id ${slashId}).`, SecondaryDep.changeRel(newRel))
+                                .fmap(SecondaryDep.ofInterface)
+
+                            const getNode = state
+                                .currentTreeState
+                                .nodeByTreeNodeId
+
+                            const parentNode = newSlash
+                                .bind(SecondaryDep.depTreeNodeId(state.currentTreeState))
+                                .fmap(Str.fromNum)
+                                .bind(getNode)
+
+                            const changeSlash = newSlash.fmap(TreeNode.changeSlash)
+
+                            const newParentNode = parentNode.applyFmap(changeSlash)
+
+                            // This is where the node gets changed in the overall state
+                            newParentNode.fmap(state.changeNode)
+                            break
+
+                        case (false):
+                            Graph.unclickAll()
+                            break
+                    }
+                }
+
+    changeSlashRel =
         (newRel: AGLDTRel) =>
-        (slashId: string) => 
-    {
-        TreeStateIO.changeSlashRel
-            (newRel)
-            (slashId)
-            (this)
-    }
+            (slashId: string) => {
+                TreeStateIO.changeSlashRel
+                    (newRel)
+                    (slashId)
+                    (this)
+            }
 
-    get clickState () {
+    get clickState() {
         return this.currentTreeState.clickState
     }
 
-    private set clickState (value: ClickState) {
+    private set clickState(value: ClickState) {
         this.currentTreeState.clickState = value
     }
 
@@ -300,11 +295,11 @@ class TreeStateIO {
 
         const tokensWithRoot = Arr
             .unshift(Obj.deepcopy(sentState._tokens), Constants.rootToken)
-        
+
         const nodes = TreeNode
             .tokensToTreeNodes(tokensWithRoot)
 
-        const newSentState = new TreeState (
+        const newSentState = new TreeState(
             sentState._state_id,
             sentState._sentence_id,
             sentState._lang,
@@ -370,44 +365,41 @@ class TreeStateIO {
             .bindErr("Error", TextStateIO
                 .setCurrentSentenceViewBoxStr(newViewBoxStr)
             )
-    }   
+    }
 
     static newSlashRel =
         (newRel: string) =>
-        (headTreeNodeId: number) =>
-        (depTreeNodeId: number) => 
-        (state: TreeStateIO) => 
+            (headTreeNodeId: number) =>
+                (depTreeNodeId: number) =>
+                    (state: TreeStateIO) => {
+                        const slash = SecondaryDep.ofTreeNodeIds(state.currentTreeState)(headTreeNodeId)(depTreeNodeId)(newRel)
 
-        {
-            const slash = SecondaryDep.ofTreeNodeIds (state.currentTreeState) (headTreeNodeId) (depTreeNodeId) (newRel)
+                        state
+                            .currentTreeState
+                            .nodeByTreeNodeId(Str.fromNum(depTreeNodeId))
+                            .applyFmap(slash.fmap(TreeNode.appendSecondaryDep))
+                            .fmap(state.changeNode)
+                    }
 
-            state
-                .currentTreeState
-                .nodeByTreeNodeId(Str.fromNum(depTreeNodeId))
-                .applyFmap(slash.fmap(TreeNode.appendSecondaryDep))
-                .fmap(state.changeNode)
-        }
-
-    newSlashRel = 
+    newSlashRel =
         (newRel: string) =>
-        (headTokenIdx: number) =>
-        (depTokenIdx: number) => 
-        {
-            return TreeStateIO 
-                .newSlashRel
-                    (newRel)
-                    (headTokenIdx)
-                    (depTokenIdx)
-                    (this)
-        }
+            (headTokenIdx: number) =>
+                (depTokenIdx: number) => {
+                    return TreeStateIO
+                        .newSlashRel
+                        (newRel)
+                        (headTokenIdx)
+                        (depTokenIdx)
+                        (this)
+                }
 
-    get nodes () {
+    get nodes() {
         return this.currentTreeState.nodes
     }
 
     static nodes = (state: TreeStateIO) => {
         return state.currentTreeState.nodes
-    } 
+    }
 
     static of = (sentState: TreeState) => {
         return new TreeStateIO(sentState)
@@ -416,32 +408,31 @@ class TreeStateIO {
     push = (ts: TreeState) => (ext: boolean) => (update: boolean) => {
         TreeStateIO.push(ext)(update)(ts)(this)
     }
-    
-    static push = 
-        (ext: boolean) => 
-        (updateGraph: boolean) => 
-        (ts: TreeState) =>  
-        (treeStateIO: TreeStateIO) => 
-    {
 
-        treeStateIO._treeState = ts
-        treeStateIO.currentSentStateIdx = 0
+    static push =
+        (ext: boolean) =>
+            (updateGraph: boolean) =>
+                (ts: TreeState) =>
+                    (treeStateIO: TreeStateIO) => {
 
-        if (updateGraph) {
-            Graph.updateSimulation(treeStateIO)
-        }
+                        treeStateIO._treeState = ts
+                        treeStateIO.currentSentStateIdx = 0
 
-        const changeArethusaSentence = globalState
-            .textStateIO
-            .fmap(TextStateIO.changeArethusaSentence(true))
+                        if (updateGraph) {
+                            Graph.updateSimulation(treeStateIO)
+                        }
 
-        if (!ext) {
-            treeStateIO
-                .arethusaSentence
-                .applyFmap(changeArethusaSentence)
-        }
+                        const changeArethusaSentence = globalState
+                            .textStateIO
+                            .fmap(TextStateIO.changeArethusaSentence(true))
 
-    }
+                        if (!ext) {
+                            treeStateIO
+                                .arethusaSentence
+                                .applyFmap(changeArethusaSentence)
+                        }
+
+                    }
 
     redo = () => {
         TreeStateIO.redo(this)
@@ -463,14 +454,14 @@ class TreeStateIO {
     static removeSlashBySlashIdFromTreeNodeIds = (slashId: string) => (state: TreeStateIO) => {
         const node = state
             .currentTreeState
-            .nodeBySlashIdFromTreeNodeIds (slashId)
-            .fmap(TreeNode.removeSlashBySlashIdFromTreeNodeIds(state.currentTreeState) (slashId))
+            .nodeBySlashIdFromTreeNodeIds(slashId)
+            .fmap(TreeNode.removeSlashBySlashIdFromTreeNodeIds(state.currentTreeState)(slashId))
 
         node.fmap(state.changeNode)
     }
 
     removeSlashBySlashIdFromTreeNodeIds = (slashId: string) => {
-        TreeStateIO.removeSlashBySlashIdFromTreeNodeIds (slashId) (this)
+        TreeStateIO.removeSlashBySlashIdFromTreeNodeIds(slashId)(this)
     }
 
     replace = (state: TreeState, update: boolean, sentStateToReplaceIdx: number) => {
@@ -482,11 +473,10 @@ class TreeStateIO {
     }
 
     replaceSentStateFromNodes(
-        nodes: ITreeNode[], 
-        update: boolean, 
-        idx: number): void 
-    {
-        const newSentState = new TreeState (
+        nodes: ITreeNode[],
+        update: boolean,
+        idx: number): void {
+        const newSentState = new TreeState(
             this.currentSentStateIdx + 1,
             this.currentTreeState._sentence_id,
             this.currentTreeState._lang,
@@ -498,22 +488,21 @@ class TreeStateIO {
         this.replace(newSentState, update, idx)
     }
 
-    static replaceSentStateFromNodes= (
-        nodes: ITreeNode[], 
-        update: boolean, 
-        idx: number) => (state: TreeStateIO): void  => 
-    {
-        const newSentState = new TreeState (
-            state.currentSentStateIdx + 1,
-            state.currentTreeState._sentence_id,
-            state.currentTreeState._lang,
-            state.currentTreeState._notes,
-            [],
-            nodes,
-            state.currentTreeState.clickState
-        )
-        state.replace(newSentState, update, idx)
-    }
+    static replaceSentStateFromNodes = (
+        nodes: ITreeNode[],
+        update: boolean,
+        idx: number) => (state: TreeStateIO): void => {
+            const newSentState = new TreeState(
+                state.currentSentStateIdx + 1,
+                state.currentTreeState._sentence_id,
+                state.currentTreeState._lang,
+                state.currentTreeState._notes,
+                [],
+                nodes,
+                state.currentTreeState.clickState
+            )
+            state.replace(newSentState, update, idx)
+        }
 
     get slashes() {
         return this.currentTreeState.slashes
@@ -544,16 +533,16 @@ class TreeStateIO {
 
         switch (state.currentTreeState.clickState.elementType) {
             case (TreeLabelType.NodeLabel):
-                this.changeClickState( ClickState.none() )
+                this.changeClickState(ClickState.none())
                 break
-            
+
             case (TreeLabelType.EdgeLabel):
-                this.changeClickState( ClickState.none() )
-                break       
+                this.changeClickState(ClickState.none())
+                break
         }
     }
 
-    get xmlNode () {
+    get xmlNode() {
         return this.currentTreeState.xmlNode
     }
 }

@@ -32,14 +32,14 @@ class TreeState implements ITreeState {
         this._clickState = clickState
     }
 
-    get arethusaSentence () {
-        return TreeState   
+    get arethusaSentence() {
+        return TreeState
             .arethusaSentence(this)
     }
 
     static arethusaSentence = (s: TreeState) => {
         return TreeState
-            .toArethusaXMLNode(s) 
+            .toArethusaXMLNode(s)
             .fmap(ArethusaSentence.fromXMLNode)
     }
 
@@ -76,71 +76,67 @@ class TreeState implements ITreeState {
         this._state_id = value
     }
 
-    static nodeByTokenId = 
-        (tokenId: string) => 
-        (sentState: TreeState) => 
-    {
-        return TreeNode.nodeByTokenId(tokenId) (sentState.nodes)
-    }
+    static nodeByTokenId =
+        (tokenId: string) =>
+            (sentState: TreeState) => {
+                return TreeNode.nodeByTokenId(tokenId)(sentState.nodes)
+            }
 
-    static nodeByTreeNodeId = 
-        (treeNodeId: string) => 
-        (sentState: TreeState) => 
-    {
-        return MaybeT.of(
-            sentState
-                .nodes
-                .find(
-                    (node: ITreeNode) => 
-                        node.treeNodeId === parseInt(treeNodeId))
-            )
-    }
+    static nodeByTreeNodeId =
+        (treeNodeId: string) =>
+            (sentState: TreeState) => {
+                return MaybeT.of(
+                    sentState
+                        .nodes
+                        .find(
+                            (node: ITreeNode) =>
+                                node.treeNodeId === parseInt(treeNodeId))
+                )
+            }
 
     nodeByTokenId = (depIdx: string) => {
-        return TreeState.nodeByTokenId (depIdx) (this)
+        return TreeState.nodeByTokenId(depIdx)(this)
     }
 
     nodeByTreeNodeId = (depIdx: string) => {
-        return TreeState.nodeByTreeNodeId (depIdx) (this)
+        return TreeState.nodeByTreeNodeId(depIdx)(this)
     }
 
-    static nodeBySlashIdFromTreeNodeIds = 
-        (slashId: string) => 
-        (sentState: TreeState) => 
-    {
-        return MaybeT.of(
-            sentState
-                .slashes
-                .find(
-                    (islash: ISecondaryDep) => {
-                        return SecondaryDep
-                            .ofInterface(islash)
-                            .slashIdFromTreeNodeIds(sentState)
-                            .eq(slashId)
-                    }
+    static nodeBySlashIdFromTreeNodeIds =
+        (slashId: string) =>
+            (sentState: TreeState) => {
+                return MaybeT.of(
+                    sentState
+                        .slashes
+                        .find(
+                            (islash: ISecondaryDep) => {
+                                return SecondaryDep
+                                    .ofInterface(islash)
+                                    .slashIdFromTreeNodeIds(sentState)
+                                    .eq(slashId)
+                            }
+                        )
                 )
-            )
 
-            .bind(SecondaryDep.depTreeNodeId(sentState))
-            .fmap(Str.fromNum)
-            .bind(sentState.nodeByTreeNodeId)
-    }
+                    .bind(SecondaryDep.depTreeNodeId(sentState))
+                    .fmap(Str.fromNum)
+                    .bind(sentState.nodeByTreeNodeId)
+            }
 
     nodeBySlashIdFromTreeNodeIds = (slashId: string) => {
         return TreeState
             .nodeBySlashIdFromTreeNodeIds
-                (slashId)
-                (this)
+            (slashId)
+            (this)
     }
 
-    static nodeRelation = 
-        (depIdx: string) => 
-        (sentState: TreeState): Maybe<string> => 
-    {
-        return TreeState
-            .nodeByTreeNodeId(depIdx)(sentState)
-            .fmap(TreeNode.relation)
-    }
+    static nodeRelation =
+        (depIdx: string) =>
+            (sentState: TreeState): Maybe<string> => {
+                return TreeState
+                    .nodeByTreeNodeId(depIdx)(sentState)
+                    .fmap(TreeNode.relation)
+            }
 
     get nodes() {
         return this._nodes
@@ -156,93 +152,90 @@ class TreeState implements ITreeState {
         this._nodes = value
     }
 
-    static of = 
+    static of =
         (stateId: number) =>
-        (sentenceId: string, lang: string, notes: string) =>
-        (tokens: ITreeToken[]) =>
+            (sentenceId: string, lang: string, notes: string) =>
+                (tokens: ITreeToken[]) =>
+                    (nodes: ITreeNode[]) =>
+                        (clickState: ClickState) => {
+
+                            return new TreeState(
+                                stateId,
+                                sentenceId,
+                                notes,
+                                lang,
+                                tokens,
+                                nodes,
+                                clickState
+                            )
+                        }
+
+    static ofTokens =
+        (sentence_id: string, lang: string, notes: string) =>
+            (tokens: ITreeToken[]) => {
+                const nodes = tokens
+                    .map(TreeNode.tokenToTreeNode)
+
+                return new TreeState(
+                    globalState
+                        .treeStateIO
+                        .fmap(TreeStateIO.currentStateId)
+                        .fmap(Num.add(1))
+                        .fromMaybe(0),
+                    sentence_id,
+                    lang,
+                    notes,
+                    tokens,
+                    nodes,
+                    ClickState.none()
+                )
+            }
+
+    static ofTokensWithExistingNodes =
         (nodes: ITreeNode[]) =>
-        (clickState: ClickState) => 
-    {
+            (sentence_id: string, lang: string, notes: string) =>
+                (tokens: ITreeToken[]) => {
+                    const tokensWithRoot = Arr
+                        .unshift(
+                            Obj.deepcopy(tokens), Constants.rootToken
+                        )
+                    const _nodes = tokensWithRoot
+                        .map(
+                            TreeNode.tokenToTreeNodeFromExistingNode(nodes)
+                        )
 
-            return new TreeState(
-                stateId, 
-                sentenceId, 
-                notes,
-                lang,
-                tokens, 
-                nodes, 
-                clickState
-            )
-        }
+                    return new TreeState(
+                        globalState
+                            .treeStateIO
+                            .fmap(TreeStateIO.currentStateId)
+                            .fmap(Num.add(1))
+                            .fromMaybe(0),
+                        sentence_id,
+                        lang,
+                        notes,
+                        tokens,
+                        _nodes,
+                        ClickState.none()
+                    )
+                }
 
-    static ofTokens = 
-        (sentence_id: string, lang: string, notes: string) =>
-        (tokens: ITreeToken[]) => 
-    {
-        const nodes = tokens
-            .map(TreeNode.tokenToTreeNode)
-
-        return new TreeState(
-            globalState
-                .treeStateIO
-                .fmap(TreeStateIO.currentStateId)
-                .fmap(Num.add(1))
-                .fromMaybe(0), 
-            sentence_id, 
-            lang,
-            notes,
-            tokens, 
-            nodes, 
-            ClickState.none()
-        )
-    }
-
-    static ofTokensWithExistingNodes = 
-        (nodes: ITreeNode[]) => 
-        (sentence_id: string, lang: string, notes: string) =>
-        (tokens: ITreeToken[]) => 
-    {
-        const tokensWithRoot = Arr
-            .unshift(
-                Obj.deepcopy(tokens), Constants.rootToken
-            )
-        const _nodes = tokensWithRoot
-            .map(
-                TreeNode.tokenToTreeNodeFromExistingNode(nodes)
-            )
-        
-        return new TreeState(
-            globalState
-                .treeStateIO
-                .fmap(TreeStateIO.currentStateId)
-                .fmap(Num.add(1))
-                .fromMaybe(0),
-            sentence_id, 
-            lang,
-            notes,
-            tokens, 
-            _nodes, 
-            ClickState.none()
-        )
-    }
-
-    get slashes (): SecondaryDep[]  {
+    get slashes(): SecondaryDep[] {
         return this.nodes
-            .reduce ( (acc: SecondaryDep[], node:ITreeNode) => {
+            .reduce((acc: SecondaryDep[], node: ITreeNode) => {
                 return Arr.concat
                     (acc)
-                    (node   
+                    (node
                         .secondaryDeps
                         .map(SecondaryDep.ofInterface)
                     )
             }
-            , [])
+                , [])
     }
 
     slashBySlashId = (slashId: string): Maybe<SecondaryDep> => {
         return MaybeT.of(this
             .slashes
-            .find (
+            .find(
                 (slash: ISecondaryDep) => {
                     return SecondaryDep
                         .ofInterface(slash)
@@ -255,18 +248,17 @@ class TreeState implements ITreeState {
         return this._tokens
     }
 
-    set tokens (value: ITreeToken[]) {
+    set tokens(value: ITreeToken[]) {
         this._tokens = value
     }
 
-    static tokenIdToTreeNodeId = 
-        (tokenId: number) => 
-        (treeState: TreeState) => 
-    {
-        return treeState
-            .nodeByTokenId(Str.fromNum(tokenId))
-            .fmap(TreeNode.treeNodeId)
-    }
+    static tokenIdToTreeNodeId =
+        (tokenId: number) =>
+            (treeState: TreeState) => {
+                return treeState
+                    .nodeByTokenId(Str.fromNum(tokenId))
+                    .fmap(TreeNode.treeNodeId)
+            }
 
     tokenIdToTreeNodeId = (tokenId: number) => {
         return TreeState.tokenIdToTreeNodeId
@@ -290,20 +282,19 @@ class TreeState implements ITreeState {
             .firstChild)
     }
 
-    static treeNodeIdToTokenId = 
-        (treeNodeId: number) => 
-        (sentState: TreeState) => 
-    {
-        return sentState
-            .nodeByTreeNodeId(Str.fromNum(treeNodeId))
-            .fmap(TreeNode.tokenId)
-    }
+    static treeNodeIdToTokenId =
+        (treeNodeId: number) =>
+            (sentState: TreeState) => {
+                return sentState
+                    .nodeByTreeNodeId(Str.fromNum(treeNodeId))
+                    .fmap(TreeNode.tokenId)
+            }
 
     treeNodeIdToTokenId = (treeNodeId: number) => {
         return TreeState.treeNodeIdToTokenId(treeNodeId)(this)
     }
 
-    get xmlNode () {
+    get xmlNode() {
         return TreeState.toArethusaXMLNode(this)
     }
 

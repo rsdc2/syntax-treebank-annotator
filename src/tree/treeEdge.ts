@@ -18,8 +18,11 @@ namespace TreeEdge {
                 return 0
 
             count++; 
-            if (count > 100) 
-                throw "Maximum recursion depth exceeded."
+            // Undo the last action if there is a cycle
+            // TODO: there is probably a better way to fix this
+            if (count > 100) {
+                throw Error("Recursion error")
+            }
 
             if (headToken.fmap(TreeToken.type).eq(TreeTokenType.Root)) return count
 

@@ -68,6 +68,14 @@ class TreeStateIO {
             }
         }
         this.addSentStateFromNodes(newState._nodes, true);
+        try {
+            console.log("hello");
+            TreeEdge.countEdgesToRoot(newNode.headTokenId, newState._tokens);
+            console.log("hello");
+        }
+        catch (error) {
+            console.log("caught");
+        }
     };
     static changeNodeValue = (nodeField) => (nodeValue) => (treeNodeId) => (state) => {
         const id = parseInt(treeNodeId);
