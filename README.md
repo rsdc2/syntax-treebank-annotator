@@ -1,3 +1,10 @@
+<div>
+  <img align="left" valign="center" src="assets/ISicily.jpg?raw=true" alt="isicily logo" height="80" >
+  <img align="left" valign="center" src="assets/oxford.png?raw=true" alt="oxford logo" height="80"  style="padding-top: 80px" >
+  <img align="left" valign="center" src="assets/EU_ERC.jpg?raw=true" alt="erc logo" height="80" >
+</div>
+<br clear="all">
+
 # Syntax Treebank Annotator (α, under active development)
 
 The source code for the Syntax Treebank Annotator is written in a combination of JavaScript and [TypeScript](https://www.typescriptlang.org/), transpiled to JavaScript (ECMAScript 2022).
