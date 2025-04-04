@@ -14,8 +14,6 @@ It has been designed for use, in the first instance,
 with the [I.Sicily](http://sicily.classics.ox.ac.uk/) corpus, 
 although it can be applied to texts in any language.
 
-
-
 ## Getting started
 
 ### Online access
