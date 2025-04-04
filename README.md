@@ -5,7 +5,7 @@
 </div>
 <br clear="all">
 
-# Syntax Treebank Annotator (α, under active development)
+# Syntax Treebank Annotator
 
 The source code for the Syntax Treebank Annotator is written in a combination of JavaScript and [TypeScript](https://www.typescriptlang.org/), transpiled to JavaScript (ECMAScript 2022).
 
