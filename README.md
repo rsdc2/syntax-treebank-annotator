@@ -14,13 +14,9 @@ It has been designed for use, in the first instance,
 with the [I.Sicily](http://sicily.classics.ox.ac.uk/) corpus, 
 although it can be applied to texts in any language.
 
+Syntax Treebank Annotator is in beta. 
+
 ## Getting started
-
-### Online access
-
-The Treebank Annotator can be run by following this link:
-
-[https://rsdc2.github.io/syntax-treebank-annotator/](https://rsdc2.github.io/syntax-treebank-annotator/)
 
 ![Alt text](assets/annotator_screenshot.png "Screenshot of the annotator")
 
