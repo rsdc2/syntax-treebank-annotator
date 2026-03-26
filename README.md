@@ -162,6 +162,10 @@ The licenses for these projects are located in the `LICENSES` directory.
 
 The XML file format is designed to be compatible with that used by [Arethusa](https://www.perseids.org/tools/arethusa/app/#/).
 
-The software for the Syntax Treebank Annotator was written by Robert Crellin as part of the Crossreads project at the Faculty of Classics, University of Oxford, and is licensed under the MIT license. This project has received funding from the European Research Council (ERC) under the European Union’s Horizon 2020 research and innovation programme (grant agreement No 885040, “Crossreads”).
+The software for the Syntax Treebank Annotator was written by Robert Crellin as part of the Crossreads project at the Faculty of Classics, University of Oxford. This project has received funding from the European Research Council (ERC) under the European Union’s Horizon 2020 research and innovation programme (grant agreement No 885040, “Crossreads”).
+
+## Licenses
+
+The repository as a whole is licensed under the [GNU GPL v 3 license](LICENSES/gpl-3.0.txt). My understanding is that this license is one-way compatible with the CC-BY-4.0 licence MIT and Apache 2.0 licenses, such that it is possible for the requirements of those licenses to be fulfilled under GPL (see [https://creativecommons.org/2015/10/08/cc-by-sa-4-0-now-one-way-compatible-with-gplv3/](https://creativecommons.org/2015/10/08/cc-by-sa-4-0-now-one-way-compatible-with-gplv3/)).
 
 Sample texts from I.Sicily are either directly form, or derived from, the [I.Sicily corpus](https://github.com/ISicily/ISicily), which are made available under the [CC-BY-4.0 licence](https://creativecommons.org/licenses/by/4.0/).
