@@ -167,5 +167,5 @@ The software for the Syntax Treebank Annotator was written by Robert Crellin as 
 ## Licenses
 Sample texts from I.Sicily are from the [I.Sicily corpus](https://github.com/ISicily/ISicily), which are made available under the [CC-BY-4.0 licence](https://creativecommons.org/licenses/by/4.0/).
 
-The repository is licensed under the [GNU GPL v 3 license](LICENSES/gpl-3.0.txt). My understanding is that this license is one-way compatible with the CC-BY-4.0, MIT and Apache 2.0 licenses, such that it is possible for the requirements of those licenses to be fulfilled under GPL (see [https://creativecommons.org/2015/10/08/cc-by-sa-4-0-now-one-way-compatible-with-gplv3/](https://creativecommons.org/2015/10/08/cc-by-sa-4-0-now-one-way-compatible-with-gplv3/)).
+The repository is licensed under the [GNU GPL v 3 license](LICENSES/gpl-3.0.txt). My understanding is that this license is one-way compatible with the CC-BY-4.0, MIT and Apache 2.0 licenses, such that it is possible for the requirements of those licenses to be fulfilled under GPL (for the first, see [https://creativecommons.org/2015/10/08/cc-by-sa-4-0-now-one-way-compatible-with-gplv3/](https://creativecommons.org/2015/10/08/cc-by-sa-4-0-now-one-way-compatible-with-gplv3/)).
 
