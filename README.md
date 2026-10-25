@@ -148,7 +148,7 @@ At present the annotator is only able to handle files with:
 ## Dependencies
 The syntax treebank annotator was written in [TypeScript](https://www.typescriptlang.org/) ([Apache 2.0](https://github.com/microsoft/TypeScript/blob/main/LICENSE.txt)) and uses:
 
-- the library [D3.js](https://d3js.org/) ([ISC](https://github.com/d3/d3/blob/main/LICENSE)) for representation of the trees (graphs). 
+- the library [D3.js](https://d3js.org/) 7.9 ([ISC](https://github.com/d3/d3/blob/main/LICENSE)) for representation of the trees (graphs). The minified file originated from https://d3js.org/d3.v7.min.js.
 
 - [```http-server```](https://www.npmjs.com/package/http-server) (MIT, see LICENSES folder) to serve locally.
 
